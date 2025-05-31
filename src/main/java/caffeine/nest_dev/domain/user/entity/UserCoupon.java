@@ -20,10 +20,12 @@ public class UserCoupon extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("couponId")
+    @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Enumerated(EnumType.STRING)
