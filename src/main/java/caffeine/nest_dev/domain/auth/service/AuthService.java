@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.auth.service;
 
+import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.domain.auth.dto.request.AuthRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.LoginRequestDto;
 import caffeine.nest_dev.domain.auth.dto.response.AuthResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public AuthResponseDto signup(AuthRequestDto dto) {
@@ -45,13 +47,20 @@ public class AuthService {
 
     @Transactional
     public LoginResponseDto login(LoginRequestDto dto) {
+        // 유저 조회
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        // 토큰 생성
+        String accessToken = jwtUtil.createToken(user);
+        String refreshToken = jwtUtil.createRefreshToken(user);
+
         return LoginResponseDto.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .nickName(user.getNickName())
-//                .accessToken()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }
