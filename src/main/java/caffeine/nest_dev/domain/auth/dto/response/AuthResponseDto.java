@@ -2,13 +2,13 @@ package caffeine.nest_dev.domain.auth.dto.response;
 
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthResponseDto {
 
     private final Long id;
