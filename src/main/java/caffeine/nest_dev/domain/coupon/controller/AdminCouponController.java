@@ -7,7 +7,7 @@ import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
 import caffeine.nest_dev.domain.coupon.dto.response.AdminCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.service.AdminCouponService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -36,10 +36,9 @@ public class AdminCouponController {
 
     @GetMapping
     public ResponseEntity<CommonResponse<PagingResponse<AdminCouponResponseDto>>> findCoupons(
-            @PageableDefault(size = 10, sort = "validTo", direction = Sort.Direction.DESC) PageableDefault pageable
+            @PageableDefault(size = 10, sort = "validTo", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        PagingResponse<AdminCouponResponseDto> responseDtos = adminCouponService.getCoupon(
-                pageable);
+        PagingResponse<AdminCouponResponseDto> responseDtos = adminCouponService.getCoupon(pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
     }

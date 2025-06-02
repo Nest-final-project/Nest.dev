@@ -11,5 +11,6 @@ import org.springframework.data.web.PageableDefault;
 
 public interface AdminCouponRepository extends JpaRepository<Coupon, Long> {
 
-    PagingResponse<AdminCouponResponseDto> findAll(PageableDefault pageable);
+    Page<Coupon> findAll(Pageable pageable);
+
 }
