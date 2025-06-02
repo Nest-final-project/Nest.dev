@@ -1,11 +1,43 @@
 package caffeine.nest_dev.domain.ticket.controller;
 
+import caffeine.nest_dev.common.dto.CommonResponse;
+import caffeine.nest_dev.common.dto.PagingResponse;
+import caffeine.nest_dev.common.enums.SuccessCode;
+import caffeine.nest_dev.domain.ticket.dto.request.TicketRequestDto;
+import caffeine.nest_dev.domain.ticket.dto.response.TicketResponseDto;
+import caffeine.nest_dev.domain.ticket.service.TicketService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/api")
 public class TicketController {
+
+    private final TicketService ticketService;
+
+    @PostMapping("/admin/ticket")
+    public ResponseEntity<CommonResponse<TicketResponseDto>> registerTicket(
+            @RequestBody TicketRequestDto requestDto) {
+        TicketResponseDto responseDto = ticketService.saveTicket(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_CREATED, responseDto));
+    }
+
+    @GetMapping("/ticket")
+    public ResponseEntity<CommonResponse<List<TicketResponseDto>>> findTicketList() {
+        List<TicketResponseDto> responseDtos = ticketService.getTeicket();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
+    }
 }
