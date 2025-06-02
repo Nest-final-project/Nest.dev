@@ -13,7 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +39,24 @@ public class TicketController {
 
     @GetMapping("/ticket")
     public ResponseEntity<CommonResponse<List<TicketResponseDto>>> findTicketList() {
-        List<TicketResponseDto> responseDtos = ticketService.getTeicket();
+        List<TicketResponseDto> responseDtos = ticketService.getTicket();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
+    }
+
+    @PatchMapping("/admin/ticket/{ticketId}")
+    public ResponseEntity<CommonResponse<TicketResponseDto>> updateTicket(
+            @PathVariable Long ticketId, @RequestBody TicketRequestDto requestDto) {
+        ticketService.modifyTicket(ticketId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_UPDATED));
+    }
+
+    @DeleteMapping("/admin/ticket/{ticketId}")
+    public ResponseEntity<CommonResponse<TicketResponseDto>> deleteTicket(
+            @PathVariable Long ticketId) {
+        ticketService.removeTicket(ticketId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_DELETED));
     }
 }
