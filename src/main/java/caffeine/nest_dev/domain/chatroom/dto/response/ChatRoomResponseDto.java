@@ -1,9 +1,11 @@
 package caffeine.nest_dev.domain.chatroom.dto.response;
 
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class ChatRoomResponseDto {
 
     private Long roomId;
@@ -16,11 +18,11 @@ public class ChatRoomResponseDto {
         this.menteeId = menteeId;
     }
 
-    public static ChatRoomResponseDto from(ChatRoom chatRoom) {
-        return new ChatRoomResponseDto(
-                chatRoom.getId(),
-                chatRoom.getMentor().getId(),
-                chatRoom.getMentee().getId()
-        );
+    public static ChatRoomResponseDto of(ChatRoom chatRoom) {
+        return ChatRoomResponseDto.builder()
+                .roomId(chatRoom.getId())
+                .mentorId(chatRoom.getMentor().getId())
+                .menteeId(chatRoom.getMentee().getId())
+                .build();
     }
 }
