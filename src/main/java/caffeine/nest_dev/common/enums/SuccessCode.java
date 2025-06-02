@@ -8,6 +8,11 @@ public enum SuccessCode implements BaseCode{
     SUCCESS_USER_LOGOUT(HttpStatus.OK,"로그아웃 되었습니다."),
     SUCCESS_USER_SIGNUP(HttpStatus.CREATED, "회원가입에 성공하였습니다."),
 
+    // User
+    SUCCESS_FIND_USER(HttpStatus.OK, "유저 조회에 성공했습니다."),
+    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보가 수정되었습니다."),
+    SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 변경이 성공되었습니다."),
+
     // Ticket
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
     SUCCESS_TICKET_READ(HttpStatus.OK, "이용권을 조회하였습니다."),

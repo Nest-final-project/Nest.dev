@@ -13,18 +13,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 @Slf4j
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate stringRedisTemplate;
+    private static final String BLACKLIST_PREFIX = "blacklist:";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -33,6 +38,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
+            // 토큰이 블랙리스트에 있는지 확인
+            String blacklistToken = stringRedisTemplate.opsForValue().get(BLACKLIST_PREFIX + token);
+            if (blacklistToken != null) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType("application/json;charset=UTF-8");
+
+                CommonResponse<Object> objectCommonResponse = CommonResponse.of(
+                        ErrorCode.IS_BLACKLISTED, null);
+
+                String s = objectMapper.writeValueAsString(objectCommonResponse);
+                response.getWriter().write(s);
+                return;
+            }
+
             if (jwtUtil.validateToken(token)) {
                 Long userId = jwtUtil.getUserIdFromToken(token);
                 User user = userRepository.findById(userId).orElse(null);
