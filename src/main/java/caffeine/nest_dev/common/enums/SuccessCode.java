@@ -18,7 +18,10 @@ public enum SuccessCode implements BaseCode{
 
 
     // Review
-    SUCCESS_CREATE_REIVEW(HttpStatus.CREATED, "리뷰가 생성되었습니다.");
+    SUCCESS_CREATE_REVIEW(HttpStatus.CREATED, "리뷰가 생성되었습니다."),
+    SUCCESS_SHOW_REVIEWS(HttpStatus.OK, "리뷰 목록이 조회되었습니다."),
+    SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정에 성공했습니다."),
+    SUCESSS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

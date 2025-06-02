@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.review.dto.request;
 
+import caffeine.nest_dev.domain.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,6 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReviewRequestDto {
 
-    private final String content;
+    private String content;
+
+    public Review toEntity(){
+        return Review.builder()
+                .content(content)
+                .build();
+    }
 
 }
