@@ -11,6 +11,11 @@ public enum SuccessCode implements BaseCode{
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
     SUCCESS_TICKET_READ(HttpStatus.OK, "이용권을 조회하였습니다."),
 
+    // Admin
+    SUCCESS_ADMIN_MENTOR_CAREER_READ(HttpStatus.OK, "멘토 경력 확인 요청 목록을 조회하였습니다."),
+    SUCCESS_ADMIN_MENTOR_CAREER_DETAIL_READ(HttpStatus.OK, "관리자 멘토 경력 단건 조회 성공"),
+    SUCCESS_ADMIN_MENTOR_CAREER_STATUS_UPDATED(HttpStatus.OK, "멘토 경력 요청 상태가 변경되었습니다."),
+
     ;
 
 
