@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.profile.entity;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.category.entity.Category;
 import caffeine.nest_dev.domain.user.entity.User;
