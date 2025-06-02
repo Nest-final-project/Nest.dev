@@ -2,10 +2,10 @@ package caffeine.nest_dev.common.enums;
 
 import org.springframework.http.HttpStatus;
 
-public enum SuccessCode implements BaseCode{
+public enum SuccessCode implements BaseCode {
     // Auth
-    SUCCESS_USER_LOGIN(HttpStatus.OK,"로그인을 성공하였습니다."),
-    SUCCESS_USER_LOGOUT(HttpStatus.OK,"로그아웃 되었습니다."),
+    SUCCESS_USER_LOGIN(HttpStatus.OK, "로그인을 성공하였습니다."),
+    SUCCESS_USER_LOGOUT(HttpStatus.OK, "로그아웃 되었습니다."),
     SUCCESS_USER_SIGNUP(HttpStatus.CREATED, "회원가입에 성공하였습니다."),
 
     // User
@@ -29,7 +29,8 @@ public enum SuccessCode implements BaseCode{
     SUCCESS_ADMIN_MENTOR_CAREER_STATUS_UPDATED(HttpStatus.OK, "멘토 경력 요청 상태가 변경되었습니다."),
 
     // ChatRoom
-    SUCCESS_CHATROOM_CREATED(HttpStatus.CREATED, "채팅방이 생성되었습니다.");
+    SUCCESS_CHATROOM_CREATED(HttpStatus.CREATED, "채팅방이 생성되었습니다."),
+    SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다.");
 
 
     private final HttpStatus httpStatus;
