@@ -84,7 +84,7 @@ public class ReviewController {
                 reviewRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_REVIEW, reviewResponseDto));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_REVIEW));
 
     }
 
