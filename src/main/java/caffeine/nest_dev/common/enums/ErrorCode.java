@@ -22,9 +22,16 @@ public enum ErrorCode implements BaseCode {
         // Complaint
         ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
 
+    // SERVER_ERROR
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
 
+    // Admin 도메인 에러 예시
+    ADMIN_MENTOR_CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멘토 경력 요청입니다."),
+    ALREADY_SAME_STATUS(HttpStatus.CONFLICT, "이미 되어있는 상태입니다."),
         // Reservation
         RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+
+
 
 
         // Review
@@ -48,9 +55,4 @@ public enum ErrorCode implements BaseCode {
     public String getMessage() {
         return message;
     }
-
-    public String getMessage(Object... args) {
-        return message;
-    }
-
 }
