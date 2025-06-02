@@ -2,6 +2,7 @@ package caffeine.nest_dev.domain.ticket.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.payment.entity.Payment;
+import caffeine.nest_dev.domain.ticket.dto.request.TicketRequestDto;
 import caffeine.nest_dev.domain.ticket.enums.TicketTime;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,13 @@ public class Ticket extends BaseEntity {
 
     @OneToMany(mappedBy = "ticket")
     private List<Payment> payments = new ArrayList<>();
+
+    public void modifyTicket(TicketRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.price = requestDto.getPrice();
+        this.ticketTime = requestDto.getTicketTime();
+        this.description = requestDto.getDescription();
+    }
 }
 
 

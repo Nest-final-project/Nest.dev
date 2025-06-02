@@ -8,10 +8,12 @@ public enum ErrorCode implements BaseCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     NO_PERMISSION(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     IS_BLACKLISTED(HttpStatus.UNAUTHORIZED, "로그아웃 된 토큰입니다."),
-
-    // Auth
     ERROR_USER_LOGIN(HttpStatus.OK,"로그인을 실패하였습니다."),
     ERROR_USER_LOGOUT(HttpStatus.OK,"로그아웃을 실패하였습니다."),
+
+    // Ticket
+    NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
+
 
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
