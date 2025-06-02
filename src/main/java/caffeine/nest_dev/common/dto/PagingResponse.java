@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class PagingResponse<T> {
+
     private final long totalElements;
     private final int totalPages;
     private final boolean hasNext;
