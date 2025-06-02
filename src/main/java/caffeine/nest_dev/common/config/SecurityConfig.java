@@ -2,11 +2,10 @@ package caffeine.nest_dev.common.config;
 
 import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
 import caffeine.nest_dev.common.exception.CustomAuthenticationEntryPoint;
-import caffeine.nest_dev.domain.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,14 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final ObjectMapper objectMapper;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/auth/signup", "/api/auth/login", "/api/auth/logout"
+            "/api/auth/signup", "/api/auth/login"
             // 조회 url 추가
     };
 
@@ -37,8 +35,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers("").hasRole("ADMIN")
-//                        .requestMatchers("").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers(AUTH_WHITELIST).permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/users/{userId}").permitAll()
+                                .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form.disable())
@@ -54,7 +53,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
 
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userRepository, objectMapper),
+                .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
