@@ -39,6 +39,6 @@ public class ChatRoomService {
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-        return ChatRoomResponseDto.from(savedChatRoom);
+        return ChatRoomResponseDto.of(savedChatRoom);
     }
 }
