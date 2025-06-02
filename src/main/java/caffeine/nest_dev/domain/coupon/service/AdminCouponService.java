@@ -7,6 +7,7 @@ import caffeine.nest_dev.domain.coupon.entity.Coupon;
 import caffeine.nest_dev.domain.coupon.repository.AdminCouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,9 @@ public class AdminCouponService {
     }
 
     @Transactional(readOnly = true)
-    public PagingResponse<AdminCouponResponseDto> getCoupon(PageableDefault pageable) {
-        return adminCouponRepository.findAll(pageable);
+    public PagingResponse<AdminCouponResponseDto> getCoupon(Pageable pageable) {
+        Page<Coupon> pagingResponse = adminCouponRepository.findAll(pageable);
+        Page<AdminCouponResponseDto> responseDtos = pagingResponse.map(AdminCouponResponseDto::of);
+        return PagingResponse.from(responseDtos);
     }
 }
