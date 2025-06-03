@@ -12,20 +12,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 public class UserDetailsImpl implements UserDetails, CredentialsContainer { // Spring security 에서 인증이 끝나면 eraseCredentials() 를 자동으로 호출
 
-    private final Long userId;
+    private final Long id;
     private final String email;
     private final UserRole userRole;
     private String password;
 
-    public UserDetailsImpl(Long userId, String email, UserRole userRole, String password) {
-        this.userId = userId;
+    public UserDetailsImpl(Long id, String email, UserRole userRole, String password) {
+        this.id = id;
         this.email = email;
         this.userRole = userRole;
         this.password = password;
     }
 
     public Long getId() {
-        return userId;
+        return id;
     }
 
 
