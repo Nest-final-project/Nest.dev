@@ -39,39 +39,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             // 토큰이 블랙리스트에 있는지 확인
+            log.info("블랙리스트에서 토큰 값 확인");
             String blacklistToken = stringRedisTemplate.opsForValue().get(BLACKLIST_PREFIX + token);
             if (blacklistToken != null) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json;charset=UTF-8");
-
-                CommonResponse<Object> objectCommonResponse = CommonResponse.of(
-                        ErrorCode.IS_BLACKLISTED, null);
-
-                String s = objectMapper.writeValueAsString(objectCommonResponse);
-                response.getWriter().write(s);
+                // 있을 때 에러 발생
+                log.info("블랙리스에 토큰 존재");
+                sendErrorCommonResponse(response, ErrorCode.IS_BLACKLISTED);
                 return;
             }
 
+            // 토큰 유효성 검사
             if (jwtUtil.validateToken(token)) {
                 Long userId = jwtUtil.getUserIdFromToken(token);
-                User user = userRepository.findById(userId).orElse(null);
+                User user = userRepository.findByIdAndIsDeletedFalse(userId).orElse(null);
 
+                // UserDetailsImpl에 로그인 된 유저 정보 저장
                 if (user != null) {
-                    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+                    UserDetailsImpl userDetails = new UserDetailsImpl(user.getId(), user.getEmail(), user.getUserRole(), user.getPassword());
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } else {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json;charset=UTF-8");
-
-                CommonResponse<Object> objectCommonResponse = CommonResponse.of(
-                        ErrorCode.UNAUTHORIZED_ROLE, null);
-
-                String s = objectMapper.writeValueAsString(objectCommonResponse);
-                response.getWriter().write(s);
+                // 토큰이 유효하지 않을 때 에러 발생
+                sendErrorCommonResponse(response, ErrorCode.INVALID_TOKEN);
                 return;
             }
         }
@@ -85,5 +77,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearer.substring(7);
         }
         return null;
+    }
+
+    // 공통 응답 형식으로 에러 보내기
+    private void sendErrorCommonResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException{
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json;charset=UTF-8");
+
+        CommonResponse<Object> objectCommonResponse = CommonResponse.of(errorCode);
+
+        String s = objectMapper.writeValueAsString(objectCommonResponse);
+
+        response.getWriter().write(s);
     }
 }
