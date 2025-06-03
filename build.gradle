@@ -38,6 +38,17 @@ dependencies {
 
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.12.6'
+
+    // bcrypt
+    implementation 'at.favre.lib:bcrypt:0.10.2'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
 }
 
 tasks.named('test') {

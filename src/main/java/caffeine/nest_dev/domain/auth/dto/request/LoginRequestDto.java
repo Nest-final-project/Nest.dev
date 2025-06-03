@@ -1,11 +1,13 @@
 package caffeine.nest_dev.domain.auth.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequestDto {
-    private final String email;
-    private final String password;
+    private String email;
+    private String password;
 }

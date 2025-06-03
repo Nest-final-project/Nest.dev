@@ -4,6 +4,8 @@ import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -31,6 +33,14 @@ public class Career extends BaseEntity {
 
     private LocalDateTime endAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CareerStatus careerStatus;
+
+    @OneToMany(mappedBy = "career")
+    private List<Certificate> certificates = new ArrayList<>();
+
+    public void updateCareerStatus(CareerStatus newStatus) {
+        this.careerStatus = newStatus;
+    }
 }

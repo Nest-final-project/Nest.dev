@@ -3,31 +3,44 @@ package caffeine.nest_dev.common.enums;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode implements BaseCode {
+
     // Auth
     UNAUTHORIZED_ROLE(HttpStatus.FORBIDDEN, "권한이 없는 유저입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     NO_PERMISSION(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     IS_BLACKLISTED(HttpStatus.UNAUTHORIZED, "로그아웃 된 토큰입니다."),
 
+    // Ticket
+    NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
+    IS_BLACKLISTED(HttpStatus.UNAUTHORIZED, "로그아웃 된 토큰입니다."),
+
     // Auth
     ERROR_USER_LOGIN(HttpStatus.OK,"로그인을 실패하였습니다."),
     ERROR_USER_LOGOUT(HttpStatus.OK,"로그아웃을 실패하였습니다."),
 
+    // SERVER_ERROR
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근 가능한 사용자가 아닙니다."),
 
-        // Complaint
-        ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
+    // Admin 도메인 에러 예시
+    ADMIN_MENTOR_CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멘토 경력 요청입니다."),
+    ALREADY_SAME_STATUS(HttpStatus.CONFLICT, "이미 되어있는 상태입니다."),
 
 
-        // Reservation
-        RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+
+    // Complaint
+    ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
 
 
-        // Review
-        REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
-        REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다.");
+    // Reservation
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+
+
+    // Review
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
@@ -46,9 +59,4 @@ public enum ErrorCode implements BaseCode {
     public String getMessage() {
         return message;
     }
-
-    public String getMessage(Object... args) {
-        return message;
-    }
-
 }
