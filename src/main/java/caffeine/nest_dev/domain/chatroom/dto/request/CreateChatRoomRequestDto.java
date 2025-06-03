@@ -8,6 +8,4 @@ import lombok.NoArgsConstructor;
 public class CreateChatRoomRequestDto {
 
     private Long reservationId;
-    private Long mentorId;
-    private Long menteeId;
 }

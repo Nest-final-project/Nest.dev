@@ -9,6 +9,7 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chatrooms")
 public class ChatRoomController {
 
-    private ChatRoomService chatRoomService;
+    private final ChatRoomService chatRoomService;
 
     /**
      * 채팅방 생성
@@ -32,9 +34,12 @@ public class ChatRoomController {
      */
     @PostMapping
     public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
-            @RequestBody CreateChatRoomRequestDto requestDto
+            @RequestBody CreateChatRoomRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
+        log.info("chatRoom 생성 api 진입");
+        Long userId = userDetails.getId();
+        ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto, userId);
         return ResponseEntity.created(URI.create("/api/chatrooms"))
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_CREATED, responseDto));
     }
@@ -51,7 +56,7 @@ public class ChatRoomController {
     public ResponseEntity<CommonResponse<List<ChatRoomResponseDto>>> findAllChatRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userDetails.getId());
+        List<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userDetails.getUser());
         return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_READ, dtoList));
     }
 }
