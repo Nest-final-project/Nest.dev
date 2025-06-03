@@ -23,22 +23,28 @@ public class ChatRoomService {
 
     // 채팅방 생성
     @Transactional
-    public ChatRoomResponseDto createChatRooms(CreateChatRoomRequestDto requestDto) {
+    public ChatRoomResponseDto createChatRooms(CreateChatRoomRequestDto requestDto, Long userId) {
 
         // 예약이 유효한지 확인
         Reservation reservation = reservationRepository.findById(requestDto.getReservationId()).orElseThrow(
                 () -> new IllegalArgumentException("예약이 존재하지 않습니다.")
         );
 
+        if (!reservation.getMentor().getId().equals(userId) && !reservation.getMentee().getId().equals(userId)) {
+            throw new IllegalArgumentException("접근 권한이 없습니다.");
+        }
+
         // 채팅방이 이미 존재하는 경우 기존의 채팅방을 반환
         Optional<ChatRoom> existChatRoom = chatRoomRepository.findByReservationId(reservation.getId());
         if (existChatRoom.isPresent()) {
             return ChatRoomResponseDto.of(existChatRoom.get());
         }
-        
+
         // 멘토, 멘티 정보 추출
         User mentor = reservation.getMentor();
         User mentee = reservation.getMentee();
+        System.out.println("mentor Id" + mentor.getId());
+        System.out.println("mentee Id" + mentee.getId());
 
         ChatRoom chatRoom = ChatRoom.builder()
                 .mentor(mentor)
@@ -46,16 +52,17 @@ public class ChatRoomService {
                 .reservation(reservation)
                 .isClosed(false)
                 .build();
-
+        System.out.println("채팅방 : " + chatRoom.getId());
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         return ChatRoomResponseDto.of(savedChatRoom);
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
-        // 본인의 id를 가지고있는 채팅방 목록을 가져와야함      ????
-        // 그런데 만약에 자기가 멘티인데 멘토의 목록을 가져올수도 있잖아
-        // 어 그런데 우리 멘토멘티 전환 안되면 ?
-        return null;
+    public List<ChatRoomResponseDto> findAllChatRooms(User user) {
+        Long userId = user.getId();
+        List<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId, userId);
+
+        return findChatRoomList.stream().map(ChatRoomResponseDto::of)
+                .toList();
     }
 }
