@@ -5,6 +5,7 @@ import caffeine.nest_dev.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
@@ -31,5 +32,4 @@ public class ReviewResponseDto {
                 .content(review.getContent())
                 .build();
     }
-
 }
