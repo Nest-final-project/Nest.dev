@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticket extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,10 +38,18 @@ public class Ticket extends BaseEntity {
     private List<Payment> payments = new ArrayList<>();
 
     public void modifyTicket(TicketRequestDto requestDto) {
-        this.name = requestDto.getName();
-        this.price = requestDto.getPrice();
-        this.ticketTime = requestDto.getTicketTime();
-        this.description = requestDto.getDescription();
+        if (requestDto != null) {
+            this.name = requestDto.getName();
+        }
+        if (requestDto.getPrice() != null) {
+            this.price = requestDto.getPrice();
+        }
+        if (requestDto.getTicketTime() != null) {
+            this.ticketTime = requestDto.getTicketTime();
+        }
+        if (requestDto.getDescription() != null) {
+            this.description = requestDto.getDescription();
+        }
     }
 }
 
