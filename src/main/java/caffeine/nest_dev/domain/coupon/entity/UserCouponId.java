@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.user.entity;
+package caffeine.nest_dev.domain.coupon.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
