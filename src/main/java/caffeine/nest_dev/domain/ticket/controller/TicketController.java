@@ -45,7 +45,7 @@ public class TicketController {
     }
 
     @PatchMapping("/admin/ticket/{ticketId}")
-    public ResponseEntity<CommonResponse<TicketResponseDto>> updateTicket(
+    public ResponseEntity<CommonResponse<Void>> updateTicket(
             @PathVariable Long ticketId, @RequestBody TicketRequestDto requestDto) {
         ticketService.modifyTicket(ticketId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
@@ -53,7 +53,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/admin/ticket/{ticketId}")
-    public ResponseEntity<CommonResponse<TicketResponseDto>> deleteTicket(
+    public ResponseEntity<CommonResponse<?>> deleteTicket(
             @PathVariable Long ticketId) {
         ticketService.removeTicket(ticketId);
         return ResponseEntity.status(HttpStatus.OK)
