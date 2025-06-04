@@ -31,6 +31,7 @@ public enum ErrorCode implements BaseCode {
 
     // Complaint
     ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
+    COMPLAINT_NEED_RESERVATION_ID(HttpStatus.BAD_REQUEST, "예약 ID가 없습니다."),
 
 
     // Reservation

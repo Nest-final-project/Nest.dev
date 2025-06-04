@@ -30,7 +30,7 @@ public enum SuccessCode implements BaseCode {
 
     // ChatRoom
     SUCCESS_CHATROOM_CREATED(HttpStatus.CREATED, "채팅방이 생성되었습니다."),
-    SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다.");
+    SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다."),
     // Complaints
     SUCCESS_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
 
