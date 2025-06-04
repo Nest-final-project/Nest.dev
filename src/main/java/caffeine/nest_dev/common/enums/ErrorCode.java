@@ -12,7 +12,6 @@ public enum ErrorCode implements BaseCode {
 
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
-    IS_BLACKLISTED(HttpStatus.UNAUTHORIZED, "로그아웃 된 토큰입니다."),
 
     // Auth
     ERROR_USER_LOGIN(HttpStatus.OK,"로그인을 실패하였습니다."),
@@ -36,6 +35,7 @@ public enum ErrorCode implements BaseCode {
 
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+    RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
 
 
     // Review

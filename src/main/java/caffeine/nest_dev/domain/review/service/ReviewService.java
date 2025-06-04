@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.review.service;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
+import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.review.dto.request.ReviewRequestDto;
 import caffeine.nest_dev.domain.review.dto.response.ReviewResponseDto;
@@ -30,6 +31,10 @@ public class ReviewService {
 
         if (!reservation.getMentee().getId().equals(userId)) {
             throw new BaseException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if(!reservation.getReservationStatus().equals(ReservationStatus.COMPLETED)){
+            throw new BaseException(ErrorCode.RESERVATION_NOT_COMPLETED);
         }
 
         reviewRespository.findByReservationId(reservationId).ifPresent(r -> {
