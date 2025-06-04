@@ -82,19 +82,23 @@ public class AuthService {
 
         // refresh 토큰 유효성 검사
         log.info("토큰 유효성 검사 시작");
-        if (jwtUtil.validateToken(refreshToken)) {
+        if (!jwtUtil.validateToken(refreshToken)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
+        // 토큰 파싱해서 접두사 빼기
+        String resolvedAccessToken = jwtUtil.resolveToken(accessToken);
+
         // access 토큰에서 가져온 userId 와 refresh 토큰에서 가져온 userId 가 일치하는지 검증
-        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(accessToken);
+        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(resolvedAccessToken);
         Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(refreshToken);
+        log.info("동일한 유저인지 검증 시작");
         if (!userIdFromAccessToken.equals(userIdFromRefreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
         }
 
         // access 토큰 redis에 블랙리스트 추가
-        jwtUtil.addToBlacklistAccessToken(accessToken);
+        jwtUtil.addToBlacklistAccessToken(resolvedAccessToken);
         log.info("access 토큰을 블랙리스트에 추가");
 
         // refresh 토큰 redis에 블랙리스트 추가
