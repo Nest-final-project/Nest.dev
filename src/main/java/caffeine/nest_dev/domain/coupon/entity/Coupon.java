@@ -41,7 +41,7 @@ public class Coupon {
     private UserGrade minGrade;   // 발급 가능 최소 등급
 
     public void modifyCoupon(AdminCouponRequestDto requestDto) {
-        if (requestDto.getName() == null || requestDto.getName().isEmpty()) {
+        if (requestDto.getName() != null) {
             this.name = requestDto.getName();
         }
         if (requestDto.getDiscountAmount() != null) {
