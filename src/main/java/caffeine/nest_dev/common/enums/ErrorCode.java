@@ -22,7 +22,8 @@ public enum ErrorCode implements BaseCode {
 
     // category
     CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성되어있는 카테고리입니다."),
-
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_CATEGORY_NAME(HttpStatus.CONFLICT, "같은 카테고리명 입니다."),
     ;
 
     private final HttpStatus httpStatus;
