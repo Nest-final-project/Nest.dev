@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.coupon.entity;
 
-import caffeine.nest_dev.domain.coupon.enums.CouponUseStatus;
+import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
+import caffeine.nest_dev.domain.user.enums.UserGrade;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,15 @@ public class Coupon {
     private LocalDateTime validTo; // 유효 종료일
 
     @Enumerated(EnumType.STRING)
-    private CouponUseStatus minGrade;   // 발급 가능 최소 등급
+    private UserGrade minGrade;   // 발급 가능 최소 등급
 
+    public void modifyCoupon(AdminCouponRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.discountAmount = requestDto.getDiscountAmount();
+        this.totalQuantity = requestDto.getTotalQuantity();
+        this.issuedQuantity = requestDto.getIssuedQuantity();
+        this.validFrom = requestDto.getValidFrom();
+        this.validTo = requestDto.getValidTo();
+        this.minGrade = requestDto.getMinGrade();
+    }
 }

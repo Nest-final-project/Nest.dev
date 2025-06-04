@@ -13,6 +13,9 @@ public enum ErrorCode implements BaseCode {
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
 
+    // AdminCoupon
+    NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
+
     // SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
 

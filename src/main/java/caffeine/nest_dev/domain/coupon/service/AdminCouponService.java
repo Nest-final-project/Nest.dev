@@ -1,6 +1,8 @@
 package caffeine.nest_dev.domain.coupon.service;
 
 import caffeine.nest_dev.common.dto.PagingResponse;
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
 import caffeine.nest_dev.domain.coupon.dto.response.AdminCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.entity.Coupon;
@@ -30,4 +32,23 @@ public class AdminCouponService {
         Page<AdminCouponResponseDto> responseDtos = pagingResponse.map(AdminCouponResponseDto::of);
         return PagingResponse.from(responseDtos);
     }
+
+    @Transactional
+    public AdminCouponResponseDto modifyCoupon(Long couponId, AdminCouponRequestDto requestDto) {
+        Coupon coupon = findAdminCouponById(couponId);
+        coupon.modifyCoupon(requestDto);
+        return AdminCouponResponseDto.of(coupon);
+    }
+
+    public AdminCouponResponseDto removeCoupon(Long couponId) {
+        Coupon coupon = findAdminCouponById(couponId);
+        adminCouponRepository.delete(coupon);
+        return AdminCouponResponseDto.of(coupon);
+    }
+
+    private Coupon findAdminCouponById(Long couponId) {
+        return adminCouponRepository.findById(couponId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_ADMIN_COUPON));
+    }
+
 }
