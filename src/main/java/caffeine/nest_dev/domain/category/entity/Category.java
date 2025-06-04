@@ -15,6 +15,17 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
+
+    public void update(String newName) {
+        this.name = newName;
+    }
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

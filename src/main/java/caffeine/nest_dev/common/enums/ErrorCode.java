@@ -3,7 +3,6 @@ package caffeine.nest_dev.common.enums;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode implements BaseCode {
-
     // Auth
     UNAUTHORIZED_ROLE(HttpStatus.FORBIDDEN, "권한이 없는 유저입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
@@ -17,9 +16,19 @@ public enum ErrorCode implements BaseCode {
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "유저가 존재하지 않습니다."),
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    ERROR_USER_LOGIN(HttpStatus.OK,"로그인을 실패하였습니다."),
+    ERROR_USER_LOGOUT(HttpStatus.OK,"로그아웃을 실패하였습니다."),
 
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
+
+
+    // user
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근 가능한 사용자가 아닙니다."),
+
+    // Complaint
+    ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
 
     // AdminCoupon
     NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
@@ -31,11 +40,22 @@ public enum ErrorCode implements BaseCode {
     ADMIN_MENTOR_CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멘토 경력 요청입니다."),
     ALREADY_SAME_STATUS(HttpStatus.CONFLICT, "이미 되어있는 상태입니다."),
 
+    // category
+    CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성되어있는 카테고리입니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_CATEGORY_NAME(HttpStatus.CONFLICT, "같은 카테고리명 입니다."),
+
+    // Reservation
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+
+
     // Category
-    ALREADY_EXIST_CATEGORY(HttpStatus.BAD_REQUEST, "중복된 카테고리 이름입니다.")
+    ALREADY_EXIST_CATEGORY(HttpStatus.BAD_REQUEST, "중복된 카테고리 이름입니다."),
 
 
-    ;
+    // Review
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

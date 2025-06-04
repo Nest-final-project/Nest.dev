@@ -57,7 +57,7 @@ public class AdminCouponController {
     }
 
     @DeleteMapping("/{couponId}")
-    public ResponseEntity<?> deleteCoupon(
+    public ResponseEntity<CommonResponse<Void>> deleteCoupon(
             @PathVariable Long couponId) {
         adminCouponService.removeCoupon(couponId);
         return ResponseEntity.status(HttpStatus.OK)
