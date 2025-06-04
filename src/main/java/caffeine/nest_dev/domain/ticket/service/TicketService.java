@@ -32,17 +32,15 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponseDto modifyTicket(Long ticketId, TicketRequestDto requestDto) {
+    public void modifyTicket(Long ticketId, TicketRequestDto requestDto) {
         Ticket ticket = findTicketById(ticketId);
         ticket.modifyTicket(requestDto);
-        return TicketResponseDto.of(ticket);
     }
 
     @Transactional
-    public TicketResponseDto removeTicket(Long ticketId) {
+    public void removeTicket(Long ticketId) {
         Ticket ticket = findTicketById(ticketId);
         ticketRepository.delete(ticket);
-        return TicketResponseDto.of(ticket);
     }
 
     private Ticket findTicketById(Long ticketId) {

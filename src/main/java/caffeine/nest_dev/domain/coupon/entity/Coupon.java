@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.coupon.entity;
 
-import caffeine.nest_dev.domain.coupon.enums.CouponUseStatus;
+import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
+import caffeine.nest_dev.domain.user.enums.UserGrade;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +38,29 @@ public class Coupon {
     private LocalDateTime validTo; // 유효 종료일
 
     @Enumerated(EnumType.STRING)
-    private CouponUseStatus minGrade;   // 발급 가능 최소 등급
+    private UserGrade minGrade;   // 발급 가능 최소 등급
 
+    public void modifyCoupon(AdminCouponRequestDto requestDto) {
+        if (requestDto.getName() != null) {
+            this.name = requestDto.getName();
+        }
+        if (requestDto.getDiscountAmount() != null) {
+            this.discountAmount = requestDto.getDiscountAmount();
+        }
+        if (requestDto.getTotalQuantity() != null) {
+            this.totalQuantity = requestDto.getTotalQuantity();
+        }
+        if (requestDto.getIssuedQuantity() != null) {
+            this.issuedQuantity = requestDto.getIssuedQuantity();
+        }
+        if (requestDto.getValidFrom() != null) {
+            this.validFrom = requestDto.getValidFrom();
+        }
+        if (requestDto.getValidTo() != null) {
+            this.validTo = requestDto.getValidTo();
+        }
+        if (requestDto.getMinGrade() != null) {
+            this.minGrade = requestDto.getMinGrade();
+        }
+    }
 }
