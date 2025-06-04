@@ -38,7 +38,7 @@ public class Ticket extends BaseEntity {
     private List<Payment> payments = new ArrayList<>();
 
     public void modifyTicket(TicketRequestDto requestDto) {
-        if (requestDto != null) {
+        if (requestDto.getName() != null) {
             this.name = requestDto.getName();
         }
         if (requestDto.getPrice() != null) {
