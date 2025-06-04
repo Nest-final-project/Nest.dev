@@ -56,7 +56,7 @@ public class ChatRoomController {
     public ResponseEntity<CommonResponse<List<ChatRoomResponseDto>>> findAllChatRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        List<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userDetails.getUser());
+        List<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userDetails.getId());
         return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_READ, dtoList));
     }
 }
