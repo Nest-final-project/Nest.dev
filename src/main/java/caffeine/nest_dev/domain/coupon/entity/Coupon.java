@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Coupon {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,12 +41,26 @@ public class Coupon {
     private UserGrade minGrade;   // 발급 가능 최소 등급
 
     public void modifyCoupon(AdminCouponRequestDto requestDto) {
-        this.name = requestDto.getName();
-        this.discountAmount = requestDto.getDiscountAmount();
-        this.totalQuantity = requestDto.getTotalQuantity();
-        this.issuedQuantity = requestDto.getIssuedQuantity();
-        this.validFrom = requestDto.getValidFrom();
-        this.validTo = requestDto.getValidTo();
-        this.minGrade = requestDto.getMinGrade();
+        if (requestDto.getName() == null || requestDto.getName().isEmpty()) {
+            this.name = requestDto.getName();
+        }
+        if (requestDto.getDiscountAmount() != null) {
+            this.discountAmount = requestDto.getDiscountAmount();
+        }
+        if (requestDto.getTotalQuantity() != null) {
+            this.totalQuantity = requestDto.getTotalQuantity();
+        }
+        if (requestDto.getIssuedQuantity() != null) {
+            this.issuedQuantity = requestDto.getIssuedQuantity();
+        }
+        if (requestDto.getValidFrom() != null) {
+            this.validFrom = requestDto.getValidFrom();
+        }
+        if (requestDto.getValidTo() != null) {
+            this.validTo = requestDto.getValidTo();
+        }
+        if (requestDto.getMinGrade() != null) {
+            this.minGrade = requestDto.getMinGrade();
+        }
     }
 }
