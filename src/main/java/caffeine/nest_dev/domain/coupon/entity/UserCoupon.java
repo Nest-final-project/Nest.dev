@@ -1,9 +1,8 @@
-package caffeine.nest_dev.domain.user.entity;
+package caffeine.nest_dev.domain.coupon.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
-import caffeine.nest_dev.domain.coupon.entity.Coupon;
 import caffeine.nest_dev.domain.coupon.enums.CouponUseStatus;
-import caffeine.nest_dev.domain.payment.entity.Payment;
+import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
