@@ -29,10 +29,13 @@ public class AdminController {
      * 멘토 경력 확인 요청 목록조회
      */
     @GetMapping("/admin/mentor-careers")
-    public ResponseEntity<CommonResponse<PagingResponse<AdminMentorCareerResponseDto>>> getMentorCareers(Pageable pageable) {
-        PagingResponse<AdminMentorCareerResponseDto> pagingResponse = adminService.getMentorCareers(pageable);
+    public ResponseEntity<CommonResponse<PagingResponse<AdminMentorCareerResponseDto>>> getMentorCareers(
+            Pageable pageable) {
+        PagingResponse<AdminMentorCareerResponseDto> pagingResponse = adminService.getMentorCareers(
+                pageable);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_READ, pagingResponse));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_READ,
+                        pagingResponse));
     }
 
     /**
@@ -43,17 +46,17 @@ public class AdminController {
             @PathVariable Long careerId) {
         AdminMentorCareerResponseDto responseDto = adminService.getMentorCareerById(careerId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_DETAIL_READ, responseDto));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_DETAIL_READ,
+                        responseDto));
     }
 
     /**
-     * 멘토 경력 확인 요청 상태수정
-     */
+     * * 멘토 경력 확인 요청 상태수정
+     **/
     @PatchMapping("/admin/mentor-careers/{careerId}/status")
-    public ResponseEntity<CommonResponse> updateMentorCareerStatus(
+    public ResponseEntity<CommonResponse<Void>> updateMentorCareerStatus(
             @PathVariable Long careerId,
-            @RequestBody AdminRequestDto adminRequestDto
-    ){
+            @RequestBody AdminRequestDto adminRequestDto) {
         adminService.updateCareerStatus(careerId, adminRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_STATUS_UPDATED));
