@@ -20,6 +20,8 @@ public enum ErrorCode implements BaseCode {
     ADMIN_MENTOR_CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멘토 경력 요청입니다."),
     ALREADY_SAME_STATUS(HttpStatus.CONFLICT, "이미 되어있는 상태입니다."),
 
+    // category
+    CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성되어있는 카테고리입니다."),
 
     ;
 
