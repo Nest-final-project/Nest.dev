@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.user.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
@@ -61,29 +62,38 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
-    public void updateEmail(String email) {
-        this.email = email;
-    }
-
     // -------------- 수정 메서드 --------------
 
-    public void updateNickName(String nickName) {
-        this.nickName = nickName;
-    }
+    public void updateUser(UserRequestDto dto, User user) {
+        if (dto.getEmail() != null) {
+            this.email = dto.getEmail();
+        }
 
-    public void updatePhoneNumber (String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+        if (dto.getNickName() != null) {
+            this.nickName = dto.getNickName();
+        }
 
-    public void updateBank(String bank) {
-        this.bank = bank;
-    }
+        if (dto.getPhoneNumber() != null) {
+            this.phoneNumber = dto.getPhoneNumber();
+        }
 
-    public void updateAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+        // 멘토일 경우 추가 수정
+        if (user.getUserRole() == UserRole.MENTOR) {
+            if (dto.getBank() != null) {
+                this.bank = dto.getBank();
+            }
+
+            if (dto.getAccountNumber() != null) {
+                this.accountNumber = dto.getAccountNumber();
+            }
+        }
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void deleteUser(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

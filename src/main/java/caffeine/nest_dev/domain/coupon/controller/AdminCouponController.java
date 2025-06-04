@@ -12,7 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +44,23 @@ public class AdminCouponController {
         PagingResponse<AdminCouponResponseDto> responseDtos = adminCouponService.getCoupon(pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
+    }
+
+    @PatchMapping("/{couponId}")
+    public ResponseEntity<CommonResponse<Void>> updateCoupon(
+            @PathVariable Long couponId,
+            @RequestBody AdminCouponRequestDto requestDto
+    ) {
+        adminCouponService.modifyCoupon(couponId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_COUPON_UPDATED));
+    }
+
+    @DeleteMapping("/{couponId}")
+    public ResponseEntity<?> deleteCoupon(
+            @PathVariable Long couponId) {
+        adminCouponService.removeCoupon(couponId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_COUPON_DELETED));
     }
 }
