@@ -30,8 +30,7 @@ public class AdminController {
      */
     @GetMapping("/admin/mentor-careers")
     public ResponseEntity<CommonResponse<PagingResponse<AdminMentorCareerResponseDto>>> getMentorCareers(Pageable pageable) {
-        Page<AdminMentorCareerResponseDto> result = adminService.getMentorCareers(pageable);
-        PagingResponse<AdminMentorCareerResponseDto> pagingResponse = PagingResponse.from(result);
+        PagingResponse<AdminMentorCareerResponseDto> pagingResponse = adminService.getMentorCareers(pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_MENTOR_CAREER_READ, pagingResponse));
     }
