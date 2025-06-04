@@ -2,6 +2,7 @@ package caffeine.nest_dev.domain.review.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
+import caffeine.nest_dev.domain.review.dto.request.ReviewRequestDto;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,4 +33,7 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+   public void update(ReviewRequestDto reviewRequestDto){
+       this.content = reviewRequestDto.getContent();
+   }
 }

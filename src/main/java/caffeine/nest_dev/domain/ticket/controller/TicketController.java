@@ -53,7 +53,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/admin/ticket/{ticketId}")
-    public ResponseEntity<CommonResponse<?>> deleteTicket(
+    public ResponseEntity<CommonResponse<Void>> deleteTicket(
             @PathVariable Long ticketId) {
         ticketService.removeTicket(ticketId);
         return ResponseEntity.status(HttpStatus.OK)
