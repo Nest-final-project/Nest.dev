@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.admin.service;
 
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.admin.dto.request.AdminRequestDto;
@@ -26,9 +27,13 @@ public class AdminService {
     /**
      * 멘토 경력 확인 요청 목록 조회
      */
-    public Page<AdminMentorCareerResponseDto> getMentorCareers(Pageable pageable) {
-        return careerRepository.findByCareerStatus(CareerStatus.UNAUTHORIZED, pageable)
-                .map(AdminMentorCareerResponseDto::of);
+    public PagingResponse<AdminMentorCareerResponseDto> getMentorCareers(Pageable pageable) {
+
+        Page<Career> career = careerRepository.findByCareerStatus(pageable);
+
+        Page<AdminMentorCareerResponseDto> responseDtos = career.map(AdminMentorCareerResponseDto::of);
+
+        return PagingResponse.from(responseDtos);
     }
 
     /**
