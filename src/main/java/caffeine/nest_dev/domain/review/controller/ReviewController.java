@@ -94,7 +94,7 @@ public class ReviewController {
         reviewService.delete(reviewId);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCESSS_DELETE_REVIEW));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_REVIEW));
     }
 
 }
