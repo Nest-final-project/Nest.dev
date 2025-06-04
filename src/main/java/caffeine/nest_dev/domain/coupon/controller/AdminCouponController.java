@@ -47,7 +47,7 @@ public class AdminCouponController {
     }
 
     @PatchMapping("/{couponId}")
-    public ResponseEntity<CommonResponse<AdminCouponResponseDto>> updateCoupon(
+    public ResponseEntity<CommonResponse<Void>> updateCoupon(
             @PathVariable Long couponId,
             @RequestBody AdminCouponRequestDto requestDto
     ) {
@@ -57,7 +57,7 @@ public class AdminCouponController {
     }
 
     @DeleteMapping("/{couponId}")
-    public ResponseEntity<CommonResponse> deleteCoupon(
+    public ResponseEntity<?> deleteCoupon(
             @PathVariable Long couponId) {
         adminCouponService.removeCoupon(couponId);
         return ResponseEntity.status(HttpStatus.OK)

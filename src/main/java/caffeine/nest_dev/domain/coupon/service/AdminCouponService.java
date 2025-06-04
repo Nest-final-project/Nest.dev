@@ -34,16 +34,15 @@ public class AdminCouponService {
     }
 
     @Transactional
-    public AdminCouponResponseDto modifyCoupon(Long couponId, AdminCouponRequestDto requestDto) {
+    public void modifyCoupon(Long couponId, AdminCouponRequestDto requestDto) {
         Coupon coupon = findAdminCouponById(couponId);
         coupon.modifyCoupon(requestDto);
-        return AdminCouponResponseDto.of(coupon);
     }
 
-    public AdminCouponResponseDto removeCoupon(Long couponId) {
+    @Transactional
+    public void removeCoupon(Long couponId) {
         Coupon coupon = findAdminCouponById(couponId);
         adminCouponRepository.delete(coupon);
-        return AdminCouponResponseDto.of(coupon);
     }
 
     private Coupon findAdminCouponById(Long couponId) {
