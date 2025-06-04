@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,18 +47,19 @@ public class ReviewController {
 
     // 멘토별 리뷰 목록 조회
     @GetMapping("/mentors/{mentorId}/reviews")
-    public ResponseEntity<CommonResponse<Page<ReviewResponseDto>>> getMentorReviews(
+    public ResponseEntity<CommonResponse<PagingResponse<ReviewResponseDto>>> getMentorReviews(
             @PathVariable Long mentorId, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         Page<ReviewResponseDto> getMentorReviewList = reviewService.getMentorReviews(mentorId,
                 pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS, getMentorReviewList));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS,
+                        PagingResponse.from(getMentorReviewList)));
     }
 
     @GetMapping("/reviews")
-    public ResponseEntity<CommonResponse<Page<ReviewResponseDto>>> getMyReviews(
+    public ResponseEntity<CommonResponse<PagingResponse<ReviewResponseDto>>> getMyReviews(
             @AuthenticationPrincipal UserDetailsImpl authUser,
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
@@ -69,22 +69,21 @@ public class ReviewController {
         Page<ReviewResponseDto> getMyReviewList = reviewService.getMyReviews(userId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS, getMyReviewList));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS, PagingResponse.from(getMyReviewList)));
     }
 
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<CommonResponse<ReviewResponseDto>> update(
+    public ResponseEntity<CommonResponse<Void>> update(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal UserDetailsImpl authUser,
-            ReviewRequestDto reviewRequestDto
+            @RequestBody ReviewRequestDto reviewRequestDto
     ) {
         Long userId = authUser.getId();
 
-        ReviewResponseDto reviewResponseDto = reviewService.update(userId, reviewId,
-                reviewRequestDto);
+        reviewService.update(userId, reviewId, reviewRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_REVIEW, reviewResponseDto));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_REVIEW));
 
     }
 
@@ -94,7 +93,7 @@ public class ReviewController {
         reviewService.delete(reviewId);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCESSS_DELETE_REVIEW));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_REVIEW));
     }
 
 }
