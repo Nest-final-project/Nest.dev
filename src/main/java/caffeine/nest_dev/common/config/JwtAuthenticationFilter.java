@@ -29,18 +29,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final StringRedisTemplate stringRedisTemplate;
-    private static final String BLACKLIST_PREFIX = "blacklist:";
+    private static final String BLACKLIST_AT_PREFIX = "blacklist_AT:";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String token = resolveToken(request);
+        String accessToken = resolveToken(request);
 
-        if (token != null) {
+        if (accessToken != null) {
             // 토큰이 블랙리스트에 있는지 확인
             log.info("블랙리스트에서 토큰 값 확인");
-            String blacklistToken = stringRedisTemplate.opsForValue().get(BLACKLIST_PREFIX + token);
+            String blacklistToken = stringRedisTemplate.opsForValue().get(BLACKLIST_AT_PREFIX + accessToken);
             if (blacklistToken != null) {
                 // 있을 때 에러 발생
                 log.info("블랙리스에 토큰 존재");
@@ -49,15 +49,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // 토큰 유효성 검사
-            if (jwtUtil.validateToken(token)) {
-                Long userId = jwtUtil.getUserIdFromToken(token);
+            if (jwtUtil.validateToken(accessToken)) {
+                Long userId = jwtUtil.getUserIdFromToken(accessToken);
                 User user = userRepository.findByIdAndIsDeletedFalse(userId).orElse(null);
 
                 // UserDetailsImpl에 로그인 된 유저 정보 저장
                 if (user != null) {
-                    UserDetailsImpl userDetails = new UserDetailsImpl(user.getId(), user.getEmail(), user.getUserRole(), user.getPassword());
+                    UserDetailsImpl userDetails = new UserDetailsImpl(user.getId(), user.getEmail(),
+                            user.getUserRole(), user.getPassword());
                     UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(userDetails, null,
+                                    userDetails.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
@@ -66,6 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 sendErrorCommonResponse(response, ErrorCode.INVALID_TOKEN);
                 return;
             }
+
         }
         filterChain.doFilter(request, response);
     }
@@ -80,7 +83,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     // 공통 응답 형식으로 에러 보내기
-    private void sendErrorCommonResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException{
+    private void sendErrorCommonResponse(HttpServletResponse response, ErrorCode errorCode)
+            throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json;charset=UTF-8");
 

@@ -6,12 +6,14 @@ public enum SuccessCode implements BaseCode {
     // Auth
     SUCCESS_USER_LOGIN(HttpStatus.OK, "로그인을 성공하였습니다."),
     SUCCESS_USER_LOGOUT(HttpStatus.OK, "로그아웃 되었습니다."),
-    SUCCESS_USER_SIGNUP(HttpStatus.CREATED, "회원가입에 성공하였습니다."),
+    SUCCESS_USER_SIGNUP(HttpStatus.CREATED, "회원가입을 성공하였습니다."),
+    SUCCESS_REISSUE_TOKEN(HttpStatus.OK, "토큰을 재발행합니다."),
 
     // User
-    SUCCESS_FIND_USER(HttpStatus.OK, "유저 조회에 성공했습니다."),
-    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보가 수정되었습니다."),
-    SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 변경이 성공되었습니다."),
+    SUCCESS_FIND_USER(HttpStatus.OK, "상세페이지 조회를 성공하였습니다."),
+    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다.."),
+    SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 수정을 성공하였습니다."),
+    SUCCESS_DELETE_USER(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."),
 
     // Ticket
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
@@ -32,7 +34,12 @@ public enum SuccessCode implements BaseCode {
 
     // ChatRoom
     SUCCESS_CHATROOM_CREATED(HttpStatus.CREATED, "채팅방이 생성되었습니다."),
-    SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다.");
+    SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다."),
+
+    // Category
+    SUCCESS_CREATE_CATEGORY(HttpStatus.CREATED, "카테고리 생성을 성공하였습니다.")
+
+    ;
 
 
     private final HttpStatus httpStatus;
