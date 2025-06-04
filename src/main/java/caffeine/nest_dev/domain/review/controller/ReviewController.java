@@ -74,15 +74,14 @@ public class ReviewController {
     }
 
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<CommonResponse<ReviewResponseDto>> update(
+    public ResponseEntity<CommonResponse<Void>> update(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal UserDetailsImpl authUser,
-            ReviewRequestDto reviewRequestDto
+            @RequestBody ReviewRequestDto reviewRequestDto
     ) {
         Long userId = authUser.getId();
 
-        ReviewResponseDto reviewResponseDto = reviewService.update(userId, reviewId,
-                reviewRequestDto);
+        reviewService.update(userId, reviewId, reviewRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_REVIEW));

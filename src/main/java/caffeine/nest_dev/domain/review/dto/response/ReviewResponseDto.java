@@ -16,9 +16,9 @@ public class ReviewResponseDto {
 
     private  Long reservationId;
 
-    private  User mentor;
+    private  Long mentor;
 
-    private  User mentee;
+    private  Long mentee;
 
     private  String content;
 
@@ -27,8 +27,8 @@ public class ReviewResponseDto {
         return ReviewResponseDto.builder()
                 .id(review.getId())
                 .reservationId(review.getReservation().getId())
-                .mentor(review.getMentor())
-                .mentee(review.getMentee())
+                .mentor(review.getMentor().getId())
+                .mentee(review.getMentee().getId())
                 .content(review.getContent())
                 .build();
     }

@@ -2,6 +2,7 @@ package caffeine.nest_dev.domain.review.service;
 
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.complaint.entity.Complaint;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.review.dto.request.ReviewRequestDto;
@@ -35,7 +36,9 @@ public class ReviewService {
             throw new BaseException(ErrorCode.REVIEW_ALREADY_EXISTS);
         });
 
-        Review review = reviewRepository.save(reviewRequestDto.toEntity());
+
+        Review review = reviewRepository.save(
+                reviewRequestDto.toEntity(reservation.getMentor(), reservation.getMentee(), reservation));
 
         return ReviewResponseDto.of(review);
 
@@ -56,7 +59,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseDto update(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
+    public void update(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
@@ -68,8 +71,6 @@ public class ReviewService {
         }
 
         review.update(reviewRequestDto);
-
-        return ReviewResponseDto.of(review);
     }
 
     @Transactional
