@@ -26,7 +26,8 @@ public class JwtUtil {
     private final SecretKey key;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
-    private static final String BLACKLIST_PREFIX = "blacklist:";
+    private static final String BLACKLIST_AT_PREFIX = "blacklist_AT:";
+    private static final String BLACKLIST_RT_PREFIX = "blacklist_RT:";
     private final StringRedisTemplate stringRedisTemplate;
 
     public JwtUtil(
@@ -98,12 +99,24 @@ public class JwtUtil {
         return expiration.getTime() - System.currentTimeMillis();
     }
 
-    // 토큰 블랙리스트에 추가 메서드
-    public void addToBlacklistToken(String refreshToken) {
+    // 블랙리스트에 refreshToken 추가 메서드
+    public void addToBlacklistRefreshToken(String refreshToken) {
+        log.info("블랙리스트에 토큰 추가 메서드 시작");
         long remainingExpiration = getRemainingExpiration(refreshToken);
         if (remainingExpiration > 0) {
             stringRedisTemplate.opsForValue()
-                    .set(BLACKLIST_PREFIX + refreshToken, "logout",
+                    .set(BLACKLIST_RT_PREFIX + refreshToken, "logout",
+                            Duration.ofMillis(remainingExpiration));
+        }
+    }
+
+    // 블랙리스트에 AccessToken 추가 메서드
+    public void addToBlacklistAccessToken(String accessToken) {
+        log.info("블랙리스트에 토큰 추가 메서드 시작");
+        long remainingExpiration = getRemainingExpiration(accessToken);
+        if (remainingExpiration > 0) {
+            stringRedisTemplate.opsForValue()
+                    .set(BLACKLIST_AT_PREFIX + accessToken, "logout",
                             Duration.ofMillis(remainingExpiration));
         }
     }
