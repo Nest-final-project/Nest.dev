@@ -22,5 +22,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/queue");    // 메시지 브로커 활성화, 구독 메시지 접두사 설정 -> 메시지 받을 때
         // 클라이언트에서 발생한 메시지 중 Destination이 해당 경로로 시작하는 메시지를 메시지 브로커에서 처리하도록 함
         registry.setApplicationDestinationPrefixes("/app"); // 메시지를 보낼 때
+        registry.setUserDestinationPrefix("/user"); // 본인에게 오는 메시지만 받도록
     }
 }
