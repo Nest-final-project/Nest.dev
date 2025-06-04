@@ -36,8 +36,11 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CHATROOM_CREATED(HttpStatus.CREATED, "채팅방이 생성되었습니다."),
     SUCCESS_CHATROOM_READ(HttpStatus.OK, "채팅방 목록이 조회되었습니다."),
 
-    // Category
-    SUCCESS_CREATE_CATEGORY(HttpStatus.CREATED, "카테고리 생성을 성공하였습니다.")
+    // category
+    SUCCESS_CATEGORY_CREATED(HttpStatus.CREATED, "카테고리가 생성되었습니다."),
+    SUCCESS_CATEGORY_READ(HttpStatus.OK, "카테고리 목록 조회 성공"),
+    SUCCESS_CATEGORY_UPDATED(HttpStatus.OK, "카테고리가 수정되었습니다."),
+    SUCCESS_CATEGORY_DELETED(HttpStatus.OK, "카테고리가 삭제되었습니다."),
 
     ;
 
