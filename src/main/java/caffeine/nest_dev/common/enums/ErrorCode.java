@@ -56,8 +56,10 @@ public enum ErrorCode implements BaseCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
 
     // Profile
-    NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다.")
+    NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
 
+    // Career
+    NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다.")
 
     ;
 
