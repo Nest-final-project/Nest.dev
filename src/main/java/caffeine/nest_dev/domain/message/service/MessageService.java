@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.message.service;
 
+import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
@@ -29,32 +30,41 @@ public class MessageService {
     @Transactional
     public void sendMessage(Long chatRoomId, MessageRequestDto requestDto) {
 
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
-        );
-        Reservation reservation = reservationRepository.findById(requestDto.getReservationId()).orElseThrow(
-                () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
-        );
+        try {
 
-        // sender / receiver 식별
-        Long senderId = requestDto.getSenderId();
+            ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                    () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
+            );
+            Reservation reservation = reservationRepository.findById(requestDto.getReservationId()).orElseThrow(
+                    () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
+            );
 
-        boolean isMentorSender = chatRoom.getMentor().getId().equals(senderId);
-        User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
-        User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
+            // sender / receiver 식별
+            Long senderId = requestDto.getSenderId();
 
-        // 메시지 생성, 저장
-        Message message = requestDto.toEntity(chatRoom, reservation);
-        messageRepository.save(message);
+            boolean isMentorSender = chatRoom.getMentor().getId().equals(senderId);
+            User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
+            User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
 
-        MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
+            // 메시지 생성, 저장
+            Message message = requestDto.toEntity(chatRoom, reservation);
+            messageRepository.save(message);
 
-        // 메시지 전송 (구독 경로, 보낼 메시지)
-        // 구독한 모든 클라이언트에게 브로드캐스트
-        simpMessagingTemplate.convertAndSend(
-                "/topic/message",
-                messageResponseDto
-        );
+            MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
+
+            // 메시지 전송 (구독 경로, 보낼 메시지)
+            // 구독한 모든 클라이언트에게 브로드캐스트
+            simpMessagingTemplate.convertAndSend(
+                    "/topic/chat_room/" + chatRoomId,
+                    messageResponseDto
+            );
+        } catch (BaseException e) {
+            simpMessagingTemplate.convertAndSend(
+                    "/queue/error/" + requestDto.getSenderId(),
+                    CommonResponse.of(e.getErrorCode())
+            );
+
+        }
 
 //        // 메시지 전송 (수신자, 구독 경로, 보낼 메시지)
 //        simpMessagingTemplate.convertAndSendToUser(
