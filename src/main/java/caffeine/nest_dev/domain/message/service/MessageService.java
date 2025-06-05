@@ -47,7 +47,7 @@ public class MessageService {
 
         MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
 
-        // 메시지 전송 (수신자, 구독 경로, 보낼 메시지)
+        // 메시지 전송 (구독 경로, 보낼 메시지)
         // 구독한 모든 클라이언트에게 브로드캐스트
         simpMessagingTemplate.convertAndSend(
                 "/topic/message",
