@@ -55,7 +55,13 @@ public enum ErrorCode implements BaseCode {
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+
+    // Keyword
+    KEYWORD_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 키워드 이름입니다."),
+    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_KEYWORD_NAME(HttpStatus.CONFLICT, "같은 키워드명 입니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

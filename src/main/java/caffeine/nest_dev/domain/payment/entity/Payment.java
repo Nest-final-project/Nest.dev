@@ -1,12 +1,12 @@
 package caffeine.nest_dev.domain.payment.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.payment.enums.PaymentStatus;
 import caffeine.nest_dev.domain.payment.enums.PaymentType;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.user.entity.User;
-import caffeine.nest_dev.domain.user.entity.UserCoupon;
 import jakarta.persistence.*;
 import lombok.*;
 
