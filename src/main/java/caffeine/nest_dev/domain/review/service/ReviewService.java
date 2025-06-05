@@ -30,7 +30,7 @@ public class ReviewService {
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.getMentee().getId().equals(userId)) {
-            throw new BaseException(ErrorCode.ACCESS_DENIED);
+            throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
         if(!reservation.getReservationStatus().equals(ReservationStatus.COMPLETED)){
@@ -78,7 +78,7 @@ public class ReviewService {
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if (!reservation.getMentee().getId().equals(userId)) {
-            throw new BaseException(ErrorCode.ACCESS_DENIED);
+            throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
         review.update(reviewRequestDto);
