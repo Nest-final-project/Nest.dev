@@ -58,6 +58,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_SHOW_REVIEWS(HttpStatus.OK, "리뷰 목록이 조회되었습니다."),
     SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정에 성공했습니다."),
     SUCCESS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다."),
+    SUCCESS_ACTIVE_REVIEW(HttpStatus.OK, "리뷰 복구에 성공했습니다."),
 
     // Career
     SUCCESS_CAREER_CREATED(HttpStatus.CREATED, "경력이 생성되었습니다."),
