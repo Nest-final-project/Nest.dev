@@ -13,6 +13,7 @@ import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
 import caffeine.nest_dev.domain.auth.repository.RefreshTokenRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import caffeine.nest_dev.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -124,7 +126,7 @@ public class AuthService {
 
         // 새로운 access 토큰 발급
         Long userIdFromToken = jwtUtil.getUserIdFromToken(refreshToken);
-        User user = userRepository.findByIdOrElseThrow(userIdFromToken);
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userIdFromToken);
         String newAccessToken = jwtUtil.createAccessToken(user);
 
 
