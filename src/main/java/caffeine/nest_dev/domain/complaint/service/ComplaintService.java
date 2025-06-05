@@ -13,6 +13,8 @@ import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +56,20 @@ public class ComplaintService {
         }
         Complaint complaint = complaintRepository.save(
                 complaintRequestDto.toEntity(user, reservation));
+
+        return ComplaintResponseDto.of(complaint);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ComplaintResponseDto> getComplaints(Pageable pageable) {
+
+        return complaintRepository.findAll(pageable).map(ComplaintResponseDto::of);
+    }
+
+    @Transactional(readOnly = true)
+    public ComplaintResponseDto getComplaint(Long complaintId) {
+
+        Complaint complaint = complaintRepository.findById(complaintId).orElseThrow(()-> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
 
         return ComplaintResponseDto.of(complaint);
     }
