@@ -21,6 +21,7 @@ public class AdminCouponResponseDto {
     private final LocalDateTime validFrom;
     private final LocalDateTime validTo;
     private final UserGrade minGrade;
+    private final boolean canIssue;
 
     public static AdminCouponResponseDto of(Coupon coupon) {
         return AdminCouponResponseDto.builder()
@@ -32,6 +33,7 @@ public class AdminCouponResponseDto {
                 .validFrom(coupon.getValidFrom())
                 .validTo(coupon.getValidTo())
                 .minGrade(coupon.getMinGrade())
+                .canIssue(coupon.canIssue())
                 .build();
     }
 }
