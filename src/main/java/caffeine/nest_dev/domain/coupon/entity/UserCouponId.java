@@ -18,5 +18,9 @@ public class UserCouponId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
+    public UserCouponId(Long couponId, Long userId) {
+        this.couponId = couponId;
+        this.userId = userId;
+    }
 }
 

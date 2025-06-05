@@ -24,6 +24,11 @@ public enum ErrorCode implements BaseCode {
 
     // AdminCoupon
     NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
+    COUPON_QUANTITY_NOT_SET(HttpStatus.INTERNAL_SERVER_ERROR, "쿠폰 수량 정보가 존재하지 않습니다."),
+    COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰이 모두 소진되었습니다."),
+    NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
+    // UserCoupon
+    NOT_FOUND_USER_COUPON(HttpStatus.NOT_FOUND, "보유하신 쿠폰이 없습니다."),
 
     // SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
