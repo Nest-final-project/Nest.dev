@@ -17,4 +17,15 @@ public class Keyword extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private boolean isDeleted;
+
+    public void update(String dtoName) {
+        this.name = dtoName;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 }

@@ -52,13 +52,19 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CATEGORY_UPDATED(HttpStatus.OK, "카테고리가 수정되었습니다."),
     SUCCESS_CATEGORY_DELETED(HttpStatus.OK, "카테고리가 삭제되었습니다."),
 
-
     // Review
     SUCCESS_CREATE_REVIEW(HttpStatus.CREATED, "리뷰가 생성되었습니다."),
     SUCCESS_SHOW_REVIEWS(HttpStatus.OK, "리뷰 목록이 조회되었습니다."),
     SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정에 성공했습니다."),
     SUCCESS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다."),
     SUCCESS_ACTIVE_REVIEW(HttpStatus.OK, "리뷰 복구에 성공했습니다."),
+
+    // Keyword
+    SUCCESS_KEYWORD_CREATED(HttpStatus.CREATED, "키워드가 생성되었습니다."),
+    SUCCESS_KEYWORD_READ(HttpStatus.OK, "키워드 목록이 조회되었습니다."),
+    SUCCESS_KEYWORD_UPDATED(HttpStatus.OK, "키워드가 수정되었습니다."),
+    SUCCESS_KEYWORD_DELETED(HttpStatus.NO_CONTENT, "키워드가 삭제되었습니다."),
+
 
     // Career
     SUCCESS_CAREER_CREATED(HttpStatus.CREATED, "경력이 생성되었습니다."),

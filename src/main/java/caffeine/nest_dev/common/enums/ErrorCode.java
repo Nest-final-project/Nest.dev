@@ -3,7 +3,6 @@ package caffeine.nest_dev.common.enums;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode implements BaseCode {
-
     // Auth
     UNAUTHORIZED_ROLE(HttpStatus.FORBIDDEN, "권한이 없는 유저입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
@@ -20,6 +19,7 @@ public enum ErrorCode implements BaseCode {
 
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
+
 
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
@@ -54,12 +54,16 @@ public enum ErrorCode implements BaseCode {
 
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
-
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+
+    // Keyword
+    KEYWORD_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 키워드 이름입니다."),
+    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_KEYWORD_NAME(HttpStatus.CONFLICT, "같은 키워드명 입니다."),
 
     // Profile
     NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
