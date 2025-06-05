@@ -32,8 +32,8 @@ public class UserCoupon extends BaseEntity {
     private CouponUseStatus isUsed;
 
     public void modifyUseStatus(UserCouponRequestDto requestDto) {
-        if (requestDto.getUseStatus() != null) {
-            this.isUsed = requestDto.getUseStatus();
+        if (requestDto.getIsUsed() != null) {
+            this.isUsed = requestDto.getIsUsed();
         }
     }
 }

@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 public class UserCouponRequestDto {
     private Long couponId;
     private Long userId;
-    private CouponUseStatus useStatus;
+    private CouponUseStatus isUsed;
 
     public UserCoupon toEntity(Coupon coupon, User user) {
         return UserCoupon.builder()
                 .id(new UserCouponId(coupon.getId(), user.getId()))
                 .coupon(coupon)
                 .user(user)
-                .isUsed(useStatus)
+                .isUsed(isUsed)
                 .build();
     }
 }
