@@ -32,10 +32,7 @@ public class CategoryService {
                     throw new BaseException(ErrorCode.CATEGORY_ALREADY_EXISTS);
                 });
 
-        Category category = Category.builder()
-                        .name(categoryRequestDto.getName())
-                                .build();
-
+        Category category = categoryRequestDto.toEntity();
         Category save = categoryRepository.save(category);
 
         return CategoryResponseDto.of(save);

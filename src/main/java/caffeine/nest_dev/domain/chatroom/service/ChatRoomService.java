@@ -59,6 +59,7 @@ public class ChatRoomService {
     // 채팅방 목록 조히
     @Transactional(readOnly = true)
     public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
+
         List<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId, userId);
 
         return findChatRoomList.stream().map(ChatRoomResponseDto::of)

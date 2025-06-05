@@ -2,6 +2,8 @@ package caffeine.nest_dev.domain.complaint.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.complaint.enums.ComplaintStatus;
+import caffeine.nest_dev.domain.complaint.enums.ComplaintType;
+import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,6 +23,10 @@ public class Complaint extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id", nullable = true)
+    private Reservation reservation;
+
     @Column(nullable = false)
     private String title;
 
@@ -29,6 +35,9 @@ public class Complaint extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ComplaintStatus complaintStatus;
+
+    @Enumerated(EnumType.STRING)
+    private ComplaintType complaintType;
 
 
 }

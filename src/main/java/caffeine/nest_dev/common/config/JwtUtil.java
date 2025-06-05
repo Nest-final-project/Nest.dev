@@ -120,4 +120,13 @@ public class JwtUtil {
                             Duration.ofMillis(remainingExpiration));
         }
     }
+
+    // "Bearer" 부분 자르기
+    public String resolveToken(String accessToken) {
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            String substring = accessToken.substring(7); // "Bearer " 이후 문자열만 추출
+            return substring.trim(); // 앞뒤 공백 제거
+        }
+        return null;
+    }
 }
