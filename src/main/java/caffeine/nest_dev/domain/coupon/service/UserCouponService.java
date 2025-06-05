@@ -46,7 +46,7 @@ public class UserCouponService {
     }
 
     @Transactional
-    public void modifyUseCoupon(UserCouponRequestDto requestDto) {
+    public void modifyUserCoupon(UserCouponRequestDto requestDto) {
         UserCouponId userCouponId = new UserCouponId(requestDto.getCouponId(), requestDto.getUserId());
         UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER_COUPON));

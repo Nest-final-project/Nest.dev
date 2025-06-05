@@ -49,7 +49,7 @@ public class UserCouponController {
     public ResponseEntity<CommonResponse<Void>> updateUseUserCoupon(
             @RequestBody UserCouponRequestDto requestDto
     ) {
-        userCouponService.modifyUseCoupon(requestDto);
+        userCouponService.modifyUserCoupon(requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_COUPON_UPDATED));
     }
