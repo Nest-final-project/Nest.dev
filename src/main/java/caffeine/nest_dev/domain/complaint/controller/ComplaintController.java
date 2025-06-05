@@ -10,6 +10,8 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +41,8 @@ public class ComplaintController {
         ComplaintResponseDto complaintResponseDto = complaintService.save(userId,
                 complaintRequestDto);
 
-        return ResponseEntity.ok(
-                CommonResponse.of(SuccessCode.SUCCESS_CREATE_COMPLAINT, complaintResponseDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CREATE_COMPLAINT, complaintResponseDto));
     }
 
     /**
@@ -48,13 +50,12 @@ public class ComplaintController {
      */
     @GetMapping("/complaints")
     public ResponseEntity<CommonResponse<PagingResponse<ComplaintResponseDto>>> getComplaints(
-            @PageableDefault(page = 0, size = 10)
+            @PageableDefault(direction = Sort.Direction.DESC)
             Pageable pageable) {
-        Page<ComplaintResponseDto> getComplaintList = complaintService.getComplaints(pageable);
+        PagingResponse<ComplaintResponseDto> getComplaintList = complaintService.getComplaints(pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_COMPLAINTS,
-                        PagingResponse.from(getComplaintList)));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_COMPLAINTS, getComplaintList));
     }
 
     @GetMapping("/complaints/{complaintId}")

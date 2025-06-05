@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.complaint.service;
 
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.complaint.dto.request.ComplaintRequestDto;
@@ -60,9 +61,11 @@ public class ComplaintService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ComplaintResponseDto> getComplaints(Pageable pageable) {
+    public PagingResponse<ComplaintResponseDto> getComplaints(Pageable pageable) {
+        Page<Complaint> complaintPage = complaintRepository.findAll(pageable);
+        Page<ComplaintResponseDto> complaintResponseDtos = complaintPage.map(ComplaintResponseDto::of);
 
-        return complaintRepository.findAll(pageable).map(ComplaintResponseDto::of);
+        return PagingResponse.from(complaintResponseDtos);
     }
 
     @Transactional(readOnly = true)
