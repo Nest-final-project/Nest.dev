@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.career.dto.request.CareerRequestDto;
+import caffeine.nest_dev.domain.career.dto.request.UpdateCareerRequestDto;
 import caffeine.nest_dev.domain.career.dto.response.CareerResponseDto;
 import caffeine.nest_dev.domain.career.dto.response.CareersResponseDto;
 import caffeine.nest_dev.domain.career.dto.response.FindCareerResponseDto;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,5 +67,32 @@ public class CareerController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CAREERS_READ, careers));
+    }
+
+    // 경력 수정
+    @PatchMapping("/{careerId}")
+    public ResponseEntity<CommonResponse<Void>> updateCareer(
+            @PathVariable Long profileId,
+            @PathVariable Long careerId,
+            @RequestBody UpdateCareerRequestDto dto
+    ) {
+
+        careerService.updateCareer(profileId, careerId, dto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_UPDATED));
+    }
+
+    // 경력 삭제
+    @DeleteMapping("/{careerId}")
+    public ResponseEntity<CommonResponse<Void>> deletedCareer(
+            @PathVariable Long profileId,
+            @PathVariable Long careerId
+    ) {
+
+        careerService.deleteCareer(profileId, careerId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_DELETED));
     }
 }
