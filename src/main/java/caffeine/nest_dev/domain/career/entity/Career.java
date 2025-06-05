@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.career.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.domain.career.dto.request.UpdateCareerRequestDto;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import jakarta.persistence.CascadeType;
@@ -57,5 +58,19 @@ public class Career extends BaseEntity {
 
     public void updateCareerStatus(CareerStatus newStatus) {
         this.careerStatus = newStatus;
+    }
+
+    public void updateCareer(UpdateCareerRequestDto dto) {
+        if (dto.getCompany() != null) {
+            this.company = dto.getCompany();
+        }
+
+        if (dto.getStartAt() != null) {
+            this.startAt = dto.getStartAt();
+        }
+
+        if (dto.getStartAt() != null) {
+            this.endAt = dto.getEndAt();
+        }
     }
 }
