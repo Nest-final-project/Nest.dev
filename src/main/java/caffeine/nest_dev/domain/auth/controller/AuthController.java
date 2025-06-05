@@ -46,7 +46,8 @@ public class AuthController {
 
         LoginResponseDto responseDto = authService.login(dto);
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, responseDto));
+        return ResponseEntity.ok()
+                .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, responseDto));
     }
 
     // 로그아웃
@@ -69,6 +70,7 @@ public class AuthController {
 
         TokenResponseDto responseDto = authService.reissue(dto);
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_REISSUE_TOKEN, responseDto));
+        return ResponseEntity.ok()
+                .body(CommonResponse.of(SuccessCode.SUCCESS_REISSUE_TOKEN, responseDto));
     }
 }

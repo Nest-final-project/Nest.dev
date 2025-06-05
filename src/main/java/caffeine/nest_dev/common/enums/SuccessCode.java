@@ -41,8 +41,6 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_SHOW_COMPLAINTS(HttpStatus.OK, "민원 목록이 조회되었습니다."),
     SUCCESS_SHOW_COMPLAINT(HttpStatus.OK, "민원 상세 내용 조회에 성공하였습니다."),
 
-    // Category
-    SUCCESS_CREATE_CATEGORY(HttpStatus.CREATED, "카테고리 생성을 성공하였습니다."),
     // category
     SUCCESS_CATEGORY_CREATED(HttpStatus.CREATED, "카테고리가 생성되었습니다."),
     SUCCESS_CATEGORY_READ(HttpStatus.OK, "카테고리 목록 조회 성공"),
@@ -54,7 +52,12 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CREATE_REVIEW(HttpStatus.CREATED, "리뷰가 생성되었습니다."),
     SUCCESS_SHOW_REVIEWS(HttpStatus.OK, "리뷰 목록이 조회되었습니다."),
     SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정에 성공했습니다."),
-    SUCCESS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다.");
+    SUCCESS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다."),
+
+    // Career
+    SUCCESS_CREATE_CAREER(HttpStatus.CREATED, "경력이 생성되었습니다.")
+
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
