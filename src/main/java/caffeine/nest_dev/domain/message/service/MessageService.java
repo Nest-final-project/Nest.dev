@@ -1,5 +1,7 @@
 package caffeine.nest_dev.domain.message.service;
 
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.message.dto.request.MessageRequestDto;
@@ -28,10 +30,10 @@ public class MessageService {
     public void sendMessage(Long chatRoomId, MessageRequestDto requestDto) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                () -> new IllegalArgumentException("채팅방이 존재하지 않습니다.")
+                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
         );
         Reservation reservation = reservationRepository.findById(requestDto.getReservationId()).orElseThrow(
-                () -> new IllegalArgumentException("예약이 존재하지 않습니다.")
+                () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
         );
 
         // sender / receiver 식별
