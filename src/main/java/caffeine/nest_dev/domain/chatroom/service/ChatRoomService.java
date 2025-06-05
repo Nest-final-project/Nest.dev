@@ -20,7 +20,6 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
 
-
     // 채팅방 생성
     @Transactional
     public ChatRoomResponseDto createChatRooms(CreateChatRoomRequestDto requestDto, Long userId) {
@@ -57,6 +56,7 @@ public class ChatRoomService {
         return ChatRoomResponseDto.of(savedChatRoom);
     }
 
+    // 채팅방 목록 조히
     @Transactional(readOnly = true)
     public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
 

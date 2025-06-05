@@ -19,13 +19,18 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
     SUCCESS_TICKET_READ(HttpStatus.OK, "이용권을 조회하였습니다."),
     SUCCESS_TICKET_UPDATED(HttpStatus.OK, "이용권이 수정되었습니다."),
-    SUCCESS_TICKET_DELETED(HttpStatus.NO_CONTENT, "이용권이 삭제되었습니다."),
+    SUCCESS_TICKET_DELETED(HttpStatus.OK, "이용권이 삭제되었습니다."),
 
     // AdminCoupon
     SUCCESS_ADMIN_COUPON_CREATED(HttpStatus.CREATED, "쿠폰 생성을 성공하였습니다."),
     SUCCESS_ADMIN_COUPON_READ(HttpStatus.OK, "쿠폰 목록을 조회 완료하였습니다."),
     SUCCESS_ADMIN_COUPON_UPDATED(HttpStatus.OK, "쿠폰이 수정되었습니다."),
-    SUCCESS_ADMIN_COUPON_DELETED(HttpStatus.NO_CONTENT, "쿠폰이 삭제되었습니다."),
+    SUCCESS_ADMIN_COUPON_DELETED(HttpStatus.OK, "쿠폰이 삭제되었습니다."),
+
+    // UserCoupon
+    SUCCESS_USER_COUPON_CREATED(HttpStatus.CREATED, "쿠폰 발급이 완료되었습니다."),
+    SUCCESS_USER_COUPON_READ(HttpStatus.OK, "목록을 조회 완료하였습니다."),
+    SUCCESS_USER_COUPON_UPDATED(HttpStatus.OK, "쿠폰이 사용되었습니다."),
 
     // Admin
     SUCCESS_ADMIN_MENTOR_CAREER_READ(HttpStatus.OK, "멘토 경력 확인 요청 목록을 조회하였습니다."),
@@ -38,15 +43,14 @@ public enum SuccessCode implements BaseCode {
 
     // Complaints
     SUCCESS_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
+    SUCCESS_SHOW_COMPLAINTS(HttpStatus.OK, "민원 목록이 조회되었습니다."),
+    SUCCESS_SHOW_COMPLAINT(HttpStatus.OK, "민원 상세 내용 조회에 성공하였습니다."),
 
-    // Category
-    SUCCESS_CREATE_CATEGORY(HttpStatus.CREATED, "카테고리 생성을 성공하였습니다."),
     // category
     SUCCESS_CATEGORY_CREATED(HttpStatus.CREATED, "카테고리가 생성되었습니다."),
     SUCCESS_CATEGORY_READ(HttpStatus.OK, "카테고리 목록 조회 성공"),
     SUCCESS_CATEGORY_UPDATED(HttpStatus.OK, "카테고리가 수정되었습니다."),
     SUCCESS_CATEGORY_DELETED(HttpStatus.OK, "카테고리가 삭제되었습니다."),
-
 
     // Review
     SUCCESS_CREATE_REVIEW(HttpStatus.CREATED, "리뷰가 생성되었습니다."),
@@ -59,6 +63,14 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_KEYWORD_READ(HttpStatus.OK, "키워드 목록이 조회되었습니다."),
     SUCCESS_KEYWORD_UPDATED(HttpStatus.OK, "키워드가 수정되었습니다."),
     SUCCESS_KEYWORD_DELETED(HttpStatus.NO_CONTENT, "키워드가 삭제되었습니다."),
+
+
+    // Career
+    SUCCESS_CAREER_CREATED(HttpStatus.CREATED, "경력이 생성되었습니다."),
+    SUCCESS_CAREER_READ(HttpStatus.OK, "경력 상세 페이지 조회가 완료되었습니다."),
+    SUCCESS_CAREERS_READ(HttpStatus.OK, "경력 목록이 조회되었습니다."),
+    SUCCESS_CAREER_UPDATED(HttpStatus.OK, "경력 수정이 완료되었습니다."),
+    SUCCESS_CAREER_DELETED(HttpStatus.OK, "경력 삭제가 완료되었습니다.")
 
     ;
 

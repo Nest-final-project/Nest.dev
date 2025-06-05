@@ -35,12 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String accessToken = resolveToken(request);
+        String bearer = request.getHeader("Authorization");
+        String accessToken = jwtUtil.resolveToken(bearer);
 
         if (accessToken != null) {
             // 토큰이 블랙리스트에 있는지 확인
             log.info("블랙리스트에서 토큰 값 확인");
-            String blacklistToken = stringRedisTemplate.opsForValue().get(BLACKLIST_AT_PREFIX + accessToken);
+            String blacklistToken = stringRedisTemplate.opsForValue()
+                    .get(BLACKLIST_AT_PREFIX + accessToken);
             if (blacklistToken != null) {
                 // 있을 때 에러 발생
                 log.info("블랙리스에 토큰 존재");
@@ -71,15 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
         filterChain.doFilter(request, response);
-    }
-
-    // "Bearer" 부분 자르기
-    private String resolveToken(HttpServletRequest request) {
-        String bearer = request.getHeader("Authorization");
-        if (bearer != null && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
     }
 
     // 공통 응답 형식으로 에러 보내기

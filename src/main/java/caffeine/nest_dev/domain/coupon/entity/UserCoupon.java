@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.coupon.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.domain.coupon.dto.request.UserCouponRequestDto;
 import caffeine.nest_dev.domain.coupon.enums.CouponUseStatus;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -29,4 +30,10 @@ public class UserCoupon extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private CouponUseStatus isUsed;
+
+    public void modifyUseStatus(UserCouponRequestDto requestDto) {
+        if (requestDto.getIsUsed() != null) {
+            this.isUsed = requestDto.getIsUsed();
+        }
+    }
 }

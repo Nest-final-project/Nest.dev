@@ -6,10 +6,39 @@ Content-Type: application/json;charset=UTF-8
   "name": "Test",
   "email": "test@abc.com",
   "password": "Abcd1234!",
-  "nickname": "TestN",
+  "nickname": "Test1",
   "phoneNumber": "010-1234-1234",
   "userRole": "MENTEE"
 }
+
+
+### POST - 회원가입
+POST {{root-path}}/api/auth/signup
+Content-Type: application/json;charset=UTF-8
+
+{
+  "name": "Test1",
+  "email": "test1@abc.com",
+  "password": "Abcd1234!",
+  "nickname": "Test2",
+  "phoneNumber": "010-1234-1235",
+  "userRole": "MENTOR"
+}
+
+
+### POST - 회원가입
+POST {{root-path}}/api/auth/signup
+Content-Type: application/json;charset=UTF-8
+
+{
+  "name": "Test2",
+  "email": "test2@abc.com",
+  "password": "Abcd1234!",
+  "nickname": "Test12",
+  "phoneNumber": "010-1235-1236",
+  "userRole": "MENTEE"
+}
+
 
 ### POST - 로그인
 POST {{root-path}}/api/auth/login

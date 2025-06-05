@@ -7,6 +7,15 @@ Authorization: Bearer {{authorizationToken}}
   "reservationId": 1
 }
 
+### POST - 채팅방 생성
+POST {{root-path}}/api/chatrooms
+Content-Type: application/json
+Authorization: Bearer {{authorizationToken}}
+
+{
+  "reservationId": 2
+}
+
 ### GET - 채팅방 목록 조회
 GET {{root-path}}/api/chatrooms
 Content-Type: application/json

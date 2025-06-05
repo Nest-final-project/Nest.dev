@@ -37,6 +37,5 @@ public class CouponScheduler {
 
         // 쿠폰 삭제하기
         adminCouponRepository.deleteAll(expiredCoupons);
-        System.out.println("만료 쿠폰 삭제 완료 : " + expiredCoupons.size() + "개");
     }
 }

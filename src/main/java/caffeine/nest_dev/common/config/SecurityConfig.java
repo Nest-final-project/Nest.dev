@@ -23,7 +23,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/auth/signup", "/api/auth/login", "/api/categories", "/api/keywords",
+            "/api/auth/signup", "/api/auth/login", "/api/categories", "/api/keywords", "/ws/**", "/ws-nest/**"
             // 조회 url 추가
     };
 

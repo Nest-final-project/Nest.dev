@@ -1,5 +1,7 @@
 package caffeine.nest_dev.domain.coupon.entity;
 
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import jakarta.persistence.*;
@@ -62,5 +64,26 @@ public class Coupon {
         if (requestDto.getMinGrade() != null) {
             this.minGrade = requestDto.getMinGrade();
         }
+    }
+
+    public void issue() {
+        if (this.totalQuantity == null || this.issuedQuantity == null) {
+            throw new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+        if (this.totalQuantity <= 0) {
+            throw new BaseException(ErrorCode.COUPON_OUT_OF_STOCK);
+        }
+        if (this.issuedQuantity + 1 > this.totalQuantity) {
+            throw new BaseException(ErrorCode.COUPON_OUT_OF_STOCK);
+        }
+        this.totalQuantity -= 1;
+        this.issuedQuantity += 1;
+    }
+
+    public boolean canIssue() {
+        return this.totalQuantity != null
+                && this.issuedQuantity != null
+                && this.totalQuantity > 0
+                && this.issuedQuantity < this.totalQuantity;
     }
 }
