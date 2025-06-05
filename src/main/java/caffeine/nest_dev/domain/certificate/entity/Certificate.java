@@ -1,5 +1,7 @@
-package caffeine.nest_dev.domain.career.entity;
+package caffeine.nest_dev.domain.certificate.entity;
 
+import caffeine.nest_dev.domain.career.entity.Career;
+import caffeine.nest_dev.domain.certificate.dto.request.UpdateCertificateRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JoinColumnOrFormula;
 
 @Entity
 @Builder
@@ -27,9 +28,12 @@ public class Certificate {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "career_id",nullable = false)
+    @JoinColumn(name = "career_id", nullable = false)
     private Career career;
 
     private String fileUrl;
 
+    public void updateCertificate(UpdateCertificateRequestDto dto) {
+        this.fileUrl = dto.getFileUrl();
+    }
 }

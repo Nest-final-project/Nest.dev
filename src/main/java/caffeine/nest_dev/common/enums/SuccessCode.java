@@ -65,7 +65,11 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CAREER_READ(HttpStatus.OK, "경력 상세 페이지 조회가 완료되었습니다."),
     SUCCESS_CAREERS_READ(HttpStatus.OK, "경력 목록이 조회되었습니다."),
     SUCCESS_CAREER_UPDATED(HttpStatus.OK, "경력 수정이 완료되었습니다."),
-    SUCCESS_CAREER_DELETED(HttpStatus.OK, "경력 삭제가 완료되었습니다.")
+    SUCCESS_CAREER_DELETED(HttpStatus.OK, "경력 삭제가 완료되었습니다."),
+
+    // Certificate
+    SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
+    SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다.")
 
     ;
 
