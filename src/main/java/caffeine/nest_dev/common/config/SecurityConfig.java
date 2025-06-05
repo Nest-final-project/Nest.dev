@@ -1,6 +1,6 @@
 package caffeine.nest_dev.common.config;
 
-import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
+//import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
 import caffeine.nest_dev.common.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    //private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/api/categories", "/ws/**", "/ws-nest/**"
@@ -48,7 +48,7 @@ public class SecurityConfig {
 
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler)
+                        //.accessDeniedHandler(customAccessDeniedHandler)
                 )
 
                 .addFilterBefore(jwtAuthenticationFilter,

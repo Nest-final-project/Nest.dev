@@ -54,7 +54,7 @@ public class Review extends BaseEntity {
        }
     }
 
-    public void delete(){
+    public void softDelete(){
        this.reviewStatus = ReviewStatus.DELETED;
     }
 }
