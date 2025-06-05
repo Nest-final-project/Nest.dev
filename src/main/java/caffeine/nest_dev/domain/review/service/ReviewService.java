@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.review.service;
 
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
@@ -40,9 +41,9 @@ public class ReviewService {
             throw new BaseException(ErrorCode.REVIEW_ALREADY_EXISTS);
         });
 
-
         Review review = reviewRepository.save(
-                reviewRequestDto.toEntity(reservation.getMentor(), reservation.getMentee(), reservation));
+                reviewRequestDto.toEntity(reservation.getMentor(), reservation.getMentee(),
+                        reservation));
 
         return ReviewResponseDto.of(review);
 
@@ -50,16 +51,22 @@ public class ReviewService {
 
     // 멘토별 리뷰 목록 조회
     @Transactional(readOnly = true)
-    public Page<ReviewResponseDto> getMentorReviews(Long mentorId, Pageable pageable) {
+    public PagingResponse<ReviewResponseDto> getMentorReviews(Long mentorId, Pageable pageable) {
 
-        return reviewRepository.findByMentorId(mentorId, pageable).map(ReviewResponseDto::of);
+        Page<Review> reviewPage = reviewRepository.findByMentorId(mentorId, pageable);
+        Page<ReviewResponseDto> responseDtos = reviewPage.map(ReviewResponseDto::of);
+
+        return PagingResponse.from(responseDtos);
     }
 
     // 내가 작성한 리뷰 목록 조회
     @Transactional(readOnly = true)
-    public Page<ReviewResponseDto> getMyReviews(Long mentee, Pageable pageable) {
+    public PagingResponse<ReviewResponseDto> getMyReviews(Long mentee, Pageable pageable) {
 
-        return reviewRepository.findByMenteeId(mentee, pageable).map(ReviewResponseDto::of);
+        Page<Review> reviews = reviewRepository.findByMenteeId(mentee, pageable);
+        Page<ReviewResponseDto> responseDtos = reviews.map(ReviewResponseDto::of);
+
+        return PagingResponse.from(responseDtos);
     }
 
     @Transactional

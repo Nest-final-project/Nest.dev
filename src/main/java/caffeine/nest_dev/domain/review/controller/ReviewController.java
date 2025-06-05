@@ -48,14 +48,15 @@ public class ReviewController {
     // 멘토별 리뷰 목록 조회
     @GetMapping("/mentors/{mentorId}/reviews")
     public ResponseEntity<CommonResponse<PagingResponse<ReviewResponseDto>>> getMentorReviews(
-            @PathVariable Long mentorId, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+            @PathVariable Long mentorId, @PageableDefault() Pageable pageable) {
 
-        Page<ReviewResponseDto> getMentorReviewList = reviewService.getMentorReviews(mentorId,
+        PagingResponse<ReviewResponseDto> getMentorReviewList = reviewService.getMentorReviews(
+                mentorId,
                 pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS,
-                        PagingResponse.from(getMentorReviewList)));
+                        getMentorReviewList));
     }
 
     @GetMapping("/reviews")
@@ -66,10 +67,12 @@ public class ReviewController {
 
         Long userId = authUser.getId();
 
-        Page<ReviewResponseDto> getMyReviewList = reviewService.getMyReviews(userId, pageable);
+        PagingResponse<ReviewResponseDto> getMyReviewList = reviewService.getMyReviews(userId,
+                pageable);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS, PagingResponse.from(getMyReviewList)));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_REVIEWS,
+                        getMyReviewList));
     }
 
     @PatchMapping("/reviews/{reviewId}")
