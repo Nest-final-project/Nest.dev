@@ -16,16 +16,12 @@ public class RefreshTokenRepository {
 
     // 로그인 시 refreshToken 저장
     public void save(Long userId, String refreshToken, long expirationMillis) {
-        stringRedisTemplate.opsForValue().set(PREFIX + userId, refreshToken, Duration.ofMillis(expirationMillis));
+        stringRedisTemplate.opsForValue()
+                .set(PREFIX + userId, refreshToken, Duration.ofMillis(expirationMillis));
     }
 
     // 저장된 refreshToken 조회
     public String findByUserId(Long userId) {
         return stringRedisTemplate.opsForValue().get(PREFIX + userId);
-    }
-
-    // 로그아웃 시 refreshToken 삭제
-    public void delete(Long userId) {
-        stringRedisTemplate.delete(PREFIX + userId);
     }
 }

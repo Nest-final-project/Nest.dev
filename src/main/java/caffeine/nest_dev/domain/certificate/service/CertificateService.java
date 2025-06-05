@@ -7,6 +7,7 @@ import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import caffeine.nest_dev.domain.certificate.repository.CertificateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
 
     // 경력증명서 수정
+    @Transactional
     public void updateCertificate(Long careerId, Long certificateId,
             UpdateCertificateRequestDto dto) {
 
@@ -26,6 +28,7 @@ public class CertificateService {
     }
 
     // 경력증명서 삭제
+    @Transactional
     public void deleteCertificate(Long careerId, Long certificateId) {
 
         // 경력 증명서 조회

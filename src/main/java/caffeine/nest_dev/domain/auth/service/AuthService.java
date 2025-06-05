@@ -99,6 +99,12 @@ public class AuthService {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
         }
 
+        // refreshToken 일치 여부 검증
+        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userIdFromRefreshToken);
+        if (!refreshToken.equals(refreshTokenByUserId)) {
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
+
         // access 토큰 redis에 블랙리스트 추가
         jwtUtil.addToBlacklistAccessToken(resolvedAccessToken);
         log.info("access 토큰을 블랙리스트에 추가");
@@ -109,9 +115,15 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponseDto reissue(RefreshTokenRequestDto dto) {
+    public TokenResponseDto reissue(RefreshTokenRequestDto dto, Long userId) {
 
         String refreshToken = dto.getRefreshToken();
+
+        // refreshToken 일치 여부 검증
+        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userId);
+        if (!refreshToken.equals(refreshTokenByUserId)) {
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
 
         // 블랙리스트 확인
         String blacklistToken = stringRedisTemplate.opsForValue().get("blacklist:" + refreshToken);
