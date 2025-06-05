@@ -58,8 +58,8 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomResponseDto> findAllChatRooms(User user) {
-        Long userId = user.getId();
+    public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
+
         List<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId, userId);
 
         return findChatRoomList.stream().map(ChatRoomResponseDto::of)
