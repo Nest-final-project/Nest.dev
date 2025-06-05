@@ -1,7 +1,7 @@
 package caffeine.nest_dev.domain.career.dto.response;
 
 
-import caffeine.nest_dev.domain.career.entity.Certificate;
+import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
