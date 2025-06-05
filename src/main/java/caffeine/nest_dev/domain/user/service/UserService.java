@@ -27,7 +27,7 @@ public class UserService {
     public UserResponseDto findUser(Long userId) {
 
         // 유저 조회
-        User user = userRepository.findByIdOrElseThrow(userId);
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         return UserResponseDto.of(user);
     }
@@ -46,7 +46,7 @@ public class UserService {
         }
 
         // 유저 조회
-        User user = userRepository.findByIdOrElseThrow(userId);
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         // 수정 메서드 호출
         user.updateUser(dto, user);
@@ -56,7 +56,7 @@ public class UserService {
     public void updatePassword(Long userId, UpdatePasswordRequestDto dto) {
 
         // 유저 조회
-        User user = userRepository.findByIdOrElseThrow(userId);
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         // 비밀 번호 검증
         if (!passwordEncoder.matches(dto.getRawPassword(), user.getPassword())) {
@@ -97,8 +97,7 @@ public class UserService {
         }
 
         // 유저 조회
-        User user = userRepository.findByIdOrElseThrow(userId);
-
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         // access 토큰 redis에 블랙리스트 추가
         jwtUtil.addToBlacklistAccessToken(accessToken);
@@ -110,5 +109,12 @@ public class UserService {
 
         // 유저 상태 변경
         user.deleteUser(true);
+    }
+
+    // user 가 없으면 예외 던지기
+    public User findByIdAndIsDeletedFalseOrElseThrow(Long userId) {
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+        return user;
     }
 }
