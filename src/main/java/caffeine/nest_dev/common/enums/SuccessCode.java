@@ -68,9 +68,11 @@ public enum SuccessCode implements BaseCode {
 
     // Certificate
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
-    SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다.")
+    SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다."),
 
-    ;
+
+    // socketToken
+    SUCCESS_SOCKET_TOKEN_CREATED(HttpStatus.CREATED, "WebSocket 토큰이 발급되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
