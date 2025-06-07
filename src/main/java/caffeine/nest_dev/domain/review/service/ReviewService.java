@@ -89,6 +89,6 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-        reviewRepository.delete(review);
+        review.softDelete();
     }
 }
