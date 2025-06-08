@@ -2,9 +2,11 @@ package caffeine.nest_dev.domain.message.controller;
 
 import caffeine.nest_dev.domain.message.dto.request.MessageRequestDto;
 import caffeine.nest_dev.domain.message.service.MessageService;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -19,8 +21,10 @@ public class MessageController {
     @MessageMapping("/chat_room/{chatRoomId}/message")
     public void chat(
             @DestinationVariable Long chatRoomId,
-            MessageRequestDto requestDto) {
+            Principal principal,
+            @Payload MessageRequestDto requestDto) {
 
-        messageService.sendMessage(chatRoomId, requestDto);
+        long userId = Long.parseLong(principal.getName());
+        messageService.sendMessage(chatRoomId, userId, requestDto);
     }
 }
