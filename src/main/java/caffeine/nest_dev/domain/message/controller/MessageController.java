@@ -4,11 +4,13 @@ import caffeine.nest_dev.domain.message.dto.request.MessageRequestDto;
 import caffeine.nest_dev.domain.message.service.MessageService;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MessageController {
@@ -25,6 +27,7 @@ public class MessageController {
             @Payload MessageRequestDto requestDto) {
 
         long userId = Long.parseLong(principal.getName());
+        log.info("메시지 보내는 userId : {}", userId);
         messageService.sendMessage(chatRoomId, userId, requestDto);
     }
 }
