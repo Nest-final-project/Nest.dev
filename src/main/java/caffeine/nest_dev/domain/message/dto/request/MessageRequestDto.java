@@ -15,6 +15,7 @@ public class MessageRequestDto {
 
     public Message toEntity(ChatRoom chatRoom) {
         return Message.builder()
+                .chatRoom(chatRoom)
                 .reservation(chatRoom.getReservation())
                 .mentor(chatRoom.getMentor())
                 .mentee(chatRoom.getMentee())
