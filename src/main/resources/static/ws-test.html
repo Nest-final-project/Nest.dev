@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <title>WebSocket 테스트</title>
+  <title>WebSocket JWT 테스트</title>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <style>
@@ -29,24 +29,24 @@
 </head>
 <body>
 
-<h2>WebSocket 클라이언트 테스트</h2>
+<h2>💬 WebSocket JWT 클라이언트</h2>
 
 <div>
-  <label>소켓 토큰 (JWT):</label>
-  <input type="text" id="socketToken" placeholder="소켓 JWT를 입력하세요" size="80"/><br/>
+  <label>🔑 소켓 토큰 (JWT):</label><br/>
+  <input type="text" id="socketToken" placeholder="JWT를 입력하세요" size="80"/><br/>
 
-  <label>채팅방 ID:</label>
+  <label>💬 채팅방 ID:</label>
   <input type="number" id="chatRoomId" placeholder="예: 1"/><br/>
 
-  <label>받는 사람(receiverId):</label>
+  <label>📨 받는 사람 ID (receiverId):</label>
   <input type="number" id="receiverId" placeholder="예: 2"/><br/>
 
-  <label>메시지:</label>
-  <input type="text" id="messageInput" placeholder="내용 입력" size="40"/>
+  <label>✉️ 메시지:</label>
+  <input type="text" id="messageInput" placeholder="메시지를 입력하세요" size="50"/>
   <button onclick="sendMessage()">전송</button>
 </div>
 
-<h3>📨 수신 메시지</h3>
+<h3>📥 수신 메시지</h3>
 <ul id="messageList"></ul>
 
 <h3>❌ 에러 메시지</h3>
@@ -54,65 +54,61 @@
 
 <script>
   let stompClient = null;
-  let connectedUserId = null;
 
-  function connect(chatRoomId, token, callback) {
+  function connect(token, callback) {
     const socket = new SockJS(`http://localhost:8080/ws-nest?token=${token}`);
     stompClient = Stomp.over(socket);
 
-    stompClient.connect({}, function () {
-      console.log("✅ 연결 성공");
+    stompClient.connect({}, () => {
+      console.log("✅ WebSocket 연결 성공");
 
-      // 메시지 구독
-      stompClient.subscribe(`/queue/message`, function (msg) {
+      // 사용자 전용 메시지 구독
+      stompClient.subscribe("/user/queue/message", (msg) => {
         const data = JSON.parse(msg.body);
         const li = document.createElement("li");
         li.textContent = `[${data.senderId} → ${data.receiverId}] ${data.content}`;
         document.getElementById("messageList").appendChild(li);
       });
 
-      // 에러 구독
-      stompClient.subscribe(`/queue/error`, function (msg) {
+      // 사용자 전용 에러 메시지 구독
+      stompClient.subscribe("/user/queue/error", (msg) => {
         const error = JSON.parse(msg.body);
         const li = document.createElement("li");
-        li.textContent = `⚠️ [${error.status}] ${error.message}`;
+        li.textContent = `⚠️ ${error.status || ""} ${error.message}`;
         document.getElementById("errorList").appendChild(li);
       });
 
       if (callback) {
         callback();
       }
-    }, function (error) {
+    }, (error) => {
       console.error("❌ 연결 실패:", error);
     });
   }
 
   function sendMessage() {
     const token = document.getElementById("socketToken").value.trim();
-    const chatRoomId = document.getElementById("chatRoomId").value;
-    const receiverId = document.getElementById("receiverId").value;
-    const content = document.getElementById("messageInput").value;
+    const chatRoomId = document.getElementById("chatRoomId").value.trim();
+    const receiverId = document.getElementById("receiverId").value.trim();
+    const content = document.getElementById("messageInput").value.trim();
 
-    if (!token || !chatRoomId) {
-      alert("소켓 토큰과 채팅방 ID를 입력하세요.");
+    if (!token || !chatRoomId || !receiverId || !content) {
+      alert("모든 필드를 입력해주세요.");
       return;
     }
 
-    // 연결되지 않았으면 먼저 연결
     if (!stompClient || !stompClient.connected) {
-      connect(chatRoomId, token, () => {
-        sendMessage(); // 재호출
-      });
+      connect(token, () => sendMessage());
       return;
     }
 
-    // 메시지 전송
-    stompClient.send(`/app/chat_room/${chatRoomId}/message`, {}, JSON.stringify({
+    const payload = {
       roomId: Number(chatRoomId),
       receiverId: Number(receiverId),
       content: content
-    }));
+    };
 
+    stompClient.send(`/app/chat_room/${chatRoomId}/message`, {}, JSON.stringify(payload));
     document.getElementById("messageInput").value = "";
   }
 </script>
