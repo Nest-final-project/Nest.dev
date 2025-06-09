@@ -33,7 +33,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                                 ? keywordEntity.name.containsIgnoreCase(keyword)
                                 : null
                 )
-                .orderBy(profile.createdAt.desc()) // 최신순 정렬 (원하면 빼도 됨)
+                .orderBy(profile.createdAt.desc())
                 .fetch();
     }
 
