@@ -66,15 +66,18 @@ public enum ErrorCode implements BaseCode {
     ALREADY_SAME_KEYWORD_NAME(HttpStatus.CONFLICT, "같은 키워드명 입니다."),
 
     // Profile
-    NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
+    PROFILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
 
     // Career
     NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
     CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
 
     // Certificate
-    NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다.")
+    NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),
 
+
+    // ChatRoom
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
