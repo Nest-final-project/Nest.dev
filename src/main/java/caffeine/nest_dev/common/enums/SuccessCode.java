@@ -73,6 +73,12 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CAREER_UPDATED(HttpStatus.OK, "경력 수정이 완료되었습니다."),
     SUCCESS_CAREER_DELETED(HttpStatus.OK, "경력 삭제가 완료되었습니다."),
 
+    // Profile
+    SUCCESS_PROFILE_CREATED(HttpStatus.CREATED, "프로필이 생성되었습니다."),
+    SUCCESS_PROFILE_READ(HttpStatus.OK, "해당 유저의 프로필이 조회되었습니다."),
+    SUCCESS_PROFILE_UPDATED(HttpStatus.OK, "프로필 정보가 수정되었습니다."),
+    SUCCESS_PROFILE_KEYWORD_READ(HttpStatus.OK, "멘토프로필 키워드 검색이 완료되었습니다"),
+
     // Certificate
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
     SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다."),

@@ -1,7 +1,11 @@
 package caffeine.nest_dev.domain.profile.dto.response;
 
+import caffeine.nest_dev.domain.keyword.dto.response.KeywordResponseDto;
+import caffeine.nest_dev.domain.profile.entity.Profile;
+import caffeine.nest_dev.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +21,24 @@ public class ProfileResponseDto {
     private String title;
     private String introduction;
     private String category;
-    private List<String> keywords;
+    private List<KeywordResponseDto> keywords;
+    private String accountNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static ProfileResponseDto from(Profile profile, User user) {
+        return ProfileResponseDto.builder()
+                .id(profile.getId())
+                .role(user.getUserRole().name())
+                .title(profile.getTitle())
+                .introduction(profile.getIntroduction())
+                .category(profile.getCategory().getName())
+                .keywords(profile.getProfileKeywords().stream()
+                        .map(pk -> KeywordResponseDto.of(pk.getKeyword()))
+                        .collect(Collectors.toList()))
+                .accountNumber(profile.getAccountNumber())
+                .createdAt(profile.getCreatedAt())
+                .updatedAt(profile.getUpdatedAt())
+                .build();
+    }
 }
