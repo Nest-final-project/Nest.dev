@@ -57,6 +57,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_SHOW_REVIEWS(HttpStatus.OK, "리뷰 목록이 조회되었습니다."),
     SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정에 성공했습니다."),
     SUCCESS_DELETE_REVIEW(HttpStatus.OK, "리뷰 삭제에 성공했습니다."),
+    SUCCESS_ACTIVE_REVIEW(HttpStatus.OK, "리뷰 복구에 성공했습니다."),
 
     // Keyword
     SUCCESS_KEYWORD_CREATED(HttpStatus.CREATED, "키워드가 생성되었습니다."),
@@ -78,7 +79,13 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_PROFILE_UPDATED(HttpStatus.OK, "프로필 정보가 수정되었습니다."),
     SUCCESS_PROFILE_KEYWORD_READ(HttpStatus.OK, "멘토프로필 키워드 검색이 완료되었습니다"),
 
-    ;
+    // Certificate
+    SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
+    SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다."),
+
+
+    // socketToken
+    SUCCESS_SOCKET_TOKEN_CREATED(HttpStatus.CREATED, "WebSocket 토큰이 발급되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

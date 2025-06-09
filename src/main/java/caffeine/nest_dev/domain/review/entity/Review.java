@@ -1,8 +1,12 @@
 package caffeine.nest_dev.domain.review.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.review.dto.request.ReviewRequestDto;
+import caffeine.nest_dev.domain.review.enums.ReviewStatus;
+import caffeine.nest_dev.domain.ticket.enums.TicketTime;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +37,24 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus reviewStatus;
+
    public void update(ReviewRequestDto reviewRequestDto){
        this.content = reviewRequestDto.getContent();
    }
+
+    public void changeStatus() {
+       if(this.reviewStatus == ReviewStatus.ACTIVE){
+           this.reviewStatus = ReviewStatus.DELETED;
+       }else if(this.reviewStatus == ReviewStatus.DELETED){
+           this.reviewStatus = ReviewStatus.ACTIVE;
+       }else{
+           throw new BaseException(ErrorCode.REVIEW_NOT_FOUND);
+       }
+    }
+
+    public void softDelete(){
+       this.reviewStatus = ReviewStatus.DELETED;
+    }
 }

@@ -10,10 +10,12 @@ import caffeine.nest_dev.domain.auth.dto.response.AuthResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
 import caffeine.nest_dev.domain.auth.service.AuthService;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +48,7 @@ public class AuthController {
 
         LoginResponseDto responseDto = authService.login(dto);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, responseDto));
     }
 
@@ -59,18 +61,20 @@ public class AuthController {
 
         authService.logout(accessToken, dto.getRefreshToken());
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGOUT));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGOUT));
     }
 
     // 토큰 재발급
     @PostMapping("/refresh")
     public ResponseEntity<CommonResponse<TokenResponseDto>> reissue(
-            @RequestBody RefreshTokenRequestDto dto
+            @RequestBody RefreshTokenRequestDto dto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
-        TokenResponseDto responseDto = authService.reissue(dto);
+        TokenResponseDto responseDto = authService.reissue(dto, userDetails.getId());
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_REISSUE_TOKEN, responseDto));
     }
 }

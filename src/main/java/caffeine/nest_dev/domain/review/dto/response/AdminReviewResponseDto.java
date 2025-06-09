@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ReviewResponseDto {
+public class AdminReviewResponseDto {
 
     private  Long id;
 
@@ -23,8 +23,8 @@ public class ReviewResponseDto {
 
     private ReviewStatus reviewStatus;
 
-    public static ReviewResponseDto of(Review review){
-        return ReviewResponseDto.builder()
+    public static AdminReviewResponseDto of(Review review){
+        return AdminReviewResponseDto.builder()
                 .id(review.getId())
                 .reservationId(review.getReservation().getId())
                 .mentor(review.getMentor().getId())

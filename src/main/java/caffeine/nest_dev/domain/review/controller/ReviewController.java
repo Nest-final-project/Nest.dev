@@ -8,7 +8,6 @@ import caffeine.nest_dev.domain.review.dto.response.ReviewResponseDto;
 import caffeine.nest_dev.domain.review.service.ReviewService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;

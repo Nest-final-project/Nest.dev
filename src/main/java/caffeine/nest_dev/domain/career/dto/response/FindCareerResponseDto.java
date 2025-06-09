@@ -1,8 +1,8 @@
 package caffeine.nest_dev.domain.career.dto.response;
 
 import caffeine.nest_dev.domain.career.entity.Career;
-import caffeine.nest_dev.domain.career.entity.Certificate;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
+import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;

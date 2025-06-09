@@ -70,7 +70,15 @@ public enum ErrorCode implements BaseCode {
 
     // Career
     NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
-    CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다.");
+    CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
+
+    // Certificate
+    NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),
+
+
+    // ChatRoom
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
