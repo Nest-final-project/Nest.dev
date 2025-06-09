@@ -1,5 +1,6 @@
 package caffeine.nest_dev.common.config;
 
+import caffeine.nest_dev.domain.websocket.util.ChatHandshakeHandler;
 import caffeine.nest_dev.domain.websocket.util.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * 웹소켓 연결 시 인증을 위한 HandShake 인터셉터
      */
     private final WebSocketAuthInterceptor webSocketAuthInterceptor;
+    private final ChatHandshakeHandler chatHandshakeHandler;
 
     /**
      * STOMP 엔드포인트 등록 해당 엔드포인트로 웹소켓 연결
@@ -31,6 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-nest") // handshake 를 위해(최초 연결 시) 연결하는 endpoint
                 .addInterceptors(webSocketAuthInterceptor) // socket 연결 전 인증, 검증 로직 수행
                 .setAllowedOriginPatterns("*")  // cors 설정 (허용할 origin 지정)
+                .setHandshakeHandler(chatHandshakeHandler)
                 .withSockJS();  // 웹소켓을 지원하지 않는 브라우저도 사용할 수 있는 대체 옵션 지정
     }
 

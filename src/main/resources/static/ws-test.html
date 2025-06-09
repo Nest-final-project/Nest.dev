@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <title>WebSocket 자동화 테스트</title>
+  <title>WebSocket JWT 테스트</title>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
   <style>
@@ -28,25 +28,25 @@
   </style>
 </head>
 <body>
-<h2>WebSocket 자동화 테스트 클라이언트</h2>
+
+<h2>💬 WebSocket JWT 클라이언트</h2>
 
 <div>
-  <label>채팅방 ID:</label>
-  <input type="number" id="chatRoomId" placeholder="예: 1"/>
-  <label>예약 ID:</label>
-  <input type="number" id="reservationId" placeholder="예: 1"/>
-  <br/>
-  <label>보내는 사람(senderId):</label>
-  <input type="number" id="senderId" placeholder="예: 7"/>
-  <label>받는 사람(receiverId):</label>
-  <input type="number" id="receiverId" placeholder="예: 8"/>
-  <br/>
-  <label>메시지 내용:</label>
-  <input type="text" id="messageInput" placeholder="메시지를 입력하세요"/>
+  <label>🔑 소켓 토큰 (JWT):</label><br/>
+  <input type="text" id="socketToken" placeholder="JWT를 입력하세요" size="80"/><br/>
+
+  <label>💬 채팅방 ID:</label>
+  <input type="number" id="chatRoomId" placeholder="예: 1"/><br/>
+
+  <label>📨 받는 사람 ID (receiverId):</label>
+  <input type="number" id="receiverId" placeholder="예: 2"/><br/>
+
+  <label>✉️ 메시지:</label>
+  <input type="text" id="messageInput" placeholder="메시지를 입력하세요" size="50"/>
   <button onclick="sendMessage()">전송</button>
 </div>
 
-<h3>📨 수신 메시지</h3>
+<h3>📥 수신 메시지</h3>
 <ul id="messageList"></ul>
 
 <h3>❌ 에러 메시지</h3>
@@ -55,67 +55,63 @@
 <script>
   let stompClient = null;
 
-  function connect(chatRoomId, senderId, callback) {
-    const socket = new SockJS("http://localhost:8080/ws-nest");
+  function connect(token, callback) {
+    const socket = new SockJS(`http://localhost:8080/ws-nest?token=${token}`);
     stompClient = Stomp.over(socket);
 
-    stompClient.connect({}, function () {
-      stompClient.subscribe(`/topic/chat_room/${chatRoomId}`, function (msg) {
+    stompClient.connect({}, () => {
+      console.log("✅ WebSocket 연결 성공");
+
+      // 사용자 전용 메시지 구독
+      stompClient.subscribe("/user/queue/message", (msg) => {
         const data = JSON.parse(msg.body);
         const li = document.createElement("li");
         li.textContent = `[${data.senderId} → ${data.receiverId}] ${data.content}`;
         document.getElementById("messageList").appendChild(li);
       });
 
-      stompClient.subscribe(`/queue/error/${senderId}`, function (msg) {
-        try {
-          const errorBody = JSON.parse(msg.body);
-          console.log("🚨 에러 메시지 수신:", errorBody);
-
-          const li = document.createElement("li");
-          li.textContent = `⚠️ [${errorBody.status}] ${errorBody.message || "에러 발생"}`;
-          document.getElementById("errorList").appendChild(li);
-        } catch (e) {
-          console.error("에러 메시지 파싱 실패:", e, msg.body);
-        }
+      // 사용자 전용 에러 메시지 구독
+      stompClient.subscribe("/user/queue/error", (msg) => {
+        const error = JSON.parse(msg.body);
+        const li = document.createElement("li");
+        li.textContent = `⚠️ ${error.status || ""} ${error.message}`;
+        document.getElementById("errorList").appendChild(li);
       });
-      console.log("✅ WebSocket 연결 완료");
+
       if (callback) {
         callback();
       }
+    }, (error) => {
+      console.error("❌ 연결 실패:", error);
     });
   }
 
   function sendMessage() {
-    const chatRoomId = document.getElementById("chatRoomId").value;
-    const reservationId = document.getElementById("reservationId").value;
-    const senderId = document.getElementById("senderId").value;
-    const receiverId = document.getElementById("receiverId").value;
-    const content = document.getElementById("messageInput").value;
+    const token = document.getElementById("socketToken").value.trim();
+    const chatRoomId = document.getElementById("chatRoomId").value.trim();
+    const receiverId = document.getElementById("receiverId").value.trim();
+    const content = document.getElementById("messageInput").value.trim();
 
-    if (!chatRoomId || !senderId) {
-      alert("채팅방 ID와 senderId를 입력하세요!");
+    if (!token || !chatRoomId || !receiverId || !content) {
+      alert("모든 필드를 입력해주세요.");
       return;
     }
 
-    const messagePayload = {
-      reservationId: Number(reservationId),
+    if (!stompClient || !stompClient.connected) {
+      connect(token, () => sendMessage());
+      return;
+    }
+
+    const payload = {
       roomId: Number(chatRoomId),
-      senderId: Number(senderId),
       receiverId: Number(receiverId),
       content: content
     };
 
-    if (!stompClient || !stompClient.connected) {
-      connect(chatRoomId, senderId, () => {
-        stompClient.send(`/app/chat_room/${chatRoomId}/message`, {}, JSON.stringify(messagePayload));
-      });
-    } else {
-      stompClient.send(`/app/chat_room/${chatRoomId}/message`, {}, JSON.stringify(messagePayload));
-    }
-
+    stompClient.send(`/app/chat_room/${chatRoomId}/message`, {}, JSON.stringify(payload));
     document.getElementById("messageInput").value = "";
   }
 </script>
+
 </body>
 </html>
