@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.common.config.PasswordEncoder;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.auth.repository.RefreshTokenRepository;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
@@ -22,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto findUser(Long userId) {
@@ -94,6 +96,12 @@ public class UserService {
         Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(refreshToken);
         if (!userIdFromAccessToken.equals(userIdFromRefreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
+        }
+
+        // refreshToken 일치 여부 검증
+        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userIdFromRefreshToken);
+        if (!refreshToken.equals(refreshTokenByUserId)) {
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
         // 유저 조회
