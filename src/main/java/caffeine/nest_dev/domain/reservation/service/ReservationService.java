@@ -34,7 +34,7 @@ public class ReservationService {
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
+        User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getMentor());
 
         User mentee = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
