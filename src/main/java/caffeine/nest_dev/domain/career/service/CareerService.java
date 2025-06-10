@@ -38,6 +38,11 @@ public class CareerService {
             throw new BaseException(ErrorCode.CAREER_CERTIFICATE_LIMIT_EXCEEDED);
         }
 
+        // 경력증명서가 null 일 때 예외 발생
+        if (dto.getCertificates().isEmpty()) {
+            throw new BaseException(ErrorCode.CAREER_CERTIFICATE_EMPTY);
+        }
+
         // 프로필 조회
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
@@ -71,8 +76,7 @@ public class CareerService {
     public FindCareerResponseDto findCareer(Long profileId, Long careerId) {
 
         // 경력 조회
-        Career career = careerRepository.findByIdAndProfileId(careerId,
-                profileId).orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
+        Career career = findByIdAndProfileId(careerId, profileId);
 
         return FindCareerResponseDto.of(career);
     }
@@ -96,8 +100,7 @@ public class CareerService {
     public void updateCareer(Long profileId, Long careerId, UpdateCareerRequestDto dto) {
 
         // 경력 조회
-        Career career = careerRepository.findByIdAndProfileId(careerId, profileId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
+        Career career = findByIdAndProfileId(careerId, profileId);
 
         // 경력 수정
         career.updateCareer(dto);
@@ -108,10 +111,15 @@ public class CareerService {
     public void deleteCareer(Long profileId, Long careerId) {
 
         // 경력 조회
-        Career career = careerRepository.findByIdAndProfileId(careerId, profileId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
+        Career career = findByIdAndProfileId(careerId, profileId);
 
         // 경력 삭제
         careerRepository.delete(career);
+    }
+
+    // 경력 조회 시 null 이면 예외발생
+    public Career findByIdAndProfileId(Long careerId, Long profileId) {
+        return careerRepository.findByIdAndProfileId(careerId, profileId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
     }
 }

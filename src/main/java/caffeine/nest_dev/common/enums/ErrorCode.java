@@ -71,6 +71,7 @@ public enum ErrorCode implements BaseCode {
     // Career
     NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
     CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
+    CAREER_CERTIFICATE_EMPTY(HttpStatus.BAD_REQUEST, "경력증명서는 반드시 필요합니다."),
 
     // Certificate
     NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),

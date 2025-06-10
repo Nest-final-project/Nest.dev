@@ -11,7 +11,7 @@ public enum SuccessCode implements BaseCode {
 
     // User
     SUCCESS_FIND_USER(HttpStatus.OK, "상세페이지 조회를 성공하였습니다."),
-    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다.."),
+    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다."),
     SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 수정을 성공하였습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."),
 
