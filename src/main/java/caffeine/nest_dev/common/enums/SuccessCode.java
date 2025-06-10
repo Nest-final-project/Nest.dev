@@ -83,6 +83,10 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
     SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다."),
 
+    SUCCESS_CREATE_RESERVATION(HttpStatus.CREATED, "예약이 등록되었습니다."),
+    SUCCESS_SHOW_RESERVATION_LIST(HttpStatus.OK, "예약 목록이 조회되었습니다."),
+    SUCCESS_SHOW_RESERVATION(HttpStatus.OK, "예약 상세페이지가 조회되었습니다."),
+    SUCCESS_CANCEL_RESERVATION(HttpStatus.OK, "예약 취소가 완료되었습니다."),
 
     // socketToken
     SUCCESS_SOCKET_TOKEN_CREATED(HttpStatus.CREATED, "WebSocket 토큰이 발급되었습니다.");
