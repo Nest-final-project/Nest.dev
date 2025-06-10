@@ -11,7 +11,7 @@ public enum SuccessCode implements BaseCode {
 
     // User
     SUCCESS_FIND_USER(HttpStatus.OK, "상세페이지 조회를 성공하였습니다."),
-    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다.."),
+    SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다."),
     SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 수정을 성공하였습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."),
 
@@ -82,6 +82,11 @@ public enum SuccessCode implements BaseCode {
     // Certificate
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
     SUCCESS_CERTIFICATE_DELETED(HttpStatus.OK, "경력증명서 삭제가 완료되었습니다."),
+
+    SUCCESS_CREATE_RESERVATION(HttpStatus.CREATED, "예약이 등록되었습니다."),
+    SUCCESS_SHOW_RESERVATION_LIST(HttpStatus.OK, "예약 목록이 조회되었습니다."),
+    SUCCESS_SHOW_RESERVATION(HttpStatus.OK, "예약 상세페이지가 조회되었습니다."),
+    SUCCESS_CANCEL_RESERVATION(HttpStatus.OK, "예약 취소가 완료되었습니다."),
 
     // socketToken
     SUCCESS_SOCKET_TOKEN_CREATED(HttpStatus.CREATED, "WebSocket 토큰이 발급되었습니다."),
