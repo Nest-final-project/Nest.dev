@@ -78,6 +78,10 @@ public enum ErrorCode implements BaseCode {
 
     // ChatRoom
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+
+    // Consultation
+    CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
+    DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
     ;
 
     private final HttpStatus httpStatus;
