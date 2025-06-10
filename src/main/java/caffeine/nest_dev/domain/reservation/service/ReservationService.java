@@ -26,7 +26,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
 
-        boolean exists = reservationRepository.existsByMentorIdOrMenteeIdAndReservationStartAtAndReservationEndAt(
+        boolean exists = reservationRepository.existsByMentorOrMenteeAndTime(
                 requestDto.getMentor(), userId, requestDto.getReservationStartAt(),
                 requestDto.getReservationEndAt());
 
