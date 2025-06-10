@@ -7,7 +7,6 @@ import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequest
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
-import caffeine.nest_dev.domain.reservation.lock.DistributedLock;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
