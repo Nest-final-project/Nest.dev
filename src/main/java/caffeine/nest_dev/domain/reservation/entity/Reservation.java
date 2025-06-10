@@ -3,7 +3,6 @@ package caffeine.nest_dev.domain.reservation.entity;
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
-import caffeine.nest_dev.domain.review.entity.Review;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
