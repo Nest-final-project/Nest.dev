@@ -7,6 +7,7 @@ import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequest
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
+import caffeine.nest_dev.domain.reservation.lock.DistributedLock;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
@@ -25,6 +26,14 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
+
+        boolean exists = reservationRepository.existsByMentorIdOrMenteeIdAndReservationStartAtAndReservationEndAt(
+                requestDto.getMentor(), userId, requestDto.getReservationStartAt(),
+                requestDto.getReservationEndAt());
+
+        if(exists){
+            throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
+        }
 
         User mentor = userRepository.findById(requestDto.getMentor())
                 .orElseThrow(() -> new BaseException(
@@ -55,7 +64,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if(!reservation.getMentee().getId().equals(userId)){
+        if (!reservation.getMentee().getId().equals(userId)) {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
@@ -68,7 +77,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if(!reservation.getMentee().getId().equals(userId)){
+        if (!reservation.getMentee().getId().equals(userId)) {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
