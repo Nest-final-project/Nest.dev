@@ -55,6 +55,8 @@ public enum ErrorCode implements BaseCode {
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
+    DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "이미 중복된 예약이 존재합니다."),
+
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
@@ -66,11 +68,12 @@ public enum ErrorCode implements BaseCode {
     ALREADY_SAME_KEYWORD_NAME(HttpStatus.CONFLICT, "같은 키워드명 입니다."),
 
     // Profile
-    NOT_FOUND_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
+    PROFILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
 
     // Career
     NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
     CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
+    CAREER_CERTIFICATE_EMPTY(HttpStatus.BAD_REQUEST, "경력증명서는 반드시 필요합니다."),
 
     // Certificate
     NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),
