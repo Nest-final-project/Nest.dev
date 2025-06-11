@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.websocket.dto.response;
+package caffeine.nest_dev.common.websocket.dto.response;
 
 import lombok.Getter;
 

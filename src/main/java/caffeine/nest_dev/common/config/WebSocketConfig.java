@@ -1,7 +1,7 @@
 package caffeine.nest_dev.common.config;
 
-import caffeine.nest_dev.domain.websocket.util.ChatHandshakeHandler;
-import caffeine.nest_dev.domain.websocket.util.WebSocketAuthInterceptor;
+import caffeine.nest_dev.common.websocket.util.ChatHandshakeHandler;
+import caffeine.nest_dev.common.websocket.util.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
