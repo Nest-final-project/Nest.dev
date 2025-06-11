@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.reservation.service;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomSchedulerService;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
@@ -23,6 +24,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
+    private final ChatRoomSchedulerService chatRoomSchedulerService;
+
     @Transactional
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
 
@@ -30,7 +33,7 @@ public class ReservationService {
                 requestDto.getMentor(), userId, requestDto.getReservationStartAt(),
                 requestDto.getReservationEndAt());
 
-        if(exists){
+        if (exists) {
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
@@ -42,6 +45,11 @@ public class ReservationService {
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         Reservation reservation = reservationRepository.save(requestDto.toEntity(mentor, mentee));
+
+//        chatRoomSchedulerService.registerChatRoomSchedule(
+//                reservation.getId(),
+//                reservation.getReservationStartAt()
+//        );
 
         return ReservationResponseDto.of(reservation);
 

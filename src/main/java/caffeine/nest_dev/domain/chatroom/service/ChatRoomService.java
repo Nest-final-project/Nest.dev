@@ -7,7 +7,6 @@ import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
-import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import java.util.List;
@@ -33,9 +32,9 @@ public class ChatRoomService {
         );
 
         // 예약이 결제된 상태에만 채팅방 생성 가능
-        if (!ReservationStatus.PAID.equals(reservation.getReservationStatus())) {
-            throw new BaseException(ErrorCode.CHATROOM_NOT_CREATED);
-        }
+//        if (!ReservationStatus.PAID.equals(reservation.getReservationStatus())) {
+//            throw new BaseException(ErrorCode.CHATROOM_NOT_CREATED);
+//        }
 
 //        if (!reservation.getMentor().getId().equals(userId) && !reservation.getMentee().getId().equals(userId)) {
 //            throw new IllegalArgumentException("접근 권한이 없습니다.");
