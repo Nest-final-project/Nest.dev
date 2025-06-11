@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReservationRequestDto {
+
     private Long mentor;
     private Long mentee;
     private ReservationStatus reservationStatus;
@@ -20,7 +21,7 @@ public class ReservationRequestDto {
     private LocalDateTime reservationEndAt;
 
 
-    public Reservation toEntity(User mentor, User mentee){
+    public Reservation toEntity(User mentor, User mentee) {
         return Reservation.builder()
                 .mentor(mentor)
                 .mentee(mentee)
