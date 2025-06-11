@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
-public class SchedulerConfig {
+public class TaskSchedulerConfig {
 
     public ThreadPoolTaskScheduler chatRoomScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
