@@ -55,6 +55,8 @@ public enum ErrorCode implements BaseCode {
     // Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
+    DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "이미 중복된 예약이 존재합니다."),
+
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
@@ -83,6 +85,10 @@ public enum ErrorCode implements BaseCode {
 
     // ChatRoom
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+
+    // Consultation
+    CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
+    DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
     ;
 
     private final HttpStatus httpStatus;
