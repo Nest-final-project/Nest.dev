@@ -39,9 +39,18 @@ public class ComplaintService {
         // 1) COMPLAINT인 경우
         if (complaintRequestDto.getType().equals(ComplaintType.COMPLAINT)) {
 
+
             // 예약번호가 없을 경우
             if (complaintRequestDto.getReservationId() == null) {
                 throw new BaseException(ErrorCode.COMPLAINT_NEED_RESERVATION_ID);
+            }
+
+            // 이미 작성된 민원이 있는 지 확인.
+            boolean exists = complaintRepository.existsByReservationId(
+                    complaintRequestDto.getReservationId());
+
+            if(exists){
+                throw new BaseException(ErrorCode.DUPLICATED_COMPLAINT);
             }
 
             // 예약이 없을 경우
