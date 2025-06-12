@@ -101,4 +101,14 @@ public class ComplaintService {
 
         return ComplaintResponseDto.of(complaint);
     }
+
+    public PagingResponse<ComplaintResponseDto> getMyComplaints(Long userId, Pageable pageable) {
+
+        Page<Complaint> complaintList = complaintRepository.findAllByUserId(userId,
+                pageable);
+        Page<ComplaintResponseDto> complaintResponseDtos = complaintList.map(
+                ComplaintResponseDto::of);
+
+        return PagingResponse.from(complaintResponseDtos);
+    }
 }

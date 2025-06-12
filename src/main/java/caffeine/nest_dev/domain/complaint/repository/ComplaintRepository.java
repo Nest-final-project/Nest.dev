@@ -14,4 +14,5 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     Page<Complaint> findALLByComplaintTypeIn(List<ComplaintType> complaintType, Pageable pageable);
 
-    }
+    Page<Complaint> findAllByUserId(Long userId, Pageable pageable);
+}

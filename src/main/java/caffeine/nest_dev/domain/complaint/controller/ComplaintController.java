@@ -73,5 +73,20 @@ public class ComplaintController {
                 .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_COMPLAINT, complaint));
 
     }
+    /**
+     * 민원 목록 조회(본인의 민원 목록만)
+     */
+    @GetMapping("/complaints/myComplaints")
+    public ResponseEntity<CommonResponse<PagingResponse<ComplaintResponseDto>>> getMyComplaints(
+            @AuthenticationPrincipal UserDetailsImpl authUser,
+            @PageableDefault(direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
+        Long userId = authUser.getId();
+        PagingResponse<ComplaintResponseDto> getMyComplaints = complaintService.getMyComplaints(userId, pageable);
 
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_COMPLAINTS, getMyComplaints));
+
+    }
 }
