@@ -11,16 +11,18 @@ import lombok.Getter;
 public class OAuth2LoginResponseDto {
 
     private Long id;
-    private String name;
     private String email;
+    private String nickName;
+    private boolean isNew;
     private String accessToken;
     private String refreshToken;
 
-    public static OAuth2LoginResponseDto of(User user, String accessToken, String refreshToken) {
+    public static OAuth2LoginResponseDto of(User user, String accessToken, String refreshToken, boolean isNew) {
         return OAuth2LoginResponseDto.builder()
                 .id(user.getId())
-                .name(user.getName())
                 .email(user.getEmail())
+                .nickName(user.getNickName())
+                .isNew(isNew)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

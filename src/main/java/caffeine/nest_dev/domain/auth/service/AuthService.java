@@ -10,10 +10,13 @@ import caffeine.nest_dev.domain.auth.dto.request.RefreshTokenRequestDto;
 import caffeine.nest_dev.domain.auth.dto.response.AuthResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
-import caffeine.nest_dev.domain.auth.repository.RefreshTokenRepository;
+import caffeine.nest_dev.domain.auth.repository.TokenRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
+import caffeine.nest_dev.oauth2.userinfo.OAuth2UserInfo;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +31,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate stringRedisTemplate;
@@ -58,11 +61,16 @@ public class AuthService {
     public LoginResponseDto login(LoginRequestDto dto) {
         // 유저 조회
         User user = userRepository.findByEmailAndIsDeletedFalse(dto.getEmail())
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         // 비밀번호 일치 여부 검증
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new BaseException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        // Local 로그인 으로 변경
+        if (user.getSocialType() != SocialType.LOCAL) {
+            user.updateSocialType(SocialType.LOCAL, null);
         }
 
         // 토큰 생성
@@ -70,7 +78,7 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(user);
 
         // redis에 저장
-        refreshTokenRepository.save(user.getId(), refreshToken, refreshTokenExpiration);
+        tokenRepository.save(user.getId(), refreshToken, refreshTokenExpiration);
 
         return LoginResponseDto.of(user, accessToken, refreshToken);
     }
@@ -100,7 +108,7 @@ public class AuthService {
         }
 
         // refreshToken 일치 여부 검증
-        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userIdFromRefreshToken);
+        String refreshTokenByUserId = tokenRepository.findByUserId(userIdFromRefreshToken);
         if (!refreshToken.equals(refreshTokenByUserId)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
@@ -120,7 +128,7 @@ public class AuthService {
         String refreshToken = dto.getRefreshToken();
 
         // refreshToken 일치 여부 검증
-        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userId);
+        String refreshTokenByUserId = tokenRepository.findByUserId(userId);
         if (!refreshToken.equals(refreshTokenByUserId)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
@@ -141,7 +149,25 @@ public class AuthService {
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userIdFromToken);
         String newAccessToken = jwtUtil.createAccessToken(user);
 
-
         return TokenResponseDto.of(newAccessToken);
+    }
+
+    // DB에서 유저 조회
+    @Transactional
+    public User findUserByEmail(OAuth2UserInfo userInfo, SocialType provider) {
+        return userRepository.findByEmailAndIsDeletedFalse(userInfo.getEmail())
+                .orElseGet(() -> registerIfAbsent(userInfo, provider));
+    }
+
+    @Transactional
+    // OAuth2UserInfo 정보로 user 객체 만들기
+    public User registerIfAbsent(OAuth2UserInfo userInfo, SocialType provider) {
+        return userRepository.save(User.builder()
+                .email(userInfo.getEmail())
+                .nickName(userInfo.getNickName())
+                .password(passwordEncoder.encode(UUID.randomUUID().toString())) // 임의의 비밀번호 사용
+                .socialType(provider)
+                .socialId(userInfo.getId())
+                .build());
     }
 }

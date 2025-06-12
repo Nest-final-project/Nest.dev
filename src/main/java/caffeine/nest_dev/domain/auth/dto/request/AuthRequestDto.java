@@ -34,7 +34,7 @@ public class AuthRequestDto {
     @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
     private String phoneNumber;
 
-    @NotNull(message = "회원 구분은 필수입니다.")
+    @NotNull(message = "역할 입력은 필수입니다.")
     private UserRole userRole;
 
     public User toEntity(String encodedPassword) {
@@ -44,8 +44,9 @@ public class AuthRequestDto {
                 .nickName(nickname)
                 .password(encodedPassword)
                 .phoneNumber(phoneNumber)
-                .userGrade(UserGrade.SEED)
                 .userRole(userRole)
+                .userGrade(UserGrade.SEED)
+                .totalPrice(0)
                 .build();
     }
 }

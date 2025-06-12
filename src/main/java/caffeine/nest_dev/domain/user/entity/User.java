@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.user.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
@@ -30,7 +31,6 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
     private String email;
@@ -41,7 +41,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -54,6 +53,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    private Integer totalPrice;
 
     private String bank;
 
@@ -95,5 +96,24 @@ public class User extends BaseEntity {
 
     public void deleteUser(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public void updateUserGrade(UserGrade userGrade) {
+        this.userGrade = userGrade;
+    }
+
+    public void updateExtraInfo(ExtraInfoRequestDto dto) {
+        this.name = dto.getName();
+        this.userRole = dto.getUserRole();
+        this.phoneNumber = dto.getPhoneNumber();
+    }
+
+    public void updateSocialType(SocialType socialType, String socialId) {
+        this.socialType = socialType;
+        this.socialId = socialId;
+    }
+
+    public void updateTotalPrice(Integer totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

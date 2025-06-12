@@ -4,14 +4,19 @@ import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.common.config.PasswordEncoder;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.domain.auth.repository.RefreshTokenRepository;
+import caffeine.nest_dev.domain.auth.repository.TokenRepository;
+import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.enums.UserGrade;
+import caffeine.nest_dev.domain.user.enums.UserRole;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenRepository tokenRepository;
 
     @Transactional(readOnly = true)
     public UserResponseDto findUser(Long userId) {
@@ -78,6 +83,28 @@ public class UserService {
     }
 
     @Transactional
+    public void updateExtraInfo(Long userId, ExtraInfoRequestDto dto) {
+
+        // 유저 조회
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+
+        if (dto.getUserRole() == null || dto.getPhoneNumber() == null) {
+            throw new BaseException(ErrorCode.EXTRA_INFO_REQUIRED);
+        }
+
+        // MENTEE 일때
+        if (dto.getUserRole().equals(UserRole.MENTEE)) {
+            user.updateUserGrade(UserGrade.SEED);
+            user.updateExtraInfo(dto);
+        }
+
+        // MENTOR 일때
+        if (dto.getUserRole().equals(UserRole.MENTOR)) {
+            user.updateExtraInfo(dto);
+        }
+    }
+
+    @Transactional
     public void deleteUser(Long userId, String accessToken, String refreshToken) {
 
         // 토큰 무효화
@@ -99,7 +126,7 @@ public class UserService {
         }
 
         // refreshToken 일치 여부 검증
-        String refreshTokenByUserId = refreshTokenRepository.findByUserId(userIdFromRefreshToken);
+        String refreshTokenByUserId = tokenRepository.findByUserId(userIdFromRefreshToken);
         if (!refreshToken.equals(refreshTokenByUserId)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
@@ -121,8 +148,39 @@ public class UserService {
 
     // user 가 없으면 예외 던지기
     public User findByIdAndIsDeletedFalseOrElseThrow(Long userId) {
-        User user = userRepository.findByIdAndIsDeletedFalse(userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
-        return user;
+        return userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
     }
+
+    // 총 결제 금액으로 등급 산정
+    @Scheduled(cron = "59 59 23 L * ?")
+    @Transactional
+    public void runOnLastDayOfMonth() {
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+
+            Integer totalPrice = user.getTotalPrice();
+
+            if (totalPrice < 20000) {
+                // 20,000원 미만은 SEED
+                user.updateUserGrade(UserGrade.SEED);
+            } else if (totalPrice <= 39999) {
+                // 20,000원 ~ 39,999원 -> SPROUT
+                user.updateUserGrade(UserGrade.SPROUT);
+            } else if (totalPrice <= 59999) {
+                // 40,000원 ~ 59,999원 -> BRANCH
+                user.updateUserGrade(UserGrade.BRANCH);
+            } else if (totalPrice <= 79999) {
+                // 60,000원 ~ 79,999원 -> BLOOM
+                user.updateUserGrade(UserGrade.BLOOM);
+            } else {
+                // 80,000원 이상 -> NEST
+                user.updateUserGrade(UserGrade.NEST);
+            }
+        }
+    }
+
+    // 매달 1일 탈퇴 여부 확인하고 회원 완전 삭제
+//    @Scheduled(cron = "0 0 0 1 * * ")
 }

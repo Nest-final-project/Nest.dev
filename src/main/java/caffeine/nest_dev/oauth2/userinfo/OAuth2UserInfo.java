@@ -10,8 +10,6 @@ public class OAuth2UserInfo {
 
     private SocialType provider;
     private String id;
-    private String name;
     private String email;
     private String nickName;
-    private String phoneNumber;
 }

@@ -42,6 +42,18 @@ public class JwtUtil {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
+    public String createTempAccessToken(String email) {
+        long now = System.currentTimeMillis();
+        long tempExpiration = 5 * 60 * 1000L; // 5분
+        return Jwts.builder()
+                .subject(email)
+                .claim("key", "TEMP")
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + tempExpiration))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String createAccessToken(User user) {
         long now = System.currentTimeMillis();
         return Jwts.builder()

@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.user.controller;
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.auth.dto.request.RefreshTokenRequestDto;
+import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
@@ -10,6 +11,7 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +37,8 @@ public class UserController {
 
         UserResponseDto dto = userService.findUser(userDetails.getId());
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_FIND_USER, dto));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_FIND_USER, dto));
     }
 
     // 정보 수정
@@ -47,7 +50,8 @@ public class UserController {
 
         userService.updateUser(userDetails.getId(), dto);
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_USER));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_USER));
     }
 
     // 비밀번호 수정
@@ -59,7 +63,21 @@ public class UserController {
 
         userService.updatePassword(userDetails.getId(), dto);
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_PASSWORD));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_PASSWORD));
+    }
+
+    // MENTEE or MENTOR 선택 / 전화번호 입력 (추가정보)
+    @PatchMapping("/extraInfo")
+    public ResponseEntity<CommonResponse<Void>> extraInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody ExtraInfoRequestDto dto
+    ) {
+
+        userService.updateExtraInfo(userDetails.getId(), dto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_USER_ROLE));
     }
 
     // 회원 탈퇴
@@ -72,6 +90,7 @@ public class UserController {
 
         userService.deleteUser(userDetails.getId(), accessToken, dto.getRefreshToken());
 
-        return ResponseEntity.ok().body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_USER));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_USER));
     }
 }

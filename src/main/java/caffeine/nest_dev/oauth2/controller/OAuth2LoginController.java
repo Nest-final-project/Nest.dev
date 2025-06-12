@@ -40,10 +40,12 @@ public class OAuth2LoginController {
     @GetMapping("/oauth2/callback/{provider}")
     public ResponseEntity<CommonResponse<OAuth2LoginResponseDto>> oauth2Login(
             @PathVariable SocialType provider,
-            @RequestParam("code") String authorizationCode
+            @RequestParam("code") String authorizationCode,
+            @RequestParam("state") String state
     ) {
 
-        OAuth2LoginResponseDto responseDto = oAuth2LoginService.login(provider, authorizationCode);
+        OAuth2LoginResponseDto responseDto = oAuth2LoginService.login(provider, authorizationCode,
+                state);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, responseDto));
