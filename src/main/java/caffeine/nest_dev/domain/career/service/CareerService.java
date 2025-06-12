@@ -45,7 +45,7 @@ public class CareerService {
 
         // 프로필 조회
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BaseException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 경력 Entity 생성 및 profile 과 연관관계 설정
         Career career = dto.toEntity(dto, profile);
