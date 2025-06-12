@@ -2,7 +2,7 @@ package caffeine.nest_dev.domain.user.controller;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
-import caffeine.nest_dev.domain.auth.dto.request.RefreshTokenRequestDto;
+import caffeine.nest_dev.domain.auth.dto.request.DeleteRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
@@ -71,13 +71,13 @@ public class UserController {
     @PatchMapping("/extraInfo")
     public ResponseEntity<CommonResponse<Void>> extraInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ExtraInfoRequestDto dto
+            @Valid @RequestBody ExtraInfoRequestDto dto
     ) {
 
         userService.updateExtraInfo(userDetails.getId(), dto);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_USER_ROLE));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_EXTRA_INFO));
     }
 
     // 회원 탈퇴
@@ -85,10 +85,10 @@ public class UserController {
     public ResponseEntity<CommonResponse<Void>> deleteUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestHeader("Authorization") String accessToken,
-            @RequestBody RefreshTokenRequestDto dto
+            @RequestBody DeleteRequestDto dto
     ) {
 
-        userService.deleteUser(userDetails.getId(), accessToken, dto.getRefreshToken());
+        userService.deleteUser(userDetails.getId(), accessToken, dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_USER));
