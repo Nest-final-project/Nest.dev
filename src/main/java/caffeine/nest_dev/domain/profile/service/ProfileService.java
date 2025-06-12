@@ -14,6 +14,7 @@ import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import caffeine.nest_dev.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ProfileService {
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final CategoryRepository categoryRepository;
     private final KeywordRepository keywordRepository;
 
@@ -36,8 +38,7 @@ public class ProfileService {
     public ProfileResponseDto createProfile(Long userId, ProfileRequestDto requestDto) {
 
         // 유저 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         // 카테고리 조회
         Category category = categoryRepository.findById(requestDto.getCategoryId())
@@ -58,8 +59,8 @@ public class ProfileService {
     }
 
     public ProfileResponseDto getProfile(Long userId, Long profileId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new BaseException(ErrorCode.PROFILE_NOT_FOUND));
