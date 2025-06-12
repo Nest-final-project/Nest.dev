@@ -24,7 +24,7 @@ public class AuthRequestDto {
     private String email;
 
     @NotBlank(message = "닉네임은 필수입니다.")
-    private String nickname;
+    private String nickName;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*\\W).{8,}$", message = "비밀번호 형식이 올바르지 않습니다.")
@@ -41,7 +41,7 @@ public class AuthRequestDto {
         return User.builder()
                 .name(name)
                 .email(email)
-                .nickName(nickname)
+                .nickName(nickName)
                 .password(encodedPassword)
                 .phoneNumber(phoneNumber)
                 .userRole(userRole)

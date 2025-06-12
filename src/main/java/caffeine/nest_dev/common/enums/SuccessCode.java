@@ -10,11 +10,11 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_REISSUE_TOKEN(HttpStatus.OK, "토큰을 재발행합니다."),
 
     // User
-    SUCCESS_FIND_USER(HttpStatus.OK, "상세페이지 조회를 성공하였습니다."),
+    SUCCESS_FIND_USER(HttpStatus.OK, "마이페이지 조회를 성공하였습니다."),
     SUCCESS_UPDATE_USER(HttpStatus.OK, "정보 수정을 성공하였습니다."),
     SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 수정을 성공하였습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."),
-    SUCCESS_UPDATE_USER_ROLE(HttpStatus.OK, "회원의 역할이 수정되었습니다."),
+    SUCCESS_UPDATE_EXTRA_INFO(HttpStatus.OK, "추가 정보 입력이 완료되었습니다."),
 
     // Ticket
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
