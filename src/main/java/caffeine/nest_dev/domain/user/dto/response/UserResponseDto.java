@@ -43,8 +43,6 @@ public class UserResponseDto {
                     .userGrade(user.getUserGrade())
                     .socialType(SocialType.LOCAL)
                     .totalPrice(user.getTotalPrice())
-                    .bank(user.getBank())
-                    .accountNumber(user.getAccountNumber())
                     .createdAt(user.getCreatedAt())
                     .updatedAt(user.getUpdatedAt())
                     .build();
@@ -61,6 +59,8 @@ public class UserResponseDto {
                 .socialType(SocialType.LOCAL)
                 .bank(user.getBank())
                 .accountNumber(user.getAccountNumber())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }

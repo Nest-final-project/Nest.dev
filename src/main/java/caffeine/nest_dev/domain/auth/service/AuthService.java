@@ -16,7 +16,6 @@ import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
 import caffeine.nest_dev.oauth2.userinfo.OAuth2UserInfo;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +49,11 @@ public class AuthService {
         // 비밀번호 인코딩
         String encoded = passwordEncoder.encode(dto.getPassword());
 
-        User user = dto.toEntity(encoded);
+        User user = switch (dto.getUserRole()) {
+            case MENTEE -> User.createMentee(dto, encoded);
+            case MENTOR -> User.createMentor(dto, encoded);
+            case ADMIN -> User.createAdmin(dto, encoded);
+        };
 
         User savedUser = userRepository.save(user);
 
@@ -162,12 +165,6 @@ public class AuthService {
     @Transactional
     // OAuth2UserInfo 정보로 user 객체 만들기
     public User registerIfAbsent(OAuth2UserInfo userInfo, SocialType provider) {
-        return userRepository.save(User.builder()
-                .email(userInfo.getEmail())
-                .nickName(userInfo.getNickName())
-                .password(passwordEncoder.encode(UUID.randomUUID().toString())) // 임의의 비밀번호 사용
-                .socialType(provider)
-                .socialId(userInfo.getId())
-                .build());
+        return userRepository.save(User.createSocialUser(userInfo, provider));
     }
 }
