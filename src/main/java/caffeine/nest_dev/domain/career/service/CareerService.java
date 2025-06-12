@@ -12,7 +12,6 @@ import caffeine.nest_dev.domain.career.dto.response.FindCareerResponseDto;
 import caffeine.nest_dev.domain.career.entity.Career;
 import caffeine.nest_dev.domain.career.repository.CareerRepository;
 import caffeine.nest_dev.domain.certificate.entity.Certificate;
-import caffeine.nest_dev.domain.certificate.repository.CertificateRepository;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import java.util.List;
@@ -28,7 +27,6 @@ public class CareerService {
 
     private final CareerRepository careerRepository;
     private final ProfileRepository profileRepository;
-    private final CertificateRepository certificateRepository;
 
     // 경력 생성
     @Transactional
@@ -48,25 +46,21 @@ public class CareerService {
                 .orElseThrow(() -> new BaseException(ErrorCode.PROFILE_NOT_FOUND));
 
         // 경력 Entity 생성 및 profile 과 연관관계 설정
-        Career career = dto.toEntity(dto, profile);
+        Career career = CareerRequestDto.toEntity(dto, profile);
 
         // 경력과 경력증명서 연관관계 설정
-        List<Certificate> certificateList = dto.getCertificates().stream()
+        dto.getCertificates().stream()
                 .map(url -> Certificate.builder()
                         .fileUrl(url)
-                        .career(career)
                         .build())
-                .toList();
-
-        // 경력에 경력증명서 추가
-        career.getCertificates().addAll(certificateList);
+                .forEach(career::addCertificate); // 경력에 경력증명서 추가
 
         // 경력 저장
         Career saved = careerRepository.save(career);
 
         // 경력 증명서 리스트 dto 만들기
-        List<Certificate> list = certificateRepository.findByCareer(saved);
-        List<CertificateResponseDto> responseDto = CertificateResponseDto.fromList(list);
+        List<CertificateResponseDto> responseDto = CertificateResponseDto.fromList(
+                saved.getCertificates());
 
         return CareerResponseDto.of(saved, responseDto);
     }
@@ -117,7 +111,7 @@ public class CareerService {
         careerRepository.delete(career);
     }
 
-    // 경력 조회 시 null 이면 예외발생
+    // 경력 조회 시 null 이면 예외 발생
     public Career findByIdAndProfileId(Long careerId, Long profileId) {
         return careerRepository.findByIdAndProfileId(careerId, profileId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
