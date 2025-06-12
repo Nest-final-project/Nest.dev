@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.common.config.PasswordEncoder;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.auth.dto.request.DeleteRequestDto;
 import caffeine.nest_dev.domain.auth.repository.TokenRepository;
 import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
@@ -44,7 +45,7 @@ public class UserService {
 
         // dto 가 null 일 때
         if (dto == null) {
-            throw new IllegalArgumentException("수정하려는 항목 중 하나는 필수 입력값입니다.");
+            throw new BaseException(ErrorCode.EMPTY_UPDATE_REQUEST);
         }
 
         // 이메일 중복 검증
@@ -72,7 +73,7 @@ public class UserService {
 
         // 새로운 비밀번호가 현재 비밀번호와 같은 경우
         if (dto.getNewPassword().equals(dto.getRawPassword())) {
-            throw new IllegalArgumentException("같은 비밀번호로 변경할 수 없습니다.");
+            throw new BaseException(ErrorCode.NEW_PASSWORD_SAME_AS_CURRENT);
         }
 
         // 새 비밀번호 인코딩
@@ -88,7 +89,7 @@ public class UserService {
         // 유저 조회
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
-        if (dto.getUserRole() == null || dto.getPhoneNumber() == null) {
+        if (dto.getUserRole() == null || dto.getPhoneNumber() == null || dto.getName() == null) {
             throw new BaseException(ErrorCode.EXTRA_INFO_REQUIRED);
         }
 
@@ -105,41 +106,46 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long userId, String accessToken, String refreshToken) {
+    public void deleteUser(Long userId, String accessToken, DeleteRequestDto dto) {
 
         // 토큰 무효화
-        if (refreshToken == null) {
+        if (dto.getRefreshToken() == null) {
             throw new BaseException(ErrorCode.TOKEN_MISSING);
         }
 
         // refresh 토큰 유효성 검사
         log.info("토큰 유효성 검사 시작");
-        if (jwtUtil.validateToken(refreshToken)) {
+        if (jwtUtil.validateToken(dto.getRefreshToken())) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
         // access 토큰에서 가져온 userId 와 refresh 토큰에서 가져온 userId 가 일치하는지 검증
         Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(accessToken);
-        Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(refreshToken);
+        Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(dto.getRefreshToken());
         if (!userIdFromAccessToken.equals(userIdFromRefreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
         }
 
         // refreshToken 일치 여부 검증
         String refreshTokenByUserId = tokenRepository.findByUserId(userIdFromRefreshToken);
-        if (!refreshToken.equals(refreshTokenByUserId)) {
+        if (!dto.getRefreshToken().equals(refreshTokenByUserId)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
         // 유저 조회
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
+        // 비밀번호 일치 검증
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new BaseException(ErrorCode.INVALID_PASSWORD);
+        }
+
         // access 토큰 redis에 블랙리스트 추가
         jwtUtil.addToBlacklistAccessToken(accessToken);
         log.info("access 토큰을 블랙리스트에 추가");
 
         // refresh 토큰 redis에 블랙리스트 추가
-        jwtUtil.addToBlacklistRefreshToken(refreshToken);
+        jwtUtil.addToBlacklistRefreshToken(dto.getRefreshToken());
         log.info("refresh 토큰을 블랙리스트에 추가");
 
         // 유저 상태 변경

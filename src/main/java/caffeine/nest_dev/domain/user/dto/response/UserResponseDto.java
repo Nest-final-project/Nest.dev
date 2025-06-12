@@ -5,6 +5,7 @@ import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,8 @@ public class UserResponseDto {
     private Integer totalPrice;
     private String bank;
     private String accountNumber;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static UserResponseDto of(User user) {
         if (user.getUserRole() == UserRole.MENTEE) {
@@ -42,6 +45,8 @@ public class UserResponseDto {
                     .totalPrice(user.getTotalPrice())
                     .bank(user.getBank())
                     .accountNumber(user.getAccountNumber())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
                     .build();
         }
 
