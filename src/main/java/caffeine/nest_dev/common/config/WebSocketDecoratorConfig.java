@@ -2,6 +2,7 @@ package caffeine.nest_dev.common.config;
 
 import caffeine.nest_dev.common.websocket.util.WebSocketSessionRegistry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.CloseStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 /**
  * WebSocket 연결/종료 시점에 사용자 세션을 추적하기 위한 핸들러를 등록함
  */
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class WebSocketDecoratorConfig {
@@ -32,6 +34,7 @@ public class WebSocketDecoratorConfig {
             @Override
             public void afterConnectionEstablished(WebSocketSession session) throws Exception {
                 String userId = session.getPrincipal().getName();
+                log.info("afterConnectionEstablished : userId = {}", userId);
                 sessionRegistry.register(userId, session);
                 super.afterConnectionEstablished(session);
             }
@@ -39,6 +42,7 @@ public class WebSocketDecoratorConfig {
             @Override
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
                 String userId = session.getPrincipal().getName();
+                log.info("afterConnectionClosed : userId = {}", userId);
                 sessionRegistry.sessionClose(userId);
                 super.afterConnectionClosed(session, closeStatus);
             }
