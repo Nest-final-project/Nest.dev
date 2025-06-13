@@ -1,7 +1,6 @@
 package caffeine.nest_dev.domain.complaint.dto.response;
 
 import caffeine.nest_dev.domain.complaint.entity.Answer;
-import caffeine.nest_dev.domain.complaint.entity.Complaint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
