@@ -3,13 +3,14 @@ package caffeine.nest_dev.domain.reservation.service;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomSchedulerService;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
-import caffeine.nest_dev.domain.user.repository.UserRepository;
+import caffeine.nest_dev.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,27 +22,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+
+    private final ChatRoomSchedulerService chatRoomSchedulerService;
 
     @Transactional
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
 
-        boolean exists = reservationRepository.existsByMentorIdOrMenteeIdAndReservationStartAtAndReservationEndAt(
+        boolean exists = reservationRepository.existsByMentorOrMenteeAndTime(
                 requestDto.getMentor(), userId, requestDto.getReservationStartAt(),
                 requestDto.getReservationEndAt());
 
-        if(exists){
+        if (exists) {
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        User mentor = userRepository.findById(requestDto.getMentor())
-                .orElseThrow(() -> new BaseException(
-                        ErrorCode.USER_NOT_FOUND));
+        User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getMentor());
 
-        User mentee = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        User mentee = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         Reservation reservation = reservationRepository.save(requestDto.toEntity(mentor, mentee));
+
+//        chatRoomSchedulerService.registerChatRoomSchedule(
+//                reservation.getId(),
+//                reservation.getReservationStartAt()
+//        );
 
         return ReservationResponseDto.of(reservation);
 

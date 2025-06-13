@@ -29,6 +29,7 @@ public enum ErrorCode implements BaseCode {
     ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
     COMPLAINT_NEED_RESERVATION_ID(HttpStatus.BAD_REQUEST, "예약 ID가 없습니다."),
     COMPLAINT_NOT_FOUND(HttpStatus.NOT_FOUND, "민원을 찾을 수 없습니다."),
+    DUPLICATED_COMPLAINT(HttpStatus.CONFLICT, "이미 생성된 민원이 있습니다."),
 
     // AdminCoupon
     NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
@@ -81,6 +82,11 @@ public enum ErrorCode implements BaseCode {
 
     // ChatRoom
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+    CHATROOM_NOT_CREATED(HttpStatus.BAD_REQUEST, "결제가 완료된 후 채팅방을 생성할 수 있습니다."),
+
+    // Consultation
+    CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
+    DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -5,11 +5,21 @@ import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     Page<Reservation> findByMentorIdOrMenteeId(Long mentorId, Long menteeId, Pageable pageable);
 
-    boolean existsByMentorIdOrMenteeIdAndReservationStartAtAndReservationEndAt(Long mentorId,
-            Long menteeId, LocalDateTime startAt, LocalDateTime endAt);
+    @Query("""
+            SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r
+            WHERE (r.mentor.id = :mentorId OR r.mentee.id = :menteeId)
+            AND (r.reservationStartAt < :endAt AND r.reservationEndAt > :startAt)""")
+    boolean existsByMentorOrMenteeAndTime(@Param("mentorId") Long mentorId,
+            @Param("menteeId") Long menteeId,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
+
+
 }

@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.websocket.util;
+package caffeine.nest_dev.common.websocket.util;
 
 import caffeine.nest_dev.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
