@@ -12,6 +12,7 @@ import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
@@ -70,6 +71,11 @@ public class UserService {
 
         // 유저 조회
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+
+        // 소셜 로그인 회원은 예외 발생
+        if (!SocialType.LOCAL.equals(user.getSocialType())) {
+            throw new BaseException(ErrorCode.NOT_LOCAL_USER);
+        }
 
         // 비밀 번호 검증
         if (!passwordEncoder.matches(dto.getRawPassword(), user.getPassword())) {
