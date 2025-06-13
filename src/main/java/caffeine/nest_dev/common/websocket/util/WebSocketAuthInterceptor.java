@@ -41,7 +41,7 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
         // 토큰에서 userId를 추출해 저장 -> 소켓 세션에 저장
         Long userId = socketJwtUtil.getUserIdFromToken(token);
         attributes.put("userId", userId);
-        log.info("소켓 인증 성공 userId: {}", userId);
+        log.info("소켓 인증 성공 userId: {}", userId);    // 잘 들어감 key:"userId" value : userId
 
         return true;
     }

@@ -8,6 +8,8 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 /**
  * 웹소켓 메시지 브로커 설정 클래스 STOMP 프로토콜을 기반으로 하는 웹 소켓 통신 설정
@@ -22,6 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     private final WebSocketAuthInterceptor webSocketAuthInterceptor;
     private final ChatHandshakeHandler chatHandshakeHandler;
+    private final WebSocketHandlerDecoratorFactory decoratorFactory;
 
     /**
      * STOMP 엔드포인트 등록 해당 엔드포인트로 웹소켓 연결
@@ -35,6 +38,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("*")  // cors 설정 (허용할 origin 지정)
                 .setHandshakeHandler(chatHandshakeHandler)
                 .withSockJS();  // 웹소켓을 지원하지 않는 브라우저도 사용할 수 있는 대체 옵션 지정
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+        registry.addDecoratorFactory(decoratorFactory);
     }
 
     /**

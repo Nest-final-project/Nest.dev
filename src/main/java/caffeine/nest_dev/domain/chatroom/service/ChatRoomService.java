@@ -4,23 +4,33 @@ import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
+import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomCloseSchedulerService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.service.UserService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
+    private final UserService userService;
+
+    private final ChatRoomCloseSchedulerService schedulerService;
 
     // 채팅방 생성
     @Transactional
@@ -49,8 +59,8 @@ public class ChatRoomService {
         // 멘토, 멘티 정보 추출
         User mentor = reservation.getMentor();
         User mentee = reservation.getMentee();
-        System.out.println("mentor Id" + mentor.getId());
-        System.out.println("mentee Id" + mentee.getId());
+        log.info("mentorID = {}", mentor.getId());
+        log.info("menteeID = {}", mentee.getId());
 
         ChatRoom chatRoom = ChatRoom.builder()
                 .mentor(mentor)
@@ -58,12 +68,16 @@ public class ChatRoomService {
                 .reservation(reservation)
                 .isClosed(false)
                 .build();
-        System.out.println("채팅방 : " + chatRoom.getId());
+
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+        log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
+
+        // 채팅방 자동 종료 작업 등록
+        schedulerService.registerChatRoomCloseSchedule(reservation.getId(), reservation.getReservationEndAt());
         return ChatRoomResponseDto.of(savedChatRoom);
     }
 
-    // 채팅방 목록 조히
+    // 채팅방 목록 조회
     @Transactional(readOnly = true)
     public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
 
@@ -72,4 +86,22 @@ public class ChatRoomService {
         return findChatRoomList.stream().map(ChatRoomResponseDto::of)
                 .toList();
     }
+
+    // 채팅 내역 조회
+    public Slice<MessageDto> findAllMessage(Long id, Long chatRoomId, Long lastMessageId, Pageable pageable) {
+        Long userId = userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
+
+        Slice<MessageDto> messageDtos = chatRoomRepository.findAllMessagesByChatRoomId(chatRoomId, lastMessageId,
+                pageable);
+
+        for (MessageDto messageDto : messageDtos.getContent()) {
+            if (messageDto.getSenderId().equals(userId)) {
+                messageDto.setMine(true);
+            }
+        }
+
+        return messageDtos;
+    }
+
+
 }

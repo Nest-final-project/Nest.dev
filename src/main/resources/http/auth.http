@@ -6,7 +6,7 @@ Content-Type: application/json;charset=UTF-8
   "name": "Test",
   "email": "test@abc.com",
   "password": "Abcd1234!",
-  "nickname": "Test1",
+  "nickName": "Test1",
   "phoneNumber": "010-1234-1234",
   "userRole": "MENTEE"
 }
@@ -20,7 +20,7 @@ Content-Type: application/json;charset=UTF-8
   "name": "Test1",
   "email": "test1@abc.com",
   "password": "Abcd1234!",
-  "nickname": "Test2",
+  "nickName": "Test2",
   "phoneNumber": "010-1234-1235",
   "userRole": "MENTOR"
 }
@@ -34,7 +34,7 @@ Content-Type: application/json;charset=UTF-8
   "name": "Test2",
   "email": "test2@abc.com",
   "password": "Abcd1234!",
-  "nickname": "Test12",
+  "nickName": "Test12",
   "phoneNumber": "010-1235-1236",
   "userRole": "MENTEE"
 }

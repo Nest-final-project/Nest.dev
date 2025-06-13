@@ -2,10 +2,10 @@ package caffeine.nest_dev.domain.chatroom.scheduler.service;
 
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
 import caffeine.nest_dev.domain.chatroom.scheduler.entity.ChatRoomSchedule;
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.ChatRoomScheduleRepository;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
-import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,17 +27,16 @@ public class ChatRoomSchedulerService {
     private final ChatRoomService chatRoomService;
     private final ChatRoomScheduleRepository scheduleRepository;
 
-    private final ReservationRepository reservationRepository;
-
     // 서버 재시작 시 다시 등록
-    @SuppressWarnings("checkstyle:WhitespaceAfter")
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
         // 예약중이던 작업 가져오기
-        List<ChatRoomSchedule> findScheduleList = scheduleRepository.findAllByScheduleStatus(ScheduleStatus.PENDING)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("저장된 예약 작업이 없습니다.")
-                );
+        List<ChatRoomSchedule> findScheduleList = scheduleRepository.findAllByScheduleStatus(ScheduleStatus.PENDING);
+
+        if (findScheduleList.isEmpty()) {
+            log.info("저장된 작업이 없습니다.");
+            return;
+        }
         log.info("저장된 예약 작업 불러오기 schedule : {}", findScheduleList.isEmpty());
         // 예약시간이 지나지 않았다면 작업을 다시 등록함
         for (ChatRoomSchedule roomSchedule : findScheduleList) {
@@ -56,6 +55,7 @@ public class ChatRoomSchedulerService {
                 .reservationId(reservationId)
                 .scheduledTime(startTime)
                 .scheduleStatus(ScheduleStatus.PENDING)
+                .chatRoomType(ChatRoomType.OPEN)
                 .build();
 
         ChatRoomSchedule saved = scheduleRepository.save(roomSchedule);
