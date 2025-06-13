@@ -34,12 +34,12 @@ public class ChatRoomController {
      */
     @PostMapping
     public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
-            @RequestBody CreateChatRoomRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @RequestBody CreateChatRoomRequestDto requestDto
+//            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         log.info("chatRoom 생성 api 진입");
-        Long userId = userDetails.getId();
-        ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto, userId);
+//        Long userId = userDetails.getId();
+        ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
         return ResponseEntity.created(URI.create("/api/chatrooms"))
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_CREATED, responseDto));
     }

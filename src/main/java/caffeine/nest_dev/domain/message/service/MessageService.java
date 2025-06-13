@@ -1,6 +1,5 @@
 package caffeine.nest_dev.domain.message.service;
 
-import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
@@ -26,36 +25,31 @@ public class MessageService {
     @Transactional
     public void sendMessage(Long chatRoomId, Long userId, MessageRequestDto requestDto) {
 
-        try {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
+        );
 
-            ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                    () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
-            );
+        boolean isMentorSender = chatRoom.getMentor().getId().equals(userId);
+        User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
+        User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
 
-            boolean isMentorSender = chatRoom.getMentor().getId().equals(userId);
-            User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
-            User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
+        // 메시지 생성, 저장
+        Message message = requestDto.toEntity(chatRoom);
+        messageRepository.save(message);
 
-            // 메시지 생성, 저장
-            Message message = requestDto.toEntity(chatRoom);
-            messageRepository.save(message);
+        MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
 
-            MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
-
-            // 메시지 전송 (수신자, 구독 경로, 보낼 메시지)
-            simpMessagingTemplate.convertAndSendToUser(
-                    String.valueOf(receiver.getId()),
-                    "/queue/message",
-                    messageResponseDto
-            );
-        } catch (BaseException e) {
-            simpMessagingTemplate.convertAndSendToUser(
-                    String.valueOf(userId),
-                    "/queue/error/",
-                    CommonResponse.of(e.getErrorCode())
-            );
-
-        }
+        // 메시지 전송 (수신자, 구독 경로, 보낼 메시지)
+        simpMessagingTemplate.convertAndSendToUser(
+                String.valueOf(receiver.getId()),
+                "/queue/message",
+                messageResponseDto
+        );
+//            simpMessagingTemplate.convertAndSendToUser(
+//                    String.valueOf(userId),
+//                    "/queue/error/",
+//                    CommonResponse.of(e.getErrorCode())
+//            );
 
     }
 }

@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.websocket.util;
+package caffeine.nest_dev.common.websocket.util;
 
 import com.sun.security.auth.UserPrincipal;
 import java.security.Principal;
