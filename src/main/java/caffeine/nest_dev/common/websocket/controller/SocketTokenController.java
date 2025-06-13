@@ -1,10 +1,10 @@
-package caffeine.nest_dev.domain.websocket.controller;
+package caffeine.nest_dev.common.websocket.controller;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
+import caffeine.nest_dev.common.websocket.dto.response.SocketTokenResponseDto;
+import caffeine.nest_dev.common.websocket.service.SocketTokenService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
-import caffeine.nest_dev.domain.websocket.dto.response.SocketTokenResponseDto;
-import caffeine.nest_dev.domain.websocket.service.SocketTokenService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
