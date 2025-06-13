@@ -98,6 +98,10 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CONSULTATION_DELETED(HttpStatus.OK, "상담 가능 시간이 삭제되었습니다."),
     SUCCESS_CONSULTATION_READ(HttpStatus.OK, "나의 상담 가능 시간이 조회되었습니다."),
 
+    // Answer
+    SUCCESS_CREATE_ANSWER(HttpStatus.CREATED, "답변이 등록되었습니다."),
+    SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다.")
+
     ;
 
 

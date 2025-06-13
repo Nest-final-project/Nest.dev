@@ -39,6 +39,9 @@ public class Complaint extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ComplaintType complaintType;
 
+    public void changeStatus(){
+        this.complaintStatus = ComplaintStatus.RESOLVED;
+    }
 
 }
 
