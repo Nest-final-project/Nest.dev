@@ -12,6 +12,8 @@ import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,14 @@ public class ComplaintService {
                 throw new BaseException(ErrorCode.COMPLAINT_NEED_RESERVATION_ID);
             }
 
+            // 이미 작성된 민원이 있는 지 확인.
+            boolean exists = complaintRepository.existsByReservationId(
+                    complaintRequestDto.getReservationId());
+
+            if (exists) {
+                throw new BaseException(ErrorCode.DUPLICATED_COMPLAINT);
+            }
+
             // 예약이 없을 경우
             reservation = reservationRepository.findById(
                             complaintRequestDto.getReservationId())
@@ -60,10 +70,24 @@ public class ComplaintService {
         return ComplaintResponseDto.of(complaint);
     }
 
+
     @Transactional(readOnly = true)
-    public PagingResponse<ComplaintResponseDto> getComplaints(Pageable pageable) {
-        Page<Complaint> complaintPage = complaintRepository.findAll(pageable);
-        Page<ComplaintResponseDto> complaintResponseDtos = complaintPage.map(ComplaintResponseDto::of);
+    public PagingResponse<ComplaintResponseDto> getInquiries(Pageable pageable) {
+
+        List<ComplaintType> complaintTypes = Arrays.asList(
+                ComplaintType.INQUIRY_ACCOUNT, // 계정 관련 문의
+                ComplaintType.INQUIRY_CHAT, // 채팅 관련 문의
+                ComplaintType.INQUIRY_PAY, // 결제 관련 문의
+                ComplaintType.INQUIRY_RESERVATION, // 예약 관련 문의
+                ComplaintType.INQUIRY_COUPON, // 쿠폰 관련 문의
+                ComplaintType.INQUIRY_TICKET, // 이용권 관련 문의
+                ComplaintType.INQUIRY_PROFILE // 프로필 관련 문의
+        );
+
+        Page<Complaint> complaintPage = complaintRepository.findALLByComplaintTypeIn(complaintTypes,
+                pageable);
+        Page<ComplaintResponseDto> complaintResponseDtos = complaintPage.map(
+                ComplaintResponseDto::of);
 
         return PagingResponse.from(complaintResponseDtos);
     }
@@ -71,8 +95,19 @@ public class ComplaintService {
     @Transactional(readOnly = true)
     public ComplaintResponseDto getComplaint(Long complaintId) {
 
-        Complaint complaint = complaintRepository.findById(complaintId).orElseThrow(()-> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
 
         return ComplaintResponseDto.of(complaint);
+    }
+
+    public PagingResponse<ComplaintResponseDto> getMyComplaints(Long userId, Pageable pageable) {
+
+        Page<Complaint> complaintList = complaintRepository.findAllByUserId(userId,
+                pageable);
+        Page<ComplaintResponseDto> complaintResponseDtos = complaintList.map(
+                ComplaintResponseDto::of);
+
+        return PagingResponse.from(complaintResponseDtos);
     }
 }
