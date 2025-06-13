@@ -66,7 +66,7 @@ public class AuthController {
     }
 
     // 토큰 재발급
-    @PostMapping("/refresh")
+    @PostMapping("/token/refresh")
     public ResponseEntity<CommonResponse<TokenResponseDto>> reissue(
             @RequestBody RefreshTokenRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails

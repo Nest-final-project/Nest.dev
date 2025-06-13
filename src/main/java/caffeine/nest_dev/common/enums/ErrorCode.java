@@ -11,19 +11,19 @@ public enum ErrorCode implements BaseCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 전달되지 않았습니다."),
     TOKEN_USER_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰의 사용자 정보가 일치하지 않습니다."),
+    INVALID_STATE(HttpStatus.UNAUTHORIZED, "state가 일치하지 않습니다."),
 
     // User
-    NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "유저가 존재하지 않습니다."),
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근 가능한 사용자가 아닙니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    EXTRA_INFO_REQUIRED(HttpStatus.BAD_REQUEST, "사용자 역할과 비밀번호, 이름은 필수입니다."),
+    EMPTY_UPDATE_REQUEST(HttpStatus.BAD_REQUEST, "수정하려는 항목 중 하나는 필수 입력값입니다."),
+    NEW_PASSWORD_SAME_AS_CURRENT(HttpStatus.BAD_REQUEST, "새 비밀번호가 현재 비밀번호와 동일합니다."),
 
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
-
-
-    // user
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
-    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근 가능한 사용자가 아닙니다."),
 
     // Complaint
     ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
@@ -78,6 +78,10 @@ public enum ErrorCode implements BaseCode {
 
     // Certificate
     NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),
+
+    // OAuth2
+    INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST, "소셜 로그인 타입이 일치하지 않습니다."),
+
 
 
     // ChatRoom

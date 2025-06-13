@@ -19,6 +19,7 @@ public class CareerResponseDto {
     private LocalDateTime endAt;
     private CareerStatus careerStatus;
     private List<CertificateResponseDto> certificates;
+    private LocalDateTime createdAt;
 
     public static CareerResponseDto of(Career career, List<CertificateResponseDto> list) {
         return CareerResponseDto.builder()
@@ -28,6 +29,7 @@ public class CareerResponseDto {
                 .endAt(career.getEndAt())
                 .careerStatus(career.getCareerStatus())
                 .certificates(list)
+                .createdAt(career.getCreatedAt())
                 .build();
     }
 }
