@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.auth.dto.response;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class AuthResponseDto {
     private String phoneNumber;
     private UserGrade userGrade;
     private UserRole userRole;
+    private LocalDateTime createdAt;
 
     public static AuthResponseDto of(User user) {
         return AuthResponseDto.builder()
@@ -29,6 +31,7 @@ public class AuthResponseDto {
                 .phoneNumber(user.getPhoneNumber())
                 .userGrade(user.getUserGrade())
                 .userRole(user.getUserRole())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

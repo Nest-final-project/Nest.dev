@@ -1,7 +1,6 @@
 package caffeine.nest_dev.domain.career.dto.request;
 
 import caffeine.nest_dev.domain.career.entity.Career;
-import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -11,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CareerRequestDto {
 
     @NotBlank(message = "회사명은 필수입니다.")
@@ -25,13 +24,12 @@ public class CareerRequestDto {
 
     private List<String> certificates;
 
-    public Career toEntity(CareerRequestDto dto, Profile profile) {
+    public static Career toEntity(CareerRequestDto dto, Profile profile) {
         return Career.builder()
-                .company(dto.company)
+                .company(dto.getCompany())
                 .profile(profile)
-                .startAt(dto.startAt)
-                .endAt(dto.endAt)
-                .careerStatus(CareerStatus.UNAUTHORIZED)
+                .startAt(dto.getStartAt())
+                .endAt(dto.getEndAt())
                 .build();
     }
 }

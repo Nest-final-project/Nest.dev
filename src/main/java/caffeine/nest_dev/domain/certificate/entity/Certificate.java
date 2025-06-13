@@ -36,4 +36,8 @@ public class Certificate {
     public void updateCertificate(UpdateCertificateRequestDto dto) {
         this.fileUrl = dto.getFileUrl();
     }
+
+    public void updateCareer(Career career) {
+        this.career = career;
+    }
 }
