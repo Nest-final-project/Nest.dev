@@ -6,21 +6,26 @@ import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
+import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomCloseSchedulerService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
+
+    private final ChatRoomCloseSchedulerService schedulerService;
 
     // 채팅방 생성
     @Transactional
@@ -49,8 +54,8 @@ public class ChatRoomService {
         // 멘토, 멘티 정보 추출
         User mentor = reservation.getMentor();
         User mentee = reservation.getMentee();
-        System.out.println("mentor Id" + mentor.getId());
-        System.out.println("mentee Id" + mentee.getId());
+        log.info("mentorID = {}", mentor.getId());
+        log.info("menteeID = {}", mentee.getId());
 
         ChatRoom chatRoom = ChatRoom.builder()
                 .mentor(mentor)
@@ -58,8 +63,12 @@ public class ChatRoomService {
                 .reservation(reservation)
                 .isClosed(false)
                 .build();
-        System.out.println("채팅방 : " + chatRoom.getId());
+
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+        log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
+
+        // 채팅방 자동 종료 작업 등록
+        schedulerService.registerChatRoomCloseSchedule(reservation.getId(), reservation.getReservationEndAt());
         return ChatRoomResponseDto.of(savedChatRoom);
     }
 
