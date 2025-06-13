@@ -54,11 +54,8 @@ public class ChatRoom extends BaseEntity {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
-    public void open() {
+    public void close() {
         this.isClosed = true;
     }
 }
 
-/**
- * 예약식별자 유저식별자(멘토) 유저식별자(멘티) 대화 종료 여부 채팅방 생성일
- */

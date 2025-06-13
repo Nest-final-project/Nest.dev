@@ -95,8 +95,12 @@ public enum ErrorCode implements BaseCode {
     // Answer
     ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 건입니다."),
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "답변을 찾을 수 없습니다."),
-    ANSWER_COMPLAINT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 답변은 선택된 민원에 속하지 않습니다.")
-    ;
+    ANSWER_COMPLAINT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 답변은 선택된 민원에 속하지 않습니다."),
+
+
+    // schedule
+    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방 종료 스케줄이 존재하지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;

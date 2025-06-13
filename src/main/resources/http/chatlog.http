@@ -1,0 +1,7 @@
+### GET request to example server
+GET {{root-path}}/api/chatrooms/messages/1
+Content-Type: application/json
+Authorization: Bearer {{authorizationToken}}
+
+
+###

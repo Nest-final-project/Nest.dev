@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.chatroom.scheduler.entity;
 
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,6 +37,9 @@ public class ChatRoomSchedule {
     // 채팅방 예약 상태
     @Enumerated(EnumType.STRING)
     private ScheduleStatus scheduleStatus;
+
+    @Enumerated(EnumType.STRING)
+    private ChatRoomType chatRoomType; // OPEN, CLOSE
 
     public void updateStatus() {
         this.scheduleStatus = ScheduleStatus.COMPLETE;
