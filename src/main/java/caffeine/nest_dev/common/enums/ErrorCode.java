@@ -12,6 +12,8 @@ public enum ErrorCode implements BaseCode {
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 전달되지 않았습니다."),
     TOKEN_USER_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰의 사용자 정보가 일치하지 않습니다."),
     INVALID_STATE(HttpStatus.UNAUTHORIZED, "state가 일치하지 않습니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "입력받은 유저는 멘토가 아닙니다."),
+    INVALID_ROLE_FOR_SIGNUP(HttpStatus.BAD_REQUEST, "회원가입에 사용할 수 없는 역할입니다. "),
 
     // User
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
