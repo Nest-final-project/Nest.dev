@@ -102,6 +102,7 @@ public class UserService {
         if (dto.getUserRole().equals(UserRole.MENTEE)) {
             user.updateUserGrade(UserGrade.SEED);
             user.updateExtraInfo(dto);
+            user.updateTotalPrice(0);
         }
 
         // MENTOR 일때
