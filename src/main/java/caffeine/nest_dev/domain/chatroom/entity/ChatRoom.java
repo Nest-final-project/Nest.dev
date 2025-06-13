@@ -59,6 +59,3 @@ public class ChatRoom extends BaseEntity {
     }
 }
 
-/**
- * 예약식별자 유저식별자(멘토) 유저식별자(멘티) 대화 종료 여부 채팅방 생성일
- */
