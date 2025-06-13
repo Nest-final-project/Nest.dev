@@ -13,15 +13,12 @@ import caffeine.nest_dev.domain.profile.dto.response.ProfileResponseDto;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import caffeine.nest_dev.domain.user.entity.User;
-import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -29,7 +26,6 @@ import org.springframework.stereotype.Service;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final CategoryRepository categoryRepository;
     private final KeywordRepository keywordRepository;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RefreshTokenRepository {
+public class TokenRepository {
 
     private final StringRedisTemplate stringRedisTemplate;
 

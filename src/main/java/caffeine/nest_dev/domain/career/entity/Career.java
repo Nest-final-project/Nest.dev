@@ -22,18 +22,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
 @Entity
 @Table(name = "careers")
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Career extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,6 +55,15 @@ public class Career extends BaseEntity {
     @OneToMany(mappedBy = "career", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificate> certificates = new ArrayList<>();
 
+    @Builder
+    public Career(Profile profile, String company, LocalDateTime startAt, LocalDateTime endAt) {
+        this.profile = profile;
+        this.company = company;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.careerStatus = CareerStatus.UNAUTHORIZED;
+    }
+
     public void updateCareerStatus(CareerStatus newStatus) {
         this.careerStatus = newStatus;
     }
@@ -70,8 +77,11 @@ public class Career extends BaseEntity {
             this.startAt = dto.getStartAt();
         }
 
-        if (dto.getStartAt() != null) {
-            this.endAt = dto.getEndAt();
-        }
+        this.endAt = dto.getEndAt();
+    }
+
+    public void addCertificate(Certificate certificate) {
+        this.certificates.add(certificate);
+        certificate.updateCareer(this);
     }
 }
