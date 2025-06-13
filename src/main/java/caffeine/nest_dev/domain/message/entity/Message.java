@@ -44,6 +44,7 @@ public class Message extends BaseEntity {
     @JoinColumn(name = "mentee_id", nullable = false)
     private User mentee;
 
+    // 보내는사람 식별
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
