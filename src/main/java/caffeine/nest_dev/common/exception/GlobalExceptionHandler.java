@@ -11,6 +11,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<CommonResponse<Object>> handleBaseException(BaseException e) {
+        e.printStackTrace(); // 에러 로그 띄우기
         BaseCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
                 .body(CommonResponse.of(errorCode));
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler {
     // Optionally → 모든 예외 (예상 못한 500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<Object>> handleException(Exception e) {
+        e.printStackTrace(); // 에러 로그 띄우기
         return ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(CommonResponse.of(caffeine.nest_dev.common.enums.ErrorCode.INTERNAL_SERVER_ERROR));
     }
