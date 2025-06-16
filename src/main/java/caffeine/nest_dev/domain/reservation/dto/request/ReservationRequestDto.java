@@ -2,6 +2,7 @@ package caffeine.nest_dev.domain.reservation.dto.request;
 
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
+import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class ReservationRequestDto {
 
     private Long mentor;
     private Long mentee;
+    private Long ticket;
     private ReservationStatus reservationStatus;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reservationStartAt;
@@ -21,10 +23,11 @@ public class ReservationRequestDto {
     private LocalDateTime reservationEndAt;
 
 
-    public Reservation toEntity(User mentor, User mentee) {
+    public Reservation toEntity(User mentor, User mentee, Ticket ticket) {
         return Reservation.builder()
                 .mentor(mentor)
                 .mentee(mentee)
+                .ticket(ticket)
                 .reservationStatus(ReservationStatus.REQUESTED)
                 .reservationStartAt(reservationStartAt)
                 .reservationEndAt(reservationEndAt)

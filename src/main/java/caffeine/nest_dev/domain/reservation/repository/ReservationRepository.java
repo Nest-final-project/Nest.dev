@@ -16,14 +16,28 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("""
             SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r
-            WHERE (r.mentor.id = :mentorId OR r.mentee.id = :menteeId)
-            AND (r.reservationStartAt < :endAt AND r.reservationEndAt > :startAt)""")
-    boolean existsByMentorOrMenteeAndTime(@Param("mentorId") Long mentorId,
-            @Param("menteeId") Long menteeId,
+            WHERE r.mentor.id = :mentorId
+            AND (r.reservationStartAt < :endAt AND r.reservationEndAt > :startAt)
+            AND r.reservationStatus != :canceledStatus""")
+    boolean existsByMentorTime(@Param("mentorId") Long mentorId,
             @Param("startAt") LocalDateTime startAt,
-            @Param("endAt") LocalDateTime endAt);
+            @Param("endAt") LocalDateTime endAt,
+            @Param("canceledStatus")ReservationStatus canceledStatus);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r
+            WHERE r.mentee.id = :menteeId
+            AND (r.reservationStartAt < :endAt AND r.reservationEndAt > :startAt)
+            AND r.reservationStatus != :canceledStatus""")
+    boolean existsByMenteeTime(@Param("menteeId") Long menteeId,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt,
+            @Param("canceledStatus") ReservationStatus canceledStatus);
 
     List<Reservation> findByMentorIdAndReservationStatusNot(Long mentorId,
             ReservationStatus status);
+
+
+
 
 }
