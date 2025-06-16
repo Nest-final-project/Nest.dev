@@ -43,7 +43,7 @@ public class NotificationService {
 
         // 유실된 데이터가 있다면 데이터를 찾아 다시 클라이언트에게 전송
         if (lastEventId != null && !lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(
+            Map<String, Notification> events = emitterRepository.findAllEventCacheStartWithId(
                     String.valueOf(userId));
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)

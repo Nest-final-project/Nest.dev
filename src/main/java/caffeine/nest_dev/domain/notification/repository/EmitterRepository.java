@@ -23,7 +23,7 @@ public class EmitterRepository {
         emitterMap.remove(id);
     }
 
-    public Map<String, Object> findAllEventCacheStartWithId(String userId) {
+    public Map<String, Notification> findAllEventCacheStartWithId(String userId) {
         return eventCache.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(userId + "_"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
