@@ -69,13 +69,23 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{reservationId}")
-    public ResponseEntity<CommonResponse<Void>> cancel(@PathVariable Long reservationId,
+    public ResponseEntity<CommonResponse<Void>> menteeCancel(@PathVariable Long reservationId,
             @AuthenticationPrincipal UserDetailsImpl authUser,
             @RequestBody ReservationCancelRequestDto cancelRequestDto) {
 
-        Long userId = authUser.getId();
+        reservationService.update(authUser, reservationId, cancelRequestDto);
 
-        reservationService.update(userId, reservationId, cancelRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CANCEL_RESERVATION));
+
+    }
+
+    @DeleteMapping("mentor/reservations/{reservationId}")
+    public ResponseEntity<CommonResponse<Void>> mentorCancel(@PathVariable Long reservationId,
+            @AuthenticationPrincipal UserDetailsImpl authUser,
+            @RequestBody ReservationCancelRequestDto cancelRequestDto) {
+
+        reservationService.update(authUser, reservationId, cancelRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CANCEL_RESERVATION));
