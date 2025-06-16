@@ -9,6 +9,7 @@ import caffeine.nest_dev.domain.message.dto.response.MessageResponseDto;
 import caffeine.nest_dev.domain.message.entity.Message;
 import caffeine.nest_dev.domain.message.repository.MessageRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,12 @@ public class MessageService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
+    private final UserService userService;
 
     @Transactional
     public void sendMessage(Long chatRoomId, Long userId, MessageRequestDto requestDto) {
+
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
                 () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
@@ -34,7 +38,7 @@ public class MessageService {
         User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
 
         // 메시지 생성, 저장
-        Message message = requestDto.toEntity(chatRoom);
+        Message message = requestDto.toEntity(chatRoom, user);
         messageRepository.save(message);
 
         MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
@@ -45,11 +49,6 @@ public class MessageService {
                 "/queue/message",
                 messageResponseDto
         );
-//            simpMessagingTemplate.convertAndSendToUser(
-//                    String.valueOf(userId),
-//                    "/queue/error/",
-//                    CommonResponse.of(e.getErrorCode())
-//            );
 
     }
 }

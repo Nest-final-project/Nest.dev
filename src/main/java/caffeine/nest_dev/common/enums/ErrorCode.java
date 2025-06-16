@@ -12,6 +12,8 @@ public enum ErrorCode implements BaseCode {
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 전달되지 않았습니다."),
     TOKEN_USER_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰의 사용자 정보가 일치하지 않습니다."),
     INVALID_STATE(HttpStatus.UNAUTHORIZED, "state가 일치하지 않습니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "입력받은 유저는 멘토가 아닙니다."),
+    INVALID_ROLE_FOR_SIGNUP(HttpStatus.BAD_REQUEST, "회원가입에 사용할 수 없는 역할입니다. "),
 
     // User
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
@@ -21,6 +23,7 @@ public enum ErrorCode implements BaseCode {
     EXTRA_INFO_REQUIRED(HttpStatus.BAD_REQUEST, "사용자 역할과 비밀번호, 이름은 필수입니다."),
     EMPTY_UPDATE_REQUEST(HttpStatus.BAD_REQUEST, "수정하려는 항목 중 하나는 필수 입력값입니다."),
     NEW_PASSWORD_SAME_AS_CURRENT(HttpStatus.BAD_REQUEST, "새 비밀번호가 현재 비밀번호와 동일합니다."),
+    NOT_LOCAL_USER(HttpStatus.BAD_REQUEST, "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."),
 
     // Ticket
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
@@ -91,7 +94,16 @@ public enum ErrorCode implements BaseCode {
     // Consultation
     CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
     DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
-    ;
+
+    // Answer
+    ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 건입니다."),
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "답변을 찾을 수 없습니다."),
+    ANSWER_COMPLAINT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 답변은 선택된 민원에 속하지 않습니다."),
+
+
+    // schedule
+    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방 종료 스케줄이 존재하지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;
