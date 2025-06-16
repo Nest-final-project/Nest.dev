@@ -3,7 +3,9 @@ package caffeine.nest_dev.domain.notification.service;
 import caffeine.nest_dev.domain.notification.dto.response.NotificationResponse;
 import caffeine.nest_dev.domain.notification.entity.Notification;
 import caffeine.nest_dev.domain.notification.repository.EmitterRepository;
+import caffeine.nest_dev.domain.notification.repository.NotificationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class NotificationService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
 
     private final EmitterRepository emitterRepository;
+    private final NotificationRepository notificationRepository;
 
     /**
      * 새로운 SseEmitter 생성
@@ -26,6 +29,7 @@ public class NotificationService {
      * @param lastEventId 마지막으로 발생한 eventId
      * @return 서버에서 클라이언트와 매핑되는 Sse 통신 객체
      */
+    @Transactional
     public SseEmitter subscribe(Long userId, String lastEventId) {
 
         // 데이터의 유실 시점을 파악하기 위해 시간을 함께 저장함
@@ -38,7 +42,7 @@ public class NotificationService {
         emitter.onTimeout(() -> emitterRepository.deleteById(id));
 
         // 유실된 데이터가 있다면 데이터를 찾아 다시 클라이언트에게 전송
-        if (!lastEventId.isEmpty()) {
+        if (lastEventId != null && !lastEventId.isEmpty()) {
             Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(
                     String.valueOf(userId));
             events.entrySet().stream()
@@ -49,8 +53,11 @@ public class NotificationService {
     }
 
     // 알림을 만들어 로그인한 사용자에게 데이터 전송
+    @Transactional
     public void send(User receiver, String content) {
         Notification notification = createNotification(receiver, content);
+        notificationRepository.save(notification);
+
         String userId = String.valueOf(receiver.getId());
 
         // 로그인한 유저의 SseEmitter 가져오기
