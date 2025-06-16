@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.auth.dto.response;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class AuthResponseDto {
     private String phoneNumber;
     private UserGrade userGrade;
     private UserRole userRole;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     public static AuthResponseDto of(User user) {
