@@ -4,9 +4,11 @@ import static caffeine.nest_dev.domain.chatroom.entity.QChatRoom.chatRoom;
 import static caffeine.nest_dev.domain.message.entity.QMessage.message;
 
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
+import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -44,14 +46,38 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
         return checkLastPage(pageable, results);
     }
 
+    @Override
+    public Slice<ChatRoom> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
+            Pageable pageable) {
+        List<ChatRoom> results = jpaQueryFactory.selectFrom(chatRoom)
+                .where(
+                        chatRoom.mentor.id.eq(userId).or(chatRoom.mentee.id.eq(userId)),
+                        gtUpdateAt(cursorTime, messageId)
+                )
+                .orderBy(chatRoom.updatedAt.desc(),
+                        chatRoom.id.desc())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        return checkLastPage(pageable, results);
+    }
+
     private BooleanExpression lastMessageId(Long messageId) {
-        if (messageId == null || messageId == 0) {
+        if (messageId == null || messageId == 0L) {
             return null; // 조건 없이 최신부터 조회
         }
         return message.id.lt(messageId);
     }
 
-    private Slice<MessageDto> checkLastPage(Pageable pageable, List<MessageDto> results) {
+    private BooleanExpression gtUpdateAt(LocalDateTime cursorTime, Long messageId) {
+        if (cursorTime == null || messageId == null || messageId == 0L) {
+            return null;
+        }
+        return chatRoom.updatedAt.lt(cursorTime)
+                .or(chatRoom.updatedAt.eq(cursorTime).and(chatRoom.id.lt(messageId)));
+    }
+
+    private <T> Slice<T> checkLastPage(Pageable pageable, List<T> results) {
         boolean hasNext = false;
 
         if (results.size() > pageable.getPageSize()) {
