@@ -47,7 +47,6 @@ public class ReservationService {
         }
 
 
-
         // 멘티 중복 체크
         boolean mentee_exists = reservationRepository.existsByMenteeTime(
                 requestDto.getMentee(), requestDto.getReservationStartAt(),
@@ -56,8 +55,6 @@ public class ReservationService {
         if (mentee_exists) {
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
-
-
 
         User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getMentor());
 

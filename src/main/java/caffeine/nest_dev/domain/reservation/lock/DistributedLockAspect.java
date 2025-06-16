@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.reservation.lock;
 
+import caffeine.nest_dev.common.exception.BaseException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,10 @@ public class DistributedLockAspect {
             return transactionTemplate.execute(status -> { // 트랜잭션 시작
                 try{
                     return joinPoint.proceed();
-                }catch(Throwable throwable){ // 예외 발생 시
+                }catch(BaseException e) { // 예외 발생 시
+                    status.setRollbackOnly();
+                    throw e;
+                }catch (Throwable throwable){
                     status.setRollbackOnly();
                     throw new RuntimeException(throwable);
                 }
