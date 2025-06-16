@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,20 +61,26 @@ public class ChatRoomSchedulerService {
     }
 
     // 예약 작업 저장
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registerChatRoomSchedule(Long reservationId, LocalDateTime startTime) {
 
-        ChatRoomSchedule roomSchedule = ChatRoomSchedule.builder()
-                .reservationId(reservationId)
-                .scheduledTime(startTime)
-                .scheduleStatus(ScheduleStatus.PENDING)
-                .chatRoomType(ChatRoomType.OPEN)
-                .build();
+        try {
+            ChatRoomSchedule roomSchedule = ChatRoomSchedule.builder()
+                    .reservationId(reservationId)
+                    .scheduledTime(startTime)
+                    .scheduleStatus(ScheduleStatus.PENDING)
+                    .chatRoomType(ChatRoomType.OPEN)
+                    .build();
 
-        ChatRoomSchedule saved = scheduleRepository.save(roomSchedule);
+            ChatRoomSchedule saved = scheduleRepository.save(roomSchedule);
 
-        taskScheduler.schedule(
-                createSchedule(saved.getId()),
-                Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()));
+            taskScheduler.schedule(
+                    createSchedule(saved.getId()),
+                    Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()));
+        } catch (Exception e) {
+            log.error("채팅방 예약 등록 실패 : {}", e.getMessage(), e);
+        }
+
 
     }
 
@@ -87,8 +95,11 @@ public class ChatRoomSchedulerService {
                 log.info("이미 완료된 스케줄입니다. ID : {}", scheduleId);
                 return;
             }
-
+            if (schedule.getScheduledTime().isBefore(LocalDateTime.now())) {
+                log.warn("예약시간이 지났습니다. ID : {}", scheduleId);
+            }
             CreateChatRoomRequestDto requestDto = new CreateChatRoomRequestDto(schedule.getReservationId());
+
             // 알림 예약 작업을 등록하기 위해 responseDto 반환
             ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
 
