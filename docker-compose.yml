@@ -18,6 +18,14 @@ services:
     networks:
       - nest-network
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - nest-network
+
   nest_app:
     build:
       context: .
