@@ -12,7 +12,7 @@ public class EmitterRepository {
 
     private final Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
-    private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
+    private final Map<String, Notification> eventCache = new ConcurrentHashMap<>();
 
     public SseEmitter save(String id, SseEmitter sseEmitter) {
         emitterMap.put(id, sseEmitter);
