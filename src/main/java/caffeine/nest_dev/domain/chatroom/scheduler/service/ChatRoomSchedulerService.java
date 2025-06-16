@@ -37,7 +37,13 @@ public class ChatRoomSchedulerService {
     // 알림 예약
     private final ChatRoomTerminationNotifier notifier;
 
-    // 서버 재시작 시 다시 등록
+    /**
+     * 서버가 재시작될 때 예약된 채팅방 생성 작업을 다시 스케줄링합니다.
+     *
+     * 저장소에서 상태가 PENDING인 모든 채팅방 생성 예약 작업을 조회하여,
+     * 예약 시간이 아직 지나지 않은 작업에 한해 TaskScheduler에 재등록합니다.
+     * 예약된 작업이 없거나 모두 만료된 경우 별도의 작업을 수행하지 않습니다.
+     */
     public void init() {
         // 예약중이던 작업 가져오기
         List<ChatRoomSchedule> findScheduleList = scheduleRepository.findAllByScheduleStatus(ScheduleStatus.PENDING);
@@ -76,7 +82,15 @@ public class ChatRoomSchedulerService {
 
     }
 
-    // 예약된 시간에 실행될 작업
+    /**
+     * 예약된 스케줄 ID에 따라 채팅방을 생성하고, 관련 알림 예약을 등록하는 작업을 반환합니다.
+     *
+     * 반환된 Runnable은 실행 시 해당 스케줄의 상태를 확인하여 이미 완료된 경우 작업을 중단하며,
+     * 완료되지 않은 경우 채팅방을 생성하고 스케줄 상태를 완료로 변경한 뒤, 참여자에게 채팅방 종료 알림 예약을 등록합니다.
+     *
+     * @param scheduleId 예약된 채팅방 스케줄의 ID
+     * @return 예약된 시간에 실행될 채팅방 생성 및 알림 예약 작업
+     */
     private Runnable createSchedule(Long scheduleId) {
         return () -> {
             ChatRoomSchedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
@@ -104,7 +118,14 @@ public class ChatRoomSchedulerService {
         };
     }
 
-    // 알림 예약 작업 등록
+    /**
+     * 채팅방 종료 시점에 멘토와 멘티에게 알림 예약을 등록합니다.
+     *
+     * @param responseDto 생성된 채팅방 및 참여자 정보를 담은 DTO
+     * @param reservationId 알림 예약을 위한 예약 ID
+     *
+     * @throws BaseException 예약 정보를 찾을 수 없는 경우 발생합니다.
+     */
     private void registerNotification(ChatRoomResponseDto responseDto, Long reservationId) {
         User mentee = userService.findByIdAndIsDeletedFalseOrElseThrow(responseDto.getMenteeId());
         User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(responseDto.getMentorId());

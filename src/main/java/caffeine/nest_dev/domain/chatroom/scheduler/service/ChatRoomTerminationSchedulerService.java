@@ -33,7 +33,13 @@ public class ChatRoomTerminationSchedulerService {
     // 사용자 Id , Session 매핑한 저장소
     private final WebSocketSessionRegistry sessionRegistry;
 
-    // 서버 재시작 시 초기화 작업
+    /**
+     * 서버 재시작 시 예약된 채팅방 종료 작업을 재등록합니다.
+     *
+     * 저장된 종료 예약 스케줄 중 상태가 PENDING이고 예약 시간이 아직 지나지 않은 작업을 찾아,
+     * 해당 시간에 채팅방 종료 및 사용자 연결 해제 작업을 다시 스케줄러에 등록합니다.
+     * 예약된 작업이 없을 경우 별도의 처리를 하지 않습니다.
+     */
     public void init() {
         List<ChatRoomSchedule> scheduleList = chatRoomScheduleRepository.findAllByChatRoomTypeAndScheduleStatus(
                 ChatRoomType.CLOSE, ScheduleStatus.PENDING);

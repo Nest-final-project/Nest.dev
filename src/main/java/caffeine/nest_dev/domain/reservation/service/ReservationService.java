@@ -27,6 +27,16 @@ public class ReservationService {
 
     private final ChatRoomSchedulerService chatRoomSchedulerService;
 
+    /**
+     * 새로운 예약을 생성하고 관련 채팅방 일정을 등록합니다.
+     *
+     * 예약 시간에 멘토 또는 멘티의 중복 예약이 존재할 경우 예외가 발생합니다.
+     * 멘토의 역할이 올바르지 않거나 존재하지 않는 경우에도 예외가 발생합니다.
+     *
+     * @param userId 예약을 요청하는 멘티의 사용자 ID
+     * @param requestDto 예약 요청 정보
+     * @return 생성된 예약의 응답 DTO
+     */
     @Transactional
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
 

@@ -32,7 +32,14 @@ public class ChatRoomService {
 
     private final ChatRoomTerminationSchedulerService schedulerService;
 
-    // 채팅방 생성
+    /**
+     * 예약 정보를 기반으로 새로운 채팅방을 생성하거나, 이미 존재하는 경우 기존 채팅방 정보를 반환합니다.
+     *
+     * @param requestDto 채팅방 생성을 위한 예약 정보가 담긴 요청 DTO
+     * @return 생성되었거나 기존에 존재하는 채팅방의 응답 DTO
+     *
+     * @throws BaseException 예약이 존재하지 않을 경우 {@code ErrorCode.RESERVATION_NOT_FOUND} 예외가 발생합니다.
+     */
     @Transactional
     public ChatRoomResponseDto createChatRooms(CreateChatRoomRequestDto requestDto) {
 

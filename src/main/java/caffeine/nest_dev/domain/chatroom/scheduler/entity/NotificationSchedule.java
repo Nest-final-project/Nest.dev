@@ -35,7 +35,9 @@ public class NotificationSchedule {
     private boolean isSent;
 
     private LocalDateTime scheduledAt;
-    private LocalDateTime sentAt;   // 실제 전송된 시간
+    private LocalDateTime sentAt;   /****
+     * 알림이 전송되었음을 표시하고 실제 전송 시간을 현재 시각으로 기록합니다.
+     */
 
     public void update() {
         this.isSent = true;

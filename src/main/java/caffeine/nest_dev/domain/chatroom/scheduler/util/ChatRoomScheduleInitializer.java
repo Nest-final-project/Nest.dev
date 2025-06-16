@@ -29,6 +29,11 @@ public class ChatRoomScheduleInitializer {
     private final ChatRoomTerminationNotifier chatRoomTerminationNotifier;
     private final ChatRoomTerminationSchedulerService chatRoomTerminationSchedulerService;
 
+    /**
+     * 애플리케이션 시작 시 모든 채팅방 관련 예약 작업을 복구 및 재등록합니다.
+     *
+     * 애플리케이션이 준비되면 채팅방 생성 예약, 종료 5분 전 알림 예약, 자동 종료 예약을 순차적으로 초기화합니다.
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void initAllSchedules() {
         log.info("[초기화] 채팅방 생성 예약 복구 시작");
