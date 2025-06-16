@@ -8,10 +8,18 @@ import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequest
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
+import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
+import caffeine.nest_dev.domain.reservation.lock.DistributedLock;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
+import caffeine.nest_dev.domain.ticket.entity.Ticket;
+import caffeine.nest_dev.domain.ticket.repository.TicketRepository;
+import caffeine.nest_dev.domain.ticket.service.TicketService;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.enums.UserRole;
+import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,30 +32,45 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserService userService;
+    private final TicketRepository ticketRepository;
 
     private final ChatRoomSchedulerService chatRoomSchedulerService;
 
-    @Transactional
+    @DistributedLock(key = "'reserve:' + #requestDto.mentor")
     public ReservationResponseDto save(Long userId, ReservationRequestDto requestDto) {
 
-        boolean exists = reservationRepository.existsByMentorOrMenteeAndTime(
-                requestDto.getMentor(), userId, requestDto.getReservationStartAt(),
-                requestDto.getReservationEndAt());
+        // 멘토 중복 체크
+        boolean mentor_exists = reservationRepository.existsByMentorTime(
+                requestDto.getMentor(), requestDto.getReservationStartAt(),
+                requestDto.getReservationEndAt(), ReservationStatus.CANCELED
+        );
 
-        if (exists) {
+        if(mentor_exists){
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
 
-        User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getMentor());
 
-        // mentorId 로 찾은 mentor 가 mentor 인지 검증
-        if (!mentor.getUserRole().equals(UserRole.MENTOR)) {
-            throw new BaseException(ErrorCode.INVALID_ROLE);
+
+        // 멘티 중복 체크
+        boolean mentee_exists = reservationRepository.existsByMenteeTime(
+                requestDto.getMentee(), requestDto.getReservationStartAt(),
+                requestDto.getReservationEndAt(), ReservationStatus.CANCELED);
+
+        if (mentee_exists) {
+            throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
+
+
+
+        User mentor = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getMentor());
 
         User mentee = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
-        Reservation reservation = reservationRepository.save(requestDto.toEntity(mentor, mentee));
+        Ticket ticket = ticketRepository.findById(requestDto.getTicket())
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_TICKET));
+
+        Reservation reservation = reservationRepository.save(
+                requestDto.toEntity(mentor, mentee, ticket));
 
 //        chatRoomSchedulerService.registerChatRoomSchedule(
 //                reservation.getId(),
@@ -82,16 +105,24 @@ public class ReservationService {
     }
 
     @Transactional
-    public void update(Long userId, Long reservationId,
+    public void update(UserDetailsImpl authUser, Long reservationId,
             ReservationCancelRequestDto cancelRequestDto) {
+
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservation.getMentee().getId().equals(userId)) {
-            throw new BaseException(ErrorCode.NO_PERMISSION);
+        Long userId = authUser.getId();
+        UserRole userRole = authUser.getUserRole();
+
+        if (userRole.equals(UserRole.MENTEE) || userRole.equals(UserRole.MENTOR)) {
+            if (!reservation.getMentee().getId().equals(userId) && !reservation.getMentor().getId()
+                    .equals(userId)) {
+                throw new BaseException(ErrorCode.NO_PERMISSION);
+            }
         }
 
         reservation.update(cancelRequestDto);
+
     }
 
 

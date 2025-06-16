@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.reservation.entity;
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
+import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,10 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "mentee_id", nullable = false)
     private User mentee;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
@@ -37,7 +42,7 @@ public class Reservation extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime reservationEndAt;
-    
+
 
     private String cancellation;
 
