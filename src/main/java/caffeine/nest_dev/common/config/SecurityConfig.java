@@ -48,7 +48,7 @@ public class SecurityConfig {
             "/api/reviews/*"
     };
     private static final String[] DELETE_METHOD_MENTEE_PATH = {
-            "/api/reviews/*", "/api/reservations/*"
+            "/api/reviews/*"
     };
 
     // MENTOR 전용 경로
