@@ -43,7 +43,7 @@ public class NotificationService {
 
         // 유실된 데이터가 있다면 데이터를 찾아 다시 클라이언트에게 전송
         if (lastEventId != null && !lastEventId.isEmpty()) {
-            Map<String, Notification> events = emitterRepository.findAllEventCacheStartWithId(
+            Map<String, Notification> events = emitterRepository.findAllEventCacheByUserId(
                     String.valueOf(userId));
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
@@ -61,7 +61,7 @@ public class NotificationService {
         String userId = String.valueOf(receiver.getId());
 
         // 로그인한 유저의 SseEmitter 가져오기
-        Map<String, SseEmitter> sseEmitter = emitterRepository.findAllStartWithId(userId);
+        Map<String, SseEmitter> sseEmitter = emitterRepository.findAllEmitterByUserId(userId);
         sseEmitter.forEach(
                 (key, emitter) -> {
                     // 유실된 데이터를 처리하기 위해 데이터 캐시 저장
