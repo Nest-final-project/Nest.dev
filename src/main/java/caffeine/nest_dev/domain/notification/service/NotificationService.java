@@ -23,7 +23,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     /**
-     * 새로운 SseEmitter 생성
+     * 새로운 SseEmitter 생성 메서드
      *
      * @param userId      로그인한 userId
      * @param lastEventId 마지막으로 발생한 eventId
