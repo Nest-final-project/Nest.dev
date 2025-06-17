@@ -65,6 +65,11 @@ public class ChatRoomSchedulerService {
     public void registerChatRoomSchedule(Long reservationId, LocalDateTime startTime) {
 
         try {
+            if (startTime.isBefore(LocalDateTime.now())) {
+                log.warn("지정된 시작 시간이 이미 지났습니다. 예약 ID: {}", reservationId);
+                return;
+            }
+
             ChatRoomSchedule roomSchedule = ChatRoomSchedule.builder()
                     .reservationId(reservationId)
                     .scheduledTime(startTime)
