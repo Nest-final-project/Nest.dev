@@ -9,12 +9,13 @@ import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import java.net.URI;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,8 +51,6 @@ public class ChatRoomController {
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_CREATED, responseDto));
     }
 
-    // TODO : 무한 스크롤 구현
-
     /**
      * 채팅방 목록 조회
      *
@@ -59,11 +58,16 @@ public class ChatRoomController {
      * @return 채팅방 목록
      */
     @GetMapping
-    public ResponseEntity<CommonResponse<List<ChatRoomResponseDto>>> findAllChatRooms(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<SliceResponse<ChatRoomResponseDto>> findAllChatRooms(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorTime,
+            @RequestParam(required = false) Long lastMessageId,
+            @PageableDefault(size = 10) Pageable pageable
     ) {
-        List<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userDetails.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_READ, dtoList));
+        Long userId = userDetails.getId();
+        Slice<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userId, lastMessageId, cursorTime,
+                pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(dtoList));
     }
 
     /**
