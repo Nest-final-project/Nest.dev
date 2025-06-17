@@ -49,10 +49,6 @@ public class ChatRoomService {
 //            throw new BaseException(ErrorCode.CHATROOM_NOT_CREATED);
 //        }
 
-//        if (!reservation.getMentor().getId().equals(userId) && !reservation.getMentee().getId().equals(userId)) {
-//            throw new IllegalArgumentException("접근 권한이 없습니다.");
-//        }
-
         // 채팅방이 이미 존재하는 경우 기존의 채팅방을 반환
         Optional<ChatRoom> existChatRoom = chatRoomRepository.findByReservationId(reservation.getId());
         if (existChatRoom.isPresent()) {
