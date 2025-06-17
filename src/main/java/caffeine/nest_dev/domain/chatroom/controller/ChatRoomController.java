@@ -51,8 +51,6 @@ public class ChatRoomController {
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_CREATED, responseDto));
     }
 
-    // TODO : 무한 스크롤 구현
-
     /**
      * 채팅방 목록 조회
      *
