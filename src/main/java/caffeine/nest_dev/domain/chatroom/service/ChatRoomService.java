@@ -7,17 +7,19 @@ import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
-import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomCloseSchedulerService;
+import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomTerminationSchedulerService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,8 @@ public class ChatRoomService {
     private final ReservationRepository reservationRepository;
     private final UserService userService;
 
-    private final ChatRoomCloseSchedulerService schedulerService;
+    // 채팅방 종료 예약 스케줄러
+    private final ChatRoomTerminationSchedulerService schedulerService;
 
     // 채팅방 생성
     @Transactional
@@ -74,33 +77,53 @@ public class ChatRoomService {
 
         // 채팅방 자동 종료 작업 등록
         schedulerService.registerChatRoomCloseSchedule(reservation.getId(), reservation.getReservationEndAt());
+
         return ChatRoomResponseDto.of(savedChatRoom);
     }
 
     // 채팅방 목록 조회
     @Transactional(readOnly = true)
-    public List<ChatRoomResponseDto> findAllChatRooms(Long userId) {
+    public Slice<ChatRoomResponseDto> findAllChatRooms(Long userId,
+            Long lastMessageId,
+            LocalDateTime cursorTime,
+            Pageable pageable
+    ) {
 
-        List<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId, userId);
+        Slice<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
+                lastMessageId,
+                cursorTime,
+                pageable);
 
-        return findChatRoomList.stream().map(ChatRoomResponseDto::of)
+        List<ChatRoomResponseDto> dtoList = findChatRoomList.getContent()
+                .stream()
+                .map(ChatRoomResponseDto::of)
                 .toList();
+
+        return new SliceImpl<>(dtoList, pageable, findChatRoomList.hasNext());
     }
 
     // 채팅 내역 조회
-    public Slice<MessageDto> findAllMessage(Long id, Long chatRoomId, Long lastMessageId, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Slice<MessageDto> findAllMessage(Long id,
+            Long chatRoomId,
+            Long lastMessageId,
+            Pageable pageable
+    ) {
         Long userId = userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
 
-        Slice<MessageDto> messageDtos = chatRoomRepository.findAllMessagesByChatRoomId(chatRoomId, lastMessageId,
+        Slice<MessageDto> messageDtoList = chatRoomRepository.findAllMessagesByChatRoomId(
+                chatRoomId,
+                lastMessageId,
                 pageable);
 
-        for (MessageDto messageDto : messageDtos.getContent()) {
+        // 자신이 보낸 메시지인지 판별
+        for (MessageDto messageDto : messageDtoList.getContent()) {
             if (messageDto.getSenderId().equals(userId)) {
                 messageDto.setMine(true);
             }
         }
 
-        return messageDtos;
+        return messageDtoList;
     }
 
 
