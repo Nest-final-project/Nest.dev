@@ -61,6 +61,26 @@ public enum ErrorCode implements BaseCode {
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
     DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "이미 중복된 예약이 존재합니다."),
 
+    // 결제 권한 관련
+    NO_PAYMENT_AUTHORITY(HttpStatus.FORBIDDEN, "해당 예약을 결제할 권한이 없습니다."),
+    NO_PAYMENT_INFO_AUTHORITY(HttpStatus.FORBIDDEN, "결제 정보를 처리할 권한이 없습니다."),
+    NO_PAYMENT_VIEW_AUTHORITY(HttpStatus.FORBIDDEN, "결제 내역을 조회할 권한이 없습니다."),
+    NO_PAYMENT_CANCEL_AUTHORITY(HttpStatus.NOT_FOUND, "결제를 취소할 권한이 없습니다."),
+
+    // 결제 내역/상태/검증 관련
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "주문 금액이 일치하지 않습니다."),
+    ALREADY_PROCESSED_OR_CANCELED(HttpStatus.CONFLICT, "이미 처리되었거나 취소된 주문입니다."),
+    ONLY_PAID_CAN_BE_CANCELED(HttpStatus.BAD_REQUEST, "결제 완료 상태의 주문만 취소할 수 있습니다."),
+
+    // 결제 내역 존재 관련
+    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제 내역입니다."),
+
+    // 결제/취소 처리 실패
+    PAYMENT_APPROVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스 결제 승인에 최종 실패했습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
+    TOSS_CANCEL_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 취소 요청에 실패했습니다."),
+    TOSS_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 호출에 실패했습니다."),
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
