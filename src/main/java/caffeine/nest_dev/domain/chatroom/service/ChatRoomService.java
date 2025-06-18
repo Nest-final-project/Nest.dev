@@ -13,13 +13,11 @@ import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,17 +83,12 @@ public class ChatRoomService {
             Pageable pageable
     ) {
 
-        Slice<ChatRoom> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
+        Slice<ChatRoomResponseDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
                 lastMessageId,
                 cursorTime,
                 pageable);
 
-        List<ChatRoomResponseDto> dtoList = findChatRoomList.getContent()
-                .stream()
-                .map(ChatRoomResponseDto::of)
-                .toList();
-
-        return new SliceImpl<>(dtoList, pageable, findChatRoomList.hasNext());
+        return findChatRoomList;
     }
 
     // 채팅 내역 조회
@@ -115,7 +108,7 @@ public class ChatRoomService {
         // 자신이 보낸 메시지인지 판별
         for (MessageDto messageDto : messageDtoList.getContent()) {
             if (messageDto.getSenderId().equals(userId)) {
-                messageDto.setMine(true);
+                messageDto.markAsMine();
             }
         }
 

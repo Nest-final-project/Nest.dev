@@ -104,35 +104,3 @@ sourceSets {
     }
 }
 
-processResources { dependsOn "copyReactBuildFiles" }
-
-tasks.register("installReact", Exec) {
-    workingDir = file(frontendDir)
-    inputs.dir(frontendDir)
-    group = BasePlugin.BUILD_GROUP
-
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "install"
-    } else {
-        commandLine "npm", "install"
-    }
-}
-
-tasks.register("buildReact", Exec) {
-    dependsOn("installReact")
-    workingDir = file(frontendDir)
-    inputs.dir(frontendDir)
-    group = BasePlugin.BUILD_GROUP
-
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "run-script", "build"
-    } else {
-        commandLine "npm", "run-script", "build"
-    }
-}
-
-tasks.register("copyReactBuildFiles", Copy) {
-    dependsOn("buildReact")
-    from "$frontendDir/build"
-    into "$projectDir/src/main/resources/static"
-}

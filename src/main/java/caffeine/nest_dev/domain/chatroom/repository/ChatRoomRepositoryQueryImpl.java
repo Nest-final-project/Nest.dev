@@ -3,8 +3,8 @@ package caffeine.nest_dev.domain.chatroom.repository;
 import static caffeine.nest_dev.domain.chatroom.entity.QChatRoom.chatRoom;
 import static caffeine.nest_dev.domain.message.entity.QMessage.message;
 
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
-import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -38,7 +38,6 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
                         message.chatRoom.id.eq(chatRoomId),
                         lastMessageId(messageId)
                 )
-                .leftJoin(message.chatRoom, chatRoom)
                 .orderBy(message.createdAt.desc(), message.id.desc())   // 시간은 중복될 수 있음
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -47,9 +46,15 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
     }
 
     @Override
-    public Slice<ChatRoom> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
+    public Slice<ChatRoomResponseDto> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
             Pageable pageable) {
-        List<ChatRoom> results = jpaQueryFactory.selectFrom(chatRoom)
+        List<ChatRoomResponseDto> results = jpaQueryFactory.select(Projections.fields(
+                        ChatRoomResponseDto.class,
+                        chatRoom.id.as("roomId"),
+                        chatRoom.mentor.id.as("mentorId"),
+                        chatRoom.mentee.id.as("menteeId")
+                ))
+                .from(chatRoom)
                 .where(
                         chatRoom.mentor.id.eq(userId).or(chatRoom.mentee.id.eq(userId)),
                         gtUpdateAt(cursorTime, messageId)
