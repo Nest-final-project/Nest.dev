@@ -4,8 +4,8 @@ import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
 import caffeine.nest_dev.common.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,10 +39,11 @@ public class SecurityConfig {
 
     // MENTEE 전용 경로
     private static final String[] POST_METHOD_MENTEE_PATH = {
-            "/api/reservations", "/api/reservations/*/reviews"
+            "/api/reservations", "/api/reservations/*/reviews", "/api/v1/payments/**"
     };
     private static final String[] GET_METHOD_MENTEE_PATH = {
-            "/api/user-coupons", "/api/reservations", "/api/reservations", "/api/reviews"
+            "/api/user-coupons", "/api/reservations", "/api/reservations", "/api/reviews",
+            "/api/v1/payments/*"
     };
     private static final String[] PATCH_METHOD_MENTEE_PATH = {
             "/api/reviews/*"
@@ -66,7 +67,6 @@ public class SecurityConfig {
     private static final String[] DELETE_METHOD_MENTOR_PATH = {
             "/api/profiles/*/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
     };
-
 
 
     @Bean
