@@ -89,6 +89,13 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_SHOW_RESERVATION(HttpStatus.OK, "예약 상세페이지가 조회되었습니다."),
     SUCCESS_CANCEL_RESERVATION(HttpStatus.OK, "예약 취소가 완료되었습니다."),
 
+    // Payment
+    SUCCESS_PAYMENT_PREPARE(HttpStatus.OK, "결제 준비에 성공했습니다."),
+    SUCCESS_PAYMENT_OK(HttpStatus.OK, "결제 승인에 성공했습니다."),
+    SUCCESS_PAYMENT_READ(HttpStatus.OK, "결제 정보 조회에 성공했습니다."),
+    SUCCESS_PAYMENT_LIST_READ(HttpStatus.OK, "결제 내역 목록 조회에 성공했습니다."),
+    SUCCESS_PAYMENT_CANCEL(HttpStatus.OK, "결제 취소에 성공했습니다."),
+
     // socketToken
     SUCCESS_SOCKET_TOKEN_CREATED(HttpStatus.CREATED, "WebSocket 토큰이 발급되었습니다."),
 
@@ -101,9 +108,7 @@ public enum SuccessCode implements BaseCode {
 
     // Answer
     SUCCESS_CREATE_ANSWER(HttpStatus.CREATED, "답변이 등록되었습니다."),
-    SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다.")
-
-    ;
+    SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다.");
 
 
     private final HttpStatus httpStatus;
