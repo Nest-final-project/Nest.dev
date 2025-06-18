@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -92,6 +93,6 @@ public class Payment {
     public void updateOnCancel(String reason) {
         this.status = PaymentStatus.CANCELED;
         this.cancelReason = reason;
-        this.canceledAt = getCanceledAt(); // 취소된 시점 기록
+        this.canceledAt = LocalDateTime.now().toString(); // 취소된 시점 기록
     }
 }

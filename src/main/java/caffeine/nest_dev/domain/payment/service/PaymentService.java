@@ -92,7 +92,7 @@ public class PaymentService {
     public PaymentConfirmResponseDto confirmPayment(PaymentConfirmRequestDto requestDto,
             String userEmail, Long reservationId) {
         // 결제 정보 DB 조회
-        Payment payment = paymentRepository.findByReservationId((reservationId))
+        Payment payment = paymentRepository.findByReservationId(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_ORDER));
 
         // 결제자 확인
