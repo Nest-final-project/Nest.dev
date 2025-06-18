@@ -72,7 +72,7 @@ public class ChatRoomTerminationNotifier {
             notificationService.send(schedule.getReceiver(), "채팅 종료까지 5분 남았습니다.");
 
             // isSent : false -> true, 전송시간 기록
-            schedule.update();
+            schedule.markAsSent();
 
             scheduleRepository.save(schedule);
 

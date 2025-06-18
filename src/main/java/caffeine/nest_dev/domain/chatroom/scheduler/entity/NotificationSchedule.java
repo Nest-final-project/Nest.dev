@@ -29,7 +29,7 @@ public class NotificationSchedule {
     private Long chatRoomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User receiver;
 
     private boolean isSent;
@@ -37,7 +37,7 @@ public class NotificationSchedule {
     private LocalDateTime scheduledAt;
     private LocalDateTime sentAt;   // 실제 전송된 시간
 
-    public void update() {
+    public void markAsSent() {
         this.isSent = true;
         this.sentAt = LocalDateTime.now();
     }

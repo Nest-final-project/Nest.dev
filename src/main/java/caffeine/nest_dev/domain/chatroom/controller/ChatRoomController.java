@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,13 +37,14 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     /**
-     * 채팅방 생성
+     * 채팅방 생성 (테스트/ 장애 복구용)
      *
      * @param requestDto 예약 Id
      * @return
      */
     @PostMapping
-    private ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
             @RequestBody CreateChatRoomRequestDto requestDto
     ) {
         log.info("chatRoom 생성 api 진입");

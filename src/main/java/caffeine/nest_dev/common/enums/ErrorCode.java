@@ -106,7 +106,6 @@ public enum ErrorCode implements BaseCode {
     INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST, "소셜 로그인 타입이 일치하지 않습니다."),
 
 
-
     // ChatRoom
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
     CHATROOM_NOT_CREATED(HttpStatus.BAD_REQUEST, "결제가 완료된 후 채팅방을 생성할 수 있습니다."),
@@ -122,7 +121,7 @@ public enum ErrorCode implements BaseCode {
 
 
     // schedule
-    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방 종료 스케줄이 존재하지 않습니다.");
+    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 작업이 존재하지 않습니다.");
 
 
     private final HttpStatus httpStatus;
