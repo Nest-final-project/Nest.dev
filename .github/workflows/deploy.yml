@@ -65,3 +65,6 @@ jobs:
             docker-compose up --build -d
             
             docker-compose logs --tail=30
+
+
+
