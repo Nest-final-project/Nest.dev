@@ -26,7 +26,7 @@ public class SecurityConfig {
     // 모든 사용자가 접근 가능한 URL 목록 (인증 불필요)
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
-            "/ws-nest/**", "/oauth2/**", "/api/v1/payments/**"
+            "/ws-nest/**", "/oauth2/**"
             // 조회 url 추가
     };
 
@@ -39,10 +39,11 @@ public class SecurityConfig {
 
     // MENTEE 전용 경로
     private static final String[] POST_METHOD_MENTEE_PATH = {
-            "/api/reservations", "/api/reservations/*/reviews"
+            "/api/reservations", "/api/reservations/*/reviews", "/api/v1/payments/**"
     };
     private static final String[] GET_METHOD_MENTEE_PATH = {
-            "/api/user-coupons", "/api/reservations", "/api/reservations", "/api/reviews"
+            "/api/user-coupons", "/api/reservations", "/api/reservations", "/api/reviews",
+            "/api/v1/payments/*"
     };
     private static final String[] PATCH_METHOD_MENTEE_PATH = {
             "/api/reviews/*"
@@ -66,7 +67,6 @@ public class SecurityConfig {
     private static final String[] DELETE_METHOD_MENTOR_PATH = {
             "/api/profiles/*/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
     };
-
 
 
     @Bean
