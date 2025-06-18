@@ -42,7 +42,7 @@ public class SecurityConfig {
             "/api/reservations", "/api/reservations/*/reviews", "/api/v1/payments/**"
     };
     private static final String[] GET_METHOD_MENTEE_PATH = {
-            "/api/user-coupons", "/api/reservations", "/api/reservations", "/api/reviews",
+            "/api/user-coupons", "/api/reservations", "/api/reviews",
             "/api/v1/payments/*"
     };
     private static final String[] PATCH_METHOD_MENTEE_PATH = {
