@@ -32,7 +32,7 @@ public class SecurityConfig {
 
     // 모든 사용자가 접근 가능한 GET METHOD 목록(다른 METHOD에서 URl이 같기 때문에 분리)
     private static final String[] GET_METHOD_AUTH_WHITELIST_PATHS = {
-            "/api/profiles/*/careers/**", "/api/mentors/profiles", "/users/*/profiles/*",
+            "/api/profiles/*/careers/**", "/api/mentors/profiles", "/api/users/*/profiles/*",
             "/api/complaints", "/api/complaints/*", "/api/keywords", "/api/mentors/*/reviews",
             "/api/ticket", "/api/mentor/*/availableConsultations"
     };
