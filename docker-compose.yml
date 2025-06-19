@@ -35,11 +35,16 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
+      - redis
     environment:
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SECRET_KEY: ${SECRET_KEY}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      CLIENT_SECRET: ${CLIENT_SECRET}
     networks:
       - nest-network
 
