@@ -41,7 +41,7 @@ public class AuthenticationChannelInterceptor implements ChannelInterceptor {
                 String jwt = header.substring(7);
 
                 try {
-                    Long userId = jwtUtil.getUserIdFromToken(header);
+                    Long userId = jwtUtil.getUserIdFromToken(jwt);
 
                     // 인증 객체 생성
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
