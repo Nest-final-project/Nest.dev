@@ -29,6 +29,7 @@ public class MessageService {
 
         ChatRoom chatRoom = chatRoomService.findByIdOrElseThrow(chatRoomId);
 
+        // 송신자,수신자 구분
         boolean isMentorSender = chatRoom.getMentor().getId().equals(userId);
         User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
         User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();
