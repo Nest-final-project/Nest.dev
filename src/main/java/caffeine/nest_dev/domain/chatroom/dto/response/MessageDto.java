@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +20,10 @@ public class MessageDto {
     private Long senderId;
     private String content;
     private LocalDateTime sentAt;
+
     private boolean isMine; // 현재 로그인한 사용자인지 여부 -> 프론트에서 ui 정렬 시 편함
+
+    public void markAsMine() {
+        this.isMine = true;
+    }
 }
