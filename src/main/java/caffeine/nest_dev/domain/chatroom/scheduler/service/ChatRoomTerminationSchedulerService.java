@@ -9,6 +9,7 @@ import caffeine.nest_dev.domain.chatroom.scheduler.entity.ChatRoomSchedule;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.ChatRoomScheduleRepository;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -47,7 +48,8 @@ public class ChatRoomTerminationSchedulerService {
         // 예약시간이 지나지 않았다면 작업을 다시 등록함
         for (ChatRoomSchedule roomSchedule : scheduleList) {
             if (roomSchedule.getScheduledTime().isAfter(LocalDateTime.now())) {
-                taskScheduler.schedule(disconnectUsersAndCloseRoom(roomSchedule.getId()),
+                taskScheduler.schedule(
+                        disconnectUsersAndCloseRoom(roomSchedule.getId()),
                         java.sql.Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()));
                 log.info("서버시작 후 실행되지 않은 작업이 등록되었습니다.");
             }
@@ -61,6 +63,7 @@ public class ChatRoomTerminationSchedulerService {
      * @param reservationId 예약 ID
      * @param endTime       예약 종료 시간 (채팅 종료 시간)
      */
+    @Transactional
     public void registerChatRoomCloseSchedule(Long reservationId, LocalDateTime endTime) {
         ChatRoomSchedule closeSchedule = ChatRoomSchedule.builder()
                 .reservationId(reservationId)
@@ -114,7 +117,7 @@ public class ChatRoomTerminationSchedulerService {
             disconnectUser(mentorId);
             disconnectUser(menteeId);
 
-            log.info("종료 예약 완료 : ScheduleId = {}", scheduleId);
+            log.info("종료 작업 완료 : ScheduleId = {}", scheduleId);
             log.info("채팅방 종료 완료 : ChatRoomId = {}, mentor = {}, mentee = {}", chatRoom.getId(), mentorId, menteeId);
         };
     }

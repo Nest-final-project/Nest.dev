@@ -10,7 +10,7 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     command:
-      [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
+        [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
     ports:
       - "3307:3306"
     volumes:
@@ -35,11 +35,16 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
+      - redis
     environment:
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SECRET_KEY: ${SECRET_KEY}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      CLIENT_SECRET: ${CLIENT_SECRET}
     networks:
       - nest-network
 
@@ -48,3 +53,4 @@ volumes:
 
 networks:
   nest-network:
+
