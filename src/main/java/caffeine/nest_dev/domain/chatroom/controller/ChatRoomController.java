@@ -81,7 +81,7 @@ public class ChatRoomController {
      * @param pageable      페이지객체
      * @return 채팅 내역
      */
-    @GetMapping("/messages/{chatRoomId}")
+    @GetMapping("{chatRoomId}/messages")
     public ResponseEntity<SliceResponse<MessageDto>> findAllMessages(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long chatRoomId,

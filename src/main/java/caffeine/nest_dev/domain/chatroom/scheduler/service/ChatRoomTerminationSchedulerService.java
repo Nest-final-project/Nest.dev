@@ -117,7 +117,7 @@ public class ChatRoomTerminationSchedulerService {
             disconnectUser(mentorId);
             disconnectUser(menteeId);
 
-            log.info("종료 예약 완료 : ScheduleId = {}", scheduleId);
+            log.info("종료 작업 완료 : ScheduleId = {}", scheduleId);
             log.info("채팅방 종료 완료 : ChatRoomId = {}, mentor = {}, mentee = {}", chatRoom.getId(), mentorId, menteeId);
         };
     }

@@ -1,5 +1,7 @@
 package caffeine.nest_dev.domain.chatroom.scheduler.service;
 
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.scheduler.entity.NotificationSchedule;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.NotificationScheduleRepository;
 import caffeine.nest_dev.domain.notification.service.NotificationService;
@@ -34,8 +36,7 @@ public class ChatRoomTerminationNotifier {
         for (NotificationSchedule schedule : findScheduleList) {
 
             if (schedule.getScheduledAt().isAfter(LocalDateTime.now())) {
-                taskScheduler.schedule(createNotification(schedule.getId()),
-                        Date.from(schedule.getScheduledAt().atZone(ZoneId.systemDefault()).toInstant()));
+                startSchedule(schedule);
                 log.info("서버시작 후 실행되지 않은 작업이 등록되었습니다.");
             }
         }
@@ -51,17 +52,20 @@ public class ChatRoomTerminationNotifier {
 
         NotificationSchedule savedSchedule = scheduleRepository.save(schedule);
 
-        taskScheduler.schedule(
-                createNotification(savedSchedule.getId()),
-                Date.from(savedSchedule.getScheduledAt().atZone(ZoneId.systemDefault()).toInstant())
-        );
+        startSchedule(savedSchedule);
     }
 
+    private void startSchedule(NotificationSchedule schedule) {
+        taskScheduler.schedule(
+                createNotification(schedule.getId()),
+                Date.from(schedule.getScheduledAt().atZone(ZoneId.systemDefault()).toInstant())
+        );
+    }
 
     private Runnable createNotification(Long scheduleId) {
         return () -> {
             NotificationSchedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                    () -> new IllegalArgumentException("저장된 작업이 없습니다.")
+                    () -> new BaseException(ErrorCode.NOTIFICATION_SCHEDULE_NOT_FOUND)
             );
 
             if (schedule.isSent()) {

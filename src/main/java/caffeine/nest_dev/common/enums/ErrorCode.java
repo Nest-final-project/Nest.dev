@@ -121,7 +121,11 @@ public enum ErrorCode implements BaseCode {
 
 
     // schedule
-    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 작업이 존재하지 않습니다.");
+    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 작업이 존재하지 않습니다."),
+    NOTIFICATION_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 알림 작업이 존재하지 않습니다.")
+
+    //emitter
+    ;
 
 
     private final HttpStatus httpStatus;

@@ -7,6 +7,7 @@ import caffeine.nest_dev.domain.notification.repository.NotificationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,7 @@ public class NotificationService {
         return Notification.builder()
                 .receiver(receiver)
                 .content(content)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 

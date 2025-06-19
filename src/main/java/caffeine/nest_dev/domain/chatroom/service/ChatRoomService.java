@@ -60,12 +60,7 @@ public class ChatRoomService {
         log.info("mentorID = {}", mentor.getId());
         log.info("menteeID = {}", mentee.getId());
 
-        ChatRoom chatRoom = ChatRoom.builder()
-                .mentor(mentor)
-                .mentee(mentee)
-                .reservation(reservation)
-                .isClosed(false)
-                .build();
+        ChatRoom chatRoom = requestDto.toEntity(mentor, mentee, reservation);
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
@@ -116,5 +111,9 @@ public class ChatRoomService {
         return messageDtoList;
     }
 
+    public ChatRoom findByIdOrElseThrow(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
+    }
 
 }
