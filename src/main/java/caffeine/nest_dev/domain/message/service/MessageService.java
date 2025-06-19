@@ -1,9 +1,7 @@
 package caffeine.nest_dev.domain.message.service;
 
-import caffeine.nest_dev.common.enums.ErrorCode;
-import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
-import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
+import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
 import caffeine.nest_dev.domain.message.dto.request.MessageRequestDto;
 import caffeine.nest_dev.domain.message.dto.response.MessageResponseDto;
 import caffeine.nest_dev.domain.message.entity.Message;
@@ -20,19 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class MessageService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
     private final UserService userService;
+    private final ChatRoomService chatRoomService;
 
     @Transactional
     public void sendMessage(Long chatRoomId, Long userId, MessageRequestDto requestDto) {
 
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
-        );
+        ChatRoom chatRoom = chatRoomService.findByIdOrElseThrow(chatRoomId);
 
+        // 송신자,수신자 구분
         boolean isMentorSender = chatRoom.getMentor().getId().equals(userId);
         User sender = isMentorSender ? chatRoom.getMentor() : chatRoom.getMentee();
         User receiver = isMentorSender ? chatRoom.getMentee() : chatRoom.getMentor();

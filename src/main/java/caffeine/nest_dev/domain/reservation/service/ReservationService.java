@@ -42,10 +42,9 @@ public class ReservationService {
                 requestDto.getReservationEndAt(), ReservationStatus.CANCELED
         );
 
-        if(mentor_exists){
+        if (mentor_exists) {
             throw new BaseException(ErrorCode.DUPLICATED_RESERVATION);
         }
-
 
         // 멘티 중복 체크
         boolean mentee_exists = reservationRepository.existsByMenteeTime(
