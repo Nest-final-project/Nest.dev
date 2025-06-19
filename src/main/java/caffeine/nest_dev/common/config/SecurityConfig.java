@@ -4,8 +4,8 @@ import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
 import caffeine.nest_dev.common.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,15 +26,15 @@ public class SecurityConfig {
     // 모든 사용자가 접근 가능한 URL 목록 (인증 불필요)
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
-            "/ws-nest/**", "/oauth2/**"
-            // 조회 url 추가
+            "/ws-nest/**", "/oauth2/**", "/api/mentors/recommended-profiles"
+
     };
 
     // 모든 사용자가 접근 가능한 GET METHOD 목록(다른 METHOD에서 URl이 같기 때문에 분리)
     private static final String[] GET_METHOD_AUTH_WHITELIST_PATHS = {
             "/api/profiles/*/careers/**", "/api/mentors/profiles", "/api/users/*/profiles/*",
             "/api/complaints", "/api/complaints/*", "/api/keywords", "/api/mentors/*/reviews",
-            "/api/ticket", "/api/mentor/*/availableConsultations"
+            "/api/ticket", "/api/mentor/*/availableConsultations", "/api/categories"
     };
 
     // MENTEE 전용 경로
