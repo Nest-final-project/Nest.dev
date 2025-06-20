@@ -55,6 +55,7 @@ public class ProfileService {
 
     }
 
+    @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long userId, Long profileId) {
 
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
@@ -66,6 +67,7 @@ public class ProfileService {
         if (!profile.getUser().getId().equals(userId)) {
             throw new BaseException(ErrorCode.ACCESS_DENIED);
         }
+
         return ProfileResponseDto.from(profile, user);
     }
 
