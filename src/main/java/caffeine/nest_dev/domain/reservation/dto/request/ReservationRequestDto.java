@@ -14,7 +14,6 @@ import lombok.Getter;
 public class ReservationRequestDto {
 
     private Long mentor;
-    private Long mentee;
     private Long ticket;
     private ReservationStatus reservationStatus;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

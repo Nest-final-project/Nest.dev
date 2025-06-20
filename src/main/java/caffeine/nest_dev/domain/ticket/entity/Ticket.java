@@ -34,9 +34,6 @@ public class Ticket extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "ticket")
-    private List<Payment> payments = new ArrayList<>();
-
     public void modifyTicket(TicketRequestDto requestDto) {
         if (requestDto.getName() != null) {
             this.name = requestDto.getName();
