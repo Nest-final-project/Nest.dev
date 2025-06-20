@@ -12,11 +12,11 @@ import caffeine.nest_dev.domain.profile.entity.QProfile;
 import caffeine.nest_dev.domain.user.entity.QUser;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -104,12 +104,25 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                 .fetch();
 
         // 프로필에 관련된 keyword 조회
-        Map<Long, List<Keyword>> keywordMap = queryFactory.from(profileKeyword)
+        List<Tuple> profileKeywordsRaw = queryFactory
+                .select(
+                        profileKeyword.profile.id,
+                        keywordEntity // Keyword 엔티티 자체를 가져옵니다.
+                )
+                .from(profileKeyword)
                 .join(profileKeyword.keyword, keywordEntity)
                 .where(profileKeyword.profile.id.in(profileIds))
-                .transform(
-                        GroupBy.groupBy(profileKeyword.profile.id).as(GroupBy.list(keywordEntity))
-                );
+                .fetch();
+
+        // 2. 가져온 결과를 Map<Long, List<Keyword>> 형태로 수동 그룹화합니다.
+        Map<Long, List<Keyword>> keywordMap = profileKeywordsRaw.stream()
+                .collect(Collectors.groupingBy(
+                        tuple -> tuple.get(profileKeyword.profile.id), // Map의 키: profileId
+                        Collectors.mapping(
+                                tuple -> tuple.get(keywordEntity), // Map의 값: Keyword 엔티티
+                                Collectors.toList() // 값을 List로 수집
+                        )
+                ));
 
         // 다양한 정보를 dto에 담기
         return mainProfiles.stream()

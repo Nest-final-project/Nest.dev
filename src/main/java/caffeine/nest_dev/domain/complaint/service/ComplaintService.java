@@ -79,7 +79,6 @@ public class ComplaintService {
                 ComplaintType.INQUIRY_CHAT, // 채팅 관련 문의
                 ComplaintType.INQUIRY_PAY, // 결제 관련 문의
                 ComplaintType.INQUIRY_RESERVATION, // 예약 관련 문의
-                ComplaintType.INQUIRY_COUPON, // 쿠폰 관련 문의
                 ComplaintType.INQUIRY_TICKET, // 이용권 관련 문의
                 ComplaintType.INQUIRY_PROFILE // 프로필 관련 문의
         );
