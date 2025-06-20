@@ -82,7 +82,7 @@ public class NotificationService {
                 .build();
     }
 
-    // 클라이언트에게 데이터 전송
+    // 채팅 종료 알림을 클라이언트에게 전송
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()
