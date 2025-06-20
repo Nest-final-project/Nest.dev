@@ -10,16 +10,17 @@ import caffeine.nest_dev.domain.keyword.entity.ProfileKeyword;
 import caffeine.nest_dev.domain.keyword.repository.KeywordRepository;
 import caffeine.nest_dev.domain.profile.dto.request.ProfileRequestDto;
 import caffeine.nest_dev.domain.profile.dto.response.ProfileResponseDto;
+import caffeine.nest_dev.domain.profile.dto.response.RecommendedProfileResponseDto;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -93,6 +94,7 @@ public class ProfileService {
         profile.getProfileKeywords().addAll(profileKeywords);
     }
 
+    @Transactional(readOnly = true)
     public List<ProfileResponseDto> searchMentorProfilesByKeyword(String keyword) {
         List<Profile> profiles = profileRepository.searchMentorProfilesByKeyword(keyword);
 
@@ -114,5 +116,10 @@ public class ProfileService {
                 profile -> ProfileResponseDto.from(profile, profile.getUser()));
 
         return PagingResponse.from(map);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RecommendedProfileResponseDto> getRecommendedProfiles(Long categoryId) {
+        return profileRepository.searchRecommendedMentorProfiles(categoryId);
     }
 }
