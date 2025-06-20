@@ -54,11 +54,6 @@ public class UserService {
             throw new BaseException(ErrorCode.EMPTY_UPDATE_REQUEST);
         }
 
-        // 이메일 중복 검증
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
-        }
-
         // 유저 조회
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
