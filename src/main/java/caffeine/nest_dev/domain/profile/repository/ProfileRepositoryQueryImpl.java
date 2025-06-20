@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.profile.repository;
 import caffeine.nest_dev.domain.career.entity.QCareer;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.category.entity.QCategory;
+import caffeine.nest_dev.domain.keyword.dto.response.KeywordResponseDto;
 import caffeine.nest_dev.domain.keyword.entity.Keyword;
 import caffeine.nest_dev.domain.keyword.entity.QKeyword;
 import caffeine.nest_dev.domain.keyword.entity.QProfileKeyword;
@@ -131,11 +132,23 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                     String userName = tuple.get(user.name);
                     String profileTitle = tuple.get(profile.title);
                     String categoryName = tuple.get(category.name);
-                    List<Keyword> keywords = keywordMap.getOrDefault(profileId,
-                            Collections.emptyList());
-                    return new RecommendedProfileResponseDto(profileId, userName, profileTitle,
-                            categoryName, keywords);
-                }).toList();
+                    List<Keyword> keywords = keywordMap.getOrDefault(profileId, Collections.emptyList());
+
+                    // Keyword -> KeywordResponseDto 변환
+                    List<KeywordResponseDto> keywordDtos = keywords.stream()
+                            .map(k -> new KeywordResponseDto(k.getId(), k.getName()))
+                            .toList();
+
+                    return new RecommendedProfileResponseDto(
+                            profileId,
+                            userName,
+                            profileTitle,
+                            categoryName,
+                            keywordDtos  // 수정된 부분
+                    );
+                })
+                .toList();
+
     }
 
 
