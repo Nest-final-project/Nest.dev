@@ -4,6 +4,7 @@ import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,9 @@ public class UserResponseDto {
     private Integer totalPrice;
     private String bank;
     private String accountNumber;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     public static UserResponseDto of(User user) {

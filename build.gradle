@@ -70,6 +70,8 @@ dependencies {
     //Redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.1'
 
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
     // test
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'

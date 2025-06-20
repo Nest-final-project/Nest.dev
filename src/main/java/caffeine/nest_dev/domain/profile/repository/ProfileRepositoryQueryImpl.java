@@ -1,17 +1,27 @@
 package caffeine.nest_dev.domain.profile.repository;
 
+import caffeine.nest_dev.domain.career.entity.QCareer;
+import caffeine.nest_dev.domain.career.enums.CareerStatus;
+import caffeine.nest_dev.domain.category.entity.QCategory;
+import caffeine.nest_dev.domain.keyword.entity.Keyword;
 import caffeine.nest_dev.domain.keyword.entity.QKeyword;
 import caffeine.nest_dev.domain.keyword.entity.QProfileKeyword;
+import caffeine.nest_dev.domain.profile.dto.response.RecommendedProfileResponseDto;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.entity.QProfile;
 import caffeine.nest_dev.domain.user.entity.QUser;
 import caffeine.nest_dev.domain.user.enums.UserRole;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
+
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -37,6 +47,83 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                 .fetch();
     }
 
+    @Override
+    public List<RecommendedProfileResponseDto> searchRecommendedMentorProfiles(Long categoryId) {
+        QProfile profile = QProfile.profile;
+        QUser user = QUser.user;
+        QCategory category = QCategory.category;
+        QCareer career = QCareer.career;
+        QProfileKeyword profileKeyword = QProfileKeyword.profileKeyword;
+        QKeyword keywordEntity = QKeyword.keyword;
+
+        // 서로 다른 유저의 프로필 선택
+        List<Tuple> userProfiles = queryFactory
+                .select(
+                        profile.id.max(),
+                        profile.createdAt.max()
+
+                ) // 한 유저의 여러 프로필 중 최신
+                .from(career)
+                .join(career.profile, profile)
+                .join(profile.user, user)
+                .where(
+                        career.careerStatus.eq(CareerStatus.AUTHORIZED), // careerStatus 가 승인된 것만
+                        profile.category.id.eq(categoryId) // 카테고리에 해당하는 profile 조회 조건
+                )
+                .groupBy(user.id) // 한 유저의 프로필만 나오지 않도록
+                .orderBy(profile.createdAt.max().desc()) // 가장 최신 생성일 기준
+                .limit(5)
+                .fetch();
+
+        // 조회된 프로필이 없으면 빈 리스트 즉시 반환
+        if (userProfiles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 프로필 id 만 추출
+        List<Long> profileIds = userProfiles.stream()
+                .map(tuple -> tuple.get(0, Long.class))
+                .toList();
+
+        // 프로필 ID 에 해당하는 데이터 가져오기
+        List<Tuple> mainProfiles = queryFactory
+                .selectDistinct(
+                        profile.id,
+                        user.name,
+                        profile.title,
+                        category.name,
+                        profile.createdAt
+                )
+                .from(profile)
+                .join(profile.user, user)
+                .join(profile.category, category)
+                .where(
+                        profile.id.in(profileIds)  // 위에서 지정한 프로필 3개만 가져오기
+                )
+                .orderBy(profile.createdAt.desc())
+                .fetch();
+
+        // 프로필에 관련된 keyword 조회
+        Map<Long, List<Keyword>> keywordMap = queryFactory.from(profileKeyword)
+                .join(profileKeyword.keyword, keywordEntity)
+                .where(profileKeyword.profile.id.in(profileIds))
+                .transform(
+                        GroupBy.groupBy(profileKeyword.profile.id).as(GroupBy.list(keywordEntity))
+                );
+
+        // 다양한 정보를 dto에 담기
+        return mainProfiles.stream()
+                .map(tuple -> {
+                    Long profileId = tuple.get(profile.id);
+                    String userName = tuple.get(user.name);
+                    String profileTitle = tuple.get(profile.title);
+                    String categoryName = tuple.get(category.name);
+                    List<Keyword> keywords = keywordMap.getOrDefault(profileId,
+                            Collections.emptyList());
+                    return new RecommendedProfileResponseDto(profileId, userName, profileTitle,
+                            categoryName, keywords);
+                }).toList();
+    }
 
 
 }

@@ -5,6 +5,7 @@ import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.profile.dto.request.ProfileRequestDto;
 import caffeine.nest_dev.domain.profile.dto.response.ProfileResponseDto;
+import caffeine.nest_dev.domain.profile.dto.response.RecommendedProfileResponseDto;
 import caffeine.nest_dev.domain.profile.service.ProfileService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import java.util.List;
@@ -26,11 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ProfileController {
+
     private final ProfileService profileService;
 
     /**
      * 프로필 생성
-     * */
+     */
     @PostMapping("/profiles")
     public ResponseEntity<CommonResponse<ProfileResponseDto>> createProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -43,20 +45,21 @@ public class ProfileController {
 
     /**
      * 내 프로필 전체조회
-     * */
+     */
     @GetMapping("/profiles/me")
     public ResponseEntity<CommonResponse<PagingResponse<ProfileResponseDto>>> getMyProfiles(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             Pageable pageable
     ) {
-        PagingResponse<ProfileResponseDto> myProfiles = profileService.getMyProfiles(userDetails.getId(), pageable);
+        PagingResponse<ProfileResponseDto> myProfiles = profileService.getMyProfiles(
+                userDetails.getId(), pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_PROFILE_READ, myProfiles));
     }
 
     /**
      * 프로필 단건 조회
-     * */
+     */
     @GetMapping("/users/{userId}/profiles/{profileId}")
     public ResponseEntity<CommonResponse<ProfileResponseDto>> getProfile(
             @PathVariable Long userId,
@@ -70,7 +73,7 @@ public class ProfileController {
 
     /**
      * 프로필 키워드 검색
-     * */
+     */
     @GetMapping("/mentors/profiles")
     public ResponseEntity<CommonResponse<List<ProfileResponseDto>>> getMentorProfiles(
             @RequestParam(required = false) String keyword
@@ -83,8 +86,22 @@ public class ProfileController {
     }
 
     /**
+     * 추천 멘토 조회
+     */
+    @GetMapping("/mentors/recommended-profiles")
+    public ResponseEntity<CommonResponse<List<RecommendedProfileResponseDto>>> getRecommendedProfiles(
+            @RequestParam Long categoryId
+    ) {
+        List<RecommendedProfileResponseDto> responseDto = profileService.getRecommendedProfiles(
+                categoryId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_RECOMMENDED_PROFILE_READ, responseDto));
+    }
+
+    /**
      * 프로필 수정
-     * */
+     */
     @PatchMapping("/profiles/{profileId}")
     public ResponseEntity<CommonResponse<Void>> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
