@@ -48,7 +48,7 @@ public class ReservationService {
 
         // 멘티 중복 체크
         boolean mentee_exists = reservationRepository.existsByMenteeTime(
-                requestDto.getMentee(), requestDto.getReservationStartAt(),
+                userId, requestDto.getReservationStartAt(),
                 requestDto.getReservationEndAt(), ReservationStatus.CANCELED);
 
         if (mentee_exists) {

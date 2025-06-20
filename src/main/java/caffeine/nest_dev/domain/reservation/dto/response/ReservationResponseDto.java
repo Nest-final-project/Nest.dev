@@ -16,6 +16,7 @@ public class ReservationResponseDto {
     private Long id;
     private Long mentor;
     private Long mentee;
+    private Long ticket;
     private ReservationStatus reservationStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reservationStartAt;
@@ -27,6 +28,7 @@ public class ReservationResponseDto {
                 .id(reservation.getId())
                 .mentor(reservation.getMentor().getId())
                 .mentee(reservation.getMentee().getId())
+                .ticket(reservation.getTicket().getId())
                 .reservationStatus(reservation.getReservationStatus())
                 .reservationStartAt(reservation.getReservationStartAt())
                 .reservationEndAt(reservation.getReservationEndAt())
