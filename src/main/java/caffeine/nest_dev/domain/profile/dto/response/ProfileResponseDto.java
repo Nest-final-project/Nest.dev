@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProfileResponseDto {
     private Long id;
+    private Long userId;
     private String role;
     private String title;
     private String introduction;
@@ -25,10 +26,12 @@ public class ProfileResponseDto {
     private String accountNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String name;
 
     public static ProfileResponseDto from(Profile profile, User user) {
         return ProfileResponseDto.builder()
                 .id(profile.getId())
+                .userId(user.getId())
                 .role(user.getUserRole().name())
                 .title(profile.getTitle())
                 .introduction(profile.getIntroduction())
@@ -39,6 +42,7 @@ public class ProfileResponseDto {
                 .accountNumber(profile.getAccountNumber())
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
+                .name(user.getName())
                 .build();
     }
 }
