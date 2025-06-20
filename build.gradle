@@ -70,6 +70,8 @@ dependencies {
     //Redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.1'
 
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
 
 }
 
@@ -93,3 +95,14 @@ clean {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+def frontendDir = "$projectDir/src/main/frontend"
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["$projectDir/src/main/resources"]
+        }
+    }
+}
+

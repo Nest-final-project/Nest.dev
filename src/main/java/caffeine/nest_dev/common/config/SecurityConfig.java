@@ -26,8 +26,8 @@ public class SecurityConfig {
     // 모든 사용자가 접근 가능한 URL 목록 (인증 불필요)
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
-            "/ws-nest/**", "/oauth2/**"
-            // 조회 url 추가
+            "/ws-nest/**", "/oauth2/**", "/api/mentors/recommended-profiles"
+
     };
 
     // 모든 사용자가 접근 가능한 GET METHOD 목록(다른 METHOD에서 URl이 같기 때문에 분리)
@@ -49,7 +49,7 @@ public class SecurityConfig {
             "/api/reviews/*"
     };
     private static final String[] DELETE_METHOD_MENTEE_PATH = {
-            "/api/reviews/*", "/api/reservations/*"
+            "/api/reviews/*"
     };
 
     // MENTOR 전용 경로
@@ -72,6 +72,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(authorize -> {
