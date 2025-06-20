@@ -131,9 +131,6 @@ public class User extends BaseEntity {
     // -------------- 수정 메서드 --------------
 
     public void updateUser(UserRequestDto dto, User user) {
-        if (dto.getEmail() != null) {
-            this.email = dto.getEmail();
-        }
 
         if (dto.getNickName() != null) {
             this.nickName = dto.getNickName();
