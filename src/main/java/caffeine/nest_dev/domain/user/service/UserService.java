@@ -132,12 +132,14 @@ public class UserService {
 
         // refresh 토큰 유효성 검사
         log.info("토큰 유효성 검사 시작");
-        if (jwtUtil.validateToken(dto.getRefreshToken())) {
+        if (!jwtUtil.validateToken(dto.getRefreshToken())) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
+        String resolvedAccessToken = jwtUtil.resolveToken(accessToken);
+
         // access 토큰에서 가져온 userId 와 refresh 토큰에서 가져온 userId 가 일치하는지 검증
-        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(accessToken);
+        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(resolvedAccessToken);
         Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(dto.getRefreshToken());
         if (!userIdFromAccessToken.equals(userIdFromRefreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
@@ -158,7 +160,7 @@ public class UserService {
         }
 
         // access 토큰 redis에 블랙리스트 추가
-        jwtUtil.addToBlacklistAccessToken(accessToken);
+        jwtUtil.addToBlacklistAccessToken(resolvedAccessToken);
         log.info("access 토큰을 블랙리스트에 추가");
 
         // refresh 토큰 redis에 블랙리스트 추가
