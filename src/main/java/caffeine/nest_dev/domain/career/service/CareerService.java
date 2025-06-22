@@ -72,7 +72,10 @@ public class CareerService {
         // 경력 조회
         Career career = findByIdAndProfileId(careerId, profileId);
 
-        return FindCareerResponseDto.of(career);
+        List<CertificateResponseDto> list = career.getCertificates().stream()
+                .map(CertificateResponseDto::from).toList();
+
+        return FindCareerResponseDto.of(career, list);
     }
 
     // 경력 목록 조회
