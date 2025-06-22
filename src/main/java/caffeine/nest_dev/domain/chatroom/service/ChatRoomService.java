@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.chatroom.service;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
@@ -73,13 +74,13 @@ public class ChatRoomService {
 
     // 채팅방 목록 조회
     @Transactional(readOnly = true)
-    public Slice<ChatRoomResponseDto> findAllChatRooms(Long userId,
+    public Slice<ChatRoomReadDto> findAllChatRooms(Long userId,
             Long lastMessageId,
             LocalDateTime cursorTime,
             Pageable pageable
     ) {
 
-        Slice<ChatRoomResponseDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
+        Slice<ChatRoomReadDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
                 lastMessageId,
                 cursorTime,
                 pageable);

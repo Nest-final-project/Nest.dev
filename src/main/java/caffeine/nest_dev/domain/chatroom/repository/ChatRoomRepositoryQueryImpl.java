@@ -3,7 +3,7 @@ package caffeine.nest_dev.domain.chatroom.repository;
 import static caffeine.nest_dev.domain.chatroom.entity.QChatRoom.chatRoom;
 import static caffeine.nest_dev.domain.message.entity.QMessage.message;
 
-import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -46,13 +46,15 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
     }
 
     @Override
-    public Slice<ChatRoomResponseDto> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
+    public Slice<ChatRoomReadDto> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
             Pageable pageable) {
-        List<ChatRoomResponseDto> results = jpaQueryFactory.select(Projections.fields(
-                        ChatRoomResponseDto.class,
+        List<ChatRoomReadDto> results = jpaQueryFactory.select(Projections.fields(
+                        ChatRoomReadDto.class,
                         chatRoom.id.as("roomId"),
                         chatRoom.mentor.id.as("mentorId"),
-                        chatRoom.mentee.id.as("menteeId")
+                        chatRoom.mentor.name.as("mentorName"),
+                        chatRoom.mentee.id.as("menteeId"),
+                        chatRoom.mentee.name.as("menteeName")
                 ))
                 .from(chatRoom)
                 .where(
