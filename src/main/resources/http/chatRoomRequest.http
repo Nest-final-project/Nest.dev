@@ -17,6 +17,6 @@ Authorization: Bearer {{authorizationToken}}
 }
 
 ### GET - 채팅방 목록 조회
-GET {{root-path}}/api/chatrooms
+GET {{root-path}}/api/chat_rooms
 Content-Type: application/json
 Authorization: Bearer {{authorizationToken}}
