@@ -45,7 +45,7 @@ public class AuthenticationChannelInterceptor implements ChannelInterceptor {
 
                     // 인증 객체 생성
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userId, null, List.of());
+                            userId.toString(), null, List.of());
 
                     // session에 인증 정보 저장
                     accessor.setUser(authentication);
