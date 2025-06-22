@@ -49,12 +49,15 @@ public class AuthenticationChannelInterceptor implements ChannelInterceptor {
 
                     // session에 인증 정보 저장
                     accessor.setUser(authentication);
+                    // session에 userId 저장
+                    accessor.getSessionAttributes().put("userId", userId.toString());
 
                     log.info("WebSocket CONNECT 성공 : User ID = {}", userId);
                 } catch (Exception e) {
                     log.error("WebSocket JWT 인증 실패 : {}", e.getMessage());
                     throw new BadCredentialsException("JWT 인증에 실패했습니다.");
                 }
+
             } else {
                 throw new BadCredentialsException("JWT 토큰이 존재하지 않습니다.");
             }
