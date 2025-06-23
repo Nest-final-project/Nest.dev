@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.payment.service;
 
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
@@ -11,6 +12,7 @@ import caffeine.nest_dev.domain.payment.dto.request.PaymentPrepareRequestDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentConfirmResponseDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentDetailsResponseDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentPrepareResponseDto;
+import caffeine.nest_dev.domain.payment.dto.response.PaymentsResponseDto;
 import caffeine.nest_dev.domain.payment.dto.response.TossApproveResponse;
 import caffeine.nest_dev.domain.payment.dto.response.TossCancelResponse;
 import caffeine.nest_dev.domain.payment.dto.response.TossPaymentInquiryResponse;
@@ -23,6 +25,7 @@ import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.ticket.repository.TicketRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -32,7 +35,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -126,6 +130,11 @@ public class PaymentService {
             }
         }
 
+        // 쿠폰Id 로 쿠폰 조회 (null 이 아닐 시 if () 문 타도록)
+        // 쿠폰과 로그인한 유저가 일치하는지 검증
+        // 쿠폰이 사용되었는지 검증
+        // amount - userCoupon.getCoupon.getDiscountAmount() -> 최종 금액
+
         // 결제 DB 생성 및 저장
         Payment payment = Payment.builder().reservation(reservation).amount(finalAmount)
                 .status(PaymentStatus.READY) // 결제 대기 상태로 생성
@@ -180,6 +189,9 @@ public class PaymentService {
                 }
                 userCoupon.markAsUsed();
             }
+
+            // 쿠폰 조회 (dto 에서 couponId 가져오기)
+            // 쿠폰 상태 업데이트
 
             // 응답 DTO 변환 후 반환
             return PaymentConfirmResponseDto.of(payment);
@@ -326,5 +338,33 @@ public class PaymentService {
                                     response.statusCode(), errorBody);
                             return Mono.error(new BaseException(ErrorCode.TOSS_CANCEL_API_FAILED));
                         })).bodyToMono(TossCancelResponse.class); // 응답 DTO 변환
+    }
+
+    @Transactional(readOnly = true)
+    public PagingResponse<PaymentsResponseDto> getPayments(
+            UserDetailsImpl userDetails,
+            Pageable pageable
+    ) {
+        Long payerId = userDetails.getId();
+
+        Page<Payment> paymentsPage = paymentRepository.findAllByPayerIdWithDetails(payerId, pageable);
+
+        Page<PaymentsResponseDto> dtoPage = paymentsPage.map(payment -> {
+            String mentorName = "Unknown Mentor"; // 기본값
+            String ticketName = "Unknown Ticket"; // 기본값
+
+            // NullPointerException 방지를 위한 안전한 접근
+            if (payment.getReservation() != null && payment.getReservation().getMentor() != null) {
+                mentorName = payment.getReservation().getMentor().getName(); // Assuming User entity has getName()
+            }
+            if (payment.getTicket() != null) {
+                ticketName = payment.getTicket().getName(); // Assuming Ticket entity has getName()
+            }
+
+            // 수정된 DTO의 of 메서드 호출
+            return PaymentsResponseDto.of(payment, mentorName, ticketName);
+        });
+
+        return PagingResponse.from(dtoPage);
     }
 }

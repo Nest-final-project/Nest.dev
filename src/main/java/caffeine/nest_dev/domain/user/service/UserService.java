@@ -10,6 +10,7 @@ import caffeine.nest_dev.domain.auth.repository.TokenRepository;
 import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
+import caffeine.nest_dev.domain.user.dto.response.UserInfoResponseDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.SocialType;
@@ -44,6 +45,13 @@ public class UserService {
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         return UserResponseDto.of(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getUserById(Long userId) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+
+        return UserInfoResponseDto.of(user.getId(), user.getName(), user.getUserRole());
     }
 
     @Transactional
@@ -132,12 +140,14 @@ public class UserService {
 
         // refresh 토큰 유효성 검사
         log.info("토큰 유효성 검사 시작");
-        if (jwtUtil.validateToken(dto.getRefreshToken())) {
+        if (!jwtUtil.validateToken(dto.getRefreshToken())) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
+        String resolvedAccessToken = jwtUtil.resolveToken(accessToken);
+
         // access 토큰에서 가져온 userId 와 refresh 토큰에서 가져온 userId 가 일치하는지 검증
-        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(accessToken);
+        Long userIdFromAccessToken = jwtUtil.getUserIdFromToken(resolvedAccessToken);
         Long userIdFromRefreshToken = jwtUtil.getUserIdFromToken(dto.getRefreshToken());
         if (!userIdFromAccessToken.equals(userIdFromRefreshToken)) {
             throw new BaseException(ErrorCode.TOKEN_USER_MISMATCH);
@@ -158,7 +168,7 @@ public class UserService {
         }
 
         // access 토큰 redis에 블랙리스트 추가
-        jwtUtil.addToBlacklistAccessToken(accessToken);
+        jwtUtil.addToBlacklistAccessToken(resolvedAccessToken);
         log.info("access 토큰을 블랙리스트에 추가");
 
         // refresh 토큰 redis에 블랙리스트 추가

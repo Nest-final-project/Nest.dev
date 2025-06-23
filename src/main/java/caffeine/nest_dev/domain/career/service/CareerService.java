@@ -14,6 +14,7 @@ import caffeine.nest_dev.domain.career.repository.CareerRepository;
 import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -118,5 +119,26 @@ public class CareerService {
     public Career findByIdAndProfileId(Long careerId, Long profileId) {
         return careerRepository.findByIdAndProfileId(careerId, profileId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
+    }
+
+    @Transactional(readOnly = true)
+    public PagingResponse<CareersResponseDto> getCareers(Pageable pageable, UserDetailsImpl userDetails) {
+
+        List<Profile> profiles = profileRepository.findByUserIdAndIsDeletedFalse(
+                userDetails.getId());
+
+        if (profiles.isEmpty()) {
+            return PagingResponse.from(Page.empty());
+        }
+
+        // 프로필 id 추출
+        List<Long> profileIds = profiles.stream().map(Profile::getId).toList();
+
+        // 각 프로필에 해당되는 경력 목록 조회
+        Page<Career> all = careerRepository.findAllByProfileIdsIn(profileIds, pageable);
+
+        Page<CareersResponseDto> map = all.map(CareersResponseDto::of);
+
+        return PagingResponse.from(map);
     }
 }
