@@ -11,6 +11,7 @@ import lombok.Getter;
 public class RecommendedProfileResponseDto {
 
     private Long profileId;
+    private Long userId;
     private String userName;
     private String profileTitle;
     private String categoryName;
