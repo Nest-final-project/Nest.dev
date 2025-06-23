@@ -90,7 +90,7 @@ public class ChatRoomController {
             @PageableDefault(size = 10) Pageable pageable
     ) {
         Long userId = userDetails.getId();
-        Slice<MessageDto> messageList = chatRoomService.findAllMessage(chatRoomId, userId, lastMessageId, pageable);
+        Slice<MessageDto> messageList = chatRoomService.findAllMessage(userId, chatRoomId, lastMessageId, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(messageList));
     }
 }
