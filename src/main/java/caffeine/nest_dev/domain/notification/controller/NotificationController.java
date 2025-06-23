@@ -5,7 +5,6 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +22,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/sse")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", 
-             allowedHeaders = {"Authorization", "Last-Event-Id", "Accept", "Cache-Control"})
 public class NotificationController {
 
     private final NotificationService notificationService;
