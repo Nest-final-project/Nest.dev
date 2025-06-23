@@ -10,7 +10,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,12 @@ public class TicketService {
         List<TicketResponseDto> list = ticketRepository.findAll().stream()
                 .map(TicketResponseDto::of).toList();
         return list;
+    }
+
+    @Transactional(readOnly = true)
+    public TicketResponseDto getTicketById(Long ticketId) {
+        Ticket ticket = findTicketById(ticketId);
+        return TicketResponseDto.of(ticket);
     }
 
     @Transactional

@@ -1,16 +1,12 @@
 package caffeine.nest_dev.domain.ticket.controller;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
-import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.ticket.dto.request.TicketRequestDto;
 import caffeine.nest_dev.domain.ticket.dto.response.TicketResponseDto;
 import caffeine.nest_dev.domain.ticket.service.TicketService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,6 +38,14 @@ public class TicketController {
         List<TicketResponseDto> responseDtos = ticketService.getTicket();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
+    }
+
+    @GetMapping("/ticket/{ticketId}")
+    public ResponseEntity<CommonResponse<TicketResponseDto>> findTicket(
+            @PathVariable Long ticketId) {
+        TicketResponseDto responseDto = ticketService.getTicketById(ticketId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDto));
     }
 
     @PatchMapping("/admin/ticket/{ticketId}")
