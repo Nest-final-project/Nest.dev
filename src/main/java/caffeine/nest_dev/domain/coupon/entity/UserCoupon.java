@@ -29,7 +29,20 @@ public class UserCoupon extends BaseEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CouponUseStatus isUsed;
+
+    public boolean isUsed() {
+        return this.isUsed == CouponUseStatus.USED;
+    }
+
+    public void markAsUsed() {
+        this.isUsed = CouponUseStatus.USED;
+    }
+
+    public void unmarkAsUsed() {
+        this.isUsed = CouponUseStatus.UNUSED;
+    }
 
     public void modifyUseStatus(UserCouponRequestDto requestDto) {
         if (requestDto.getIsUsed() != null) {

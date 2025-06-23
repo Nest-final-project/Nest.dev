@@ -3,13 +3,13 @@ package caffeine.nest_dev.domain.chatroom.service;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomTerminationSchedulerService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
-import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
@@ -44,9 +44,9 @@ public class ChatRoomService {
         );
 
         // 예약이 결제된 상태에만 채팅방 생성 가능
-        if (!ReservationStatus.PAID.equals(reservation.getReservationStatus())) {
-            throw new BaseException(ErrorCode.CHATROOM_NOT_CREATED);
-        }
+//        if (!ReservationStatus.PAID.equals(reservation.getReservationStatus())) {
+//            throw new BaseException(ErrorCode.CHATROOM_NOT_CREATED);
+//        }
 
         // 채팅방이 이미 존재하는 경우 기존의 채팅방을 반환
         Optional<ChatRoom> existChatRoom = chatRoomRepository.findByReservationId(reservation.getId());
@@ -73,13 +73,13 @@ public class ChatRoomService {
 
     // 채팅방 목록 조회
     @Transactional(readOnly = true)
-    public Slice<ChatRoomResponseDto> findAllChatRooms(Long userId,
+    public Slice<ChatRoomReadDto> findAllChatRooms(Long userId,
             Long lastMessageId,
             LocalDateTime cursorTime,
             Pageable pageable
     ) {
 
-        Slice<ChatRoomResponseDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
+        Slice<ChatRoomReadDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
                 lastMessageId,
                 cursorTime,
                 pageable);

@@ -37,9 +37,14 @@ public class ComplaintService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
+        // type이 null인지 체크
+        if (complaintRequestDto.getType() == null) {
+            throw new BaseException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         // 1. Complaint인지, Inquiry인지 체크하기.
         // 1) COMPLAINT인 경우
-        if (complaintRequestDto.getType().equals(ComplaintType.COMPLAINT)) {
+        if (ComplaintType.COMPLAINT.equals(complaintRequestDto.getType())) {
 
             // 예약번호가 없을 경우
             if (complaintRequestDto.getReservationId() == null) {
@@ -108,5 +113,15 @@ public class ComplaintService {
                 ComplaintResponseDto::of);
 
         return PagingResponse.from(complaintResponseDtos);
+    }
+
+    public void deleteComplant(Long id, Long complaintId) {
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
+        if (!complaint.getUser().getId().equals(id)) {
+            throw new BaseException(ErrorCode.ACCESS_DENIED);
+        }
+
+        complaintRepository.delete(complaint);
     }
 }

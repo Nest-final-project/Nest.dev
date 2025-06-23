@@ -34,13 +34,15 @@ public class UserCouponService {
                         ErrorCode.NOT_FOUND_USER_COUPON));
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getUserId());
         coupon.issue();
-        UserCoupon userCoupon = userCouponRepository.save(requestDto.toEntity(coupon, user));
+        UserCoupon userCoupon = requestDto.toEntity(coupon, user);
+        userCouponRepository.save(userCoupon);
         return UserCouponResponseDto.of(userCoupon);
     }
 
     @Transactional(readOnly = true)
     public PagingResponse<UserCouponResponseDto> getUserCoupon(Pageable pageable) {
-        Page<UserCoupon> pagingResponse = userCouponRepository.findAll(pageable);
+        // 쿠폰 정보를 함께 조회하여 N+1 문제 해결
+        Page<UserCoupon> pagingResponse = userCouponRepository.findAllWithCoupon(pageable);
         Page<UserCouponResponseDto> responseDtos = pagingResponse.map(UserCouponResponseDto::of);
         return PagingResponse.from(responseDtos);
     }

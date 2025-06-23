@@ -11,6 +11,8 @@ public class PaymentPrepareRequestDto {
 
     private String reservationId;   // 예약 고유 식별자
     private Long ticketId;          // 티켓 고유 식별자
+    private Long couponId;
+    private Long userId;
     private String orderName;       // 주문 상품
     private Integer amount;         // 결제 금액
     private String customerName;    // 구매자 명

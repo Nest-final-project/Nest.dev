@@ -42,6 +42,16 @@ public class NotificationService {
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
         emitter.onTimeout(() -> emitterRepository.deleteById(id));
 
+        // ⭐ 연결 직후 더미 이벤트 보내기
+        try {
+            emitter.send(SseEmitter.event()
+                    .name("connect")
+                    .data("SSE 연결 완료")
+                    .id(id));
+        } catch (IOException e) {
+            emitterRepository.deleteById(id);
+            throw new RuntimeException("SSE 연결 실패", e);
+        }
         // 유실된 데이터가 있다면 데이터를 찾아 다시 클라이언트에게 전송
         if (lastEventId != null && !lastEventId.isEmpty()) {
             Map<String, Notification> events = emitterRepository.findAllEventCacheByUserId(
@@ -82,7 +92,7 @@ public class NotificationService {
                 .build();
     }
 
-    // 클라이언트에게 데이터 전송
+    // 채팅 종료 알림을 클라이언트에게 전송
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()

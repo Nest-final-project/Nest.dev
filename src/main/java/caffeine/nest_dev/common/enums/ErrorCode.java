@@ -33,6 +33,7 @@ public enum ErrorCode implements BaseCode {
     COMPLAINT_NEED_RESERVATION_ID(HttpStatus.BAD_REQUEST, "예약 ID가 없습니다."),
     COMPLAINT_NOT_FOUND(HttpStatus.NOT_FOUND, "민원을 찾을 수 없습니다."),
     DUPLICATED_COMPLAINT(HttpStatus.CONFLICT, "이미 생성된 민원이 있습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "문의 종류를 선택하세요"),
 
     // AdminCoupon
     NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
@@ -42,6 +43,8 @@ public enum ErrorCode implements BaseCode {
 
     // UserCoupon
     NOT_FOUND_USER_COUPON(HttpStatus.NOT_FOUND, "보유하신 쿠폰이 없습니다."),
+    COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다."),
+    INVALID_DISCOUNT_AMOUNT(HttpStatus.BAD_REQUEST, "할인 금액이 결제 금액보다 클 수 없습니다."),
 
     // SERVER_ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
@@ -70,6 +73,7 @@ public enum ErrorCode implements BaseCode {
     // 결제 내역/상태/검증 관련
     INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "주문 금액이 일치하지 않습니다."),
     ALREADY_PROCESSED_OR_CANCELED(HttpStatus.CONFLICT, "이미 처리되었거나 취소된 주문입니다."),
+    ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 완료된 예약입니다."),
     ONLY_PAID_CAN_BE_CANCELED(HttpStatus.BAD_REQUEST, "결제 완료 상태의 주문만 취소할 수 있습니다."),
 
     // 결제 내역 존재 관련
