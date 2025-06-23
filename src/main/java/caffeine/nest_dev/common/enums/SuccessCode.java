@@ -91,7 +91,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CANCEL_RESERVATION(HttpStatus.OK, "예약 취소가 완료되었습니다."),
 
     // Payment
-    SUCCESS_PAYMENT_PREPARE(HttpStatus.OK, "결제 준비에 성공했습니다."),
+    SUCCESS_PAYMENT_PREPARE(HttpStatus.CREATED, "결제 준비에 성공했습니다."),
     SUCCESS_PAYMENT_OK(HttpStatus.OK, "결제 승인에 성공했습니다."),
     SUCCESS_PAYMENT_READ(HttpStatus.OK, "결제 정보 조회에 성공했습니다."),
     SUCCESS_PAYMENT_LIST_READ(HttpStatus.OK, "결제 내역 목록 조회에 성공했습니다."),

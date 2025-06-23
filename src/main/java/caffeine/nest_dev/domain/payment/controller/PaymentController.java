@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -37,15 +38,15 @@ public class PaymentController {
         String userEmail = userDetails.getEmail();
         PaymentPrepareResponseDto responseDto = paymentService.preparePayment(requestDto,
                 userEmail);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_PAYMENT_PREPARE, responseDto));
     }
 
-    @PostMapping("/reservations/{reservationId}/confirm")
+    @PostMapping("/confirm")
     public ResponseEntity<CommonResponse<PaymentConfirmResponseDto>> confirmPayment(
             @RequestBody PaymentConfirmRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long reservationId) {
+            @RequestParam("reservationId") Long reservationId) {
         String userEmail = userDetails.getEmail();
         PaymentConfirmResponseDto responseDto = paymentService.confirmPayment(requestDto, userEmail,
                 reservationId);
