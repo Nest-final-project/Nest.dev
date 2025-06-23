@@ -46,6 +46,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
     SUCCESS_SHOW_COMPLAINTS(HttpStatus.OK, "민원 목록이 조회되었습니다."),
     SUCCESS_SHOW_COMPLAINT(HttpStatus.OK, "민원 상세 내용 조회에 성공하였습니다."),
+    SUCCESS_DELETE_COMPLAINT(HttpStatus.CONFLICT, "문의가 삭제되었습니다."),
 
     // category
     SUCCESS_CATEGORY_CREATED(HttpStatus.CREATED, "카테고리가 생성되었습니다."),
