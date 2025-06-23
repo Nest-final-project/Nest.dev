@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.payment.controller;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentCancelRequestDto;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentConfirmRequestDto;
@@ -8,10 +9,13 @@ import caffeine.nest_dev.domain.payment.dto.request.PaymentPrepareRequestDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentConfirmResponseDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentDetailsResponseDto;
 import caffeine.nest_dev.domain.payment.dto.response.PaymentPrepareResponseDto;
+import caffeine.nest_dev.domain.payment.dto.response.PaymentsResponseDto;
 import caffeine.nest_dev.domain.payment.service.PaymentService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,5 +76,19 @@ public class PaymentController {
         paymentService.cancelPayment(paymentId, requestDto, userEmail);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_PAYMENT_CANCEL));
+    }
+
+
+    // 결제 내역 조회
+    @GetMapping
+    public ResponseEntity<CommonResponse<PagingResponse<PaymentsResponseDto>>> getPayments(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
+    ) {
+        PagingResponse<PaymentsResponseDto> payments = paymentService.getPayments(userDetails,
+                pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_PAYMENT_LIST_READ, payments));
     }
 }

@@ -22,7 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean existsByMentorTime(@Param("mentorId") Long mentorId,
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
-            @Param("canceledStatus")ReservationStatus canceledStatus);
+            @Param("canceledStatus") ReservationStatus canceledStatus);
 
     @Query("""
             SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r
@@ -38,6 +38,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             ReservationStatus status);
 
 
-
+    Page<Reservation> findByMentorIdAndReservationStatus(Long userId,
+            ReservationStatus reservationStatus, Pageable pageable);
 
 }

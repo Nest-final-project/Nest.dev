@@ -77,12 +77,24 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public PagingResponse<ReservationResponseDto> getReservationList(Long userId,
             Pageable pageable) {
+        // MENTEE 경우
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
-        Page<Reservation> reservationPage = reservationRepository.findByMentorIdOrMenteeId(userId,
-                userId, pageable);
+        if (user.getUserRole().equals(UserRole.MENTEE)) {
+            Page<Reservation> reservationPage = reservationRepository.findByMentorIdOrMenteeId(userId,
+                    userId, pageable);
+            Page<ReservationResponseDto> responseDtos = reservationPage.map(ReservationResponseDto::of);
+
+            return PagingResponse.from(responseDtos);
+        }
+
+        // MENTOR 경우
+        Page<Reservation> reservationPage = reservationRepository.findByMentorIdAndReservationStatus(userId,
+                ReservationStatus.PAID, pageable);
         Page<ReservationResponseDto> responseDtos = reservationPage.map(ReservationResponseDto::of);
 
         return PagingResponse.from(responseDtos);
+
     }
 
     @Transactional(readOnly = true)

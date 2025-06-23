@@ -9,11 +9,13 @@ import caffeine.nest_dev.domain.career.dto.response.CareerResponseDto;
 import caffeine.nest_dev.domain.career.dto.response.CareersResponseDto;
 import caffeine.nest_dev.domain.career.dto.response.FindCareerResponseDto;
 import caffeine.nest_dev.domain.career.service.CareerService;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,13 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/profiles/{profileId}/careers")
+@RequestMapping("/api")
 public class CareerController {
 
     private final CareerService careerService;
 
     // 경력 생성
-    @PostMapping
+    @PostMapping("/profiles/{profileId}/careers")
     public ResponseEntity<CommonResponse<CareerResponseDto>> saveCareer(
             @RequestBody CareerRequestDto dto,
             @PathVariable Long profileId
@@ -44,7 +46,7 @@ public class CareerController {
     }
 
     // 경력 상세페이지 조회
-    @GetMapping("/{careerId}")
+    @GetMapping("/profiles/{profileId}/careers/{careerId}")
     public ResponseEntity<CommonResponse<FindCareerResponseDto>> findCareer(
             @PathVariable Long profileId,
             @PathVariable Long careerId
@@ -57,7 +59,7 @@ public class CareerController {
     }
 
     // 경력 목록 조회
-    @GetMapping
+    @GetMapping("/profiles/{profileId}/careers")
     public ResponseEntity<CommonResponse<PagingResponse<CareersResponseDto>>> findCareers(
             @PathVariable Long profileId,
             @PageableDefault Pageable pageable
@@ -70,7 +72,7 @@ public class CareerController {
     }
 
     // 경력 수정
-    @PatchMapping("/{careerId}")
+    @PatchMapping("/profiles/{profileId}/careers/{careerId}")
     public ResponseEntity<CommonResponse<Void>> updateCareer(
             @PathVariable Long profileId,
             @PathVariable Long careerId,
@@ -84,7 +86,7 @@ public class CareerController {
     }
 
     // 경력 삭제
-    @DeleteMapping("/{careerId}")
+    @DeleteMapping("/profiles/{profileId}/careers/{careerId}")
     public ResponseEntity<CommonResponse<Void>> deletedCareer(
             @PathVariable Long profileId,
             @PathVariable Long careerId
@@ -94,5 +96,17 @@ public class CareerController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_DELETED));
+    }
+
+    // 경력 전체 조회
+    @GetMapping("/careers")
+    public ResponseEntity<CommonResponse<PagingResponse<CareersResponseDto>>> findAllCareers(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault Pageable pageable
+    ) {
+        PagingResponse<CareersResponseDto> response = careerService.getCareers(pageable, userDetails);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CAREERS_READ, response));
     }
 }

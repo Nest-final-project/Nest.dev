@@ -34,12 +34,13 @@ public class SecurityConfig {
     private static final String[] GET_METHOD_AUTH_WHITELIST_PATHS = {
             "/api/profiles/*/careers/**", "/api/mentors/profiles", "/api/users/*/profiles/*",
             "/api/complaints", "/api/complaints/*", "/api/keywords", "/api/mentors/*/reviews",
-            "/api/ticket", "/api/mentor/*/availableConsultations", "/api/categories", "/api/profiles/*/careers"
+            "/api/ticket", "/api/mentor/*/availableConsultations", "/api/categories", "/api/profiles/*/careers",
+            "/api/users/*", "/api/tickets/*", "/api/reservations",
     };
 
     // MENTEE 전용 경로
     private static final String[] POST_METHOD_MENTEE_PATH = {
-            "/api/reservations", "/api/reservations/*/reviews", "/api/v1/payments/**"
+            "/api/reservations/*/reviews", "/api/v1/payments/**"
     };
     private static final String[] GET_METHOD_MENTEE_PATH = {
             "/api/user-coupons", "/api/reservations", "/api/reviews",
@@ -72,12 +73,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> {
-                })
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(authorize -> {
 
+                    authorize.requestMatchers(HttpMethod.OPTIONS).permitAll();
                     // 화이트리스트에 있는 경로는 누구나 접근 가능
                     authorize.requestMatchers(AUTH_WHITELIST).permitAll();
 
