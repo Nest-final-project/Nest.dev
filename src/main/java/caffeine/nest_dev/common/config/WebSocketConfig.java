@@ -25,6 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketHandlerDecoratorFactory decoratorFactory;
     private final AuthenticationChannelInterceptor channelInterceptor;
     private final StompExceptionHandler exceptionHandler;
+//    private final PrincipalHandShakeHandler handshakeHandler;
 
     /**
      * STOMP 엔드포인트 등록 해당 엔드포인트로 웹소켓 연결
@@ -34,6 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-nest") // handshake 를 위해(최초 연결 시) 연결하는 endpoint
+//                .setHandshakeHandler(handshakeHandler)
                 .setAllowedOriginPatterns("*")  // cors 설정 (허용할 origin 지정)
                 .withSockJS();  // 웹소켓을 지원하지 않는 브라우저도 사용할 수 있는 대체 옵션 지정
         registry.setErrorHandler(exceptionHandler); // error 핸들러 추가
