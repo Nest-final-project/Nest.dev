@@ -13,9 +13,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class UserCouponId implements Serializable {
-
-    private Long value;
-
     @Column(name = "coupon_id")
     private Long couponId;
 
