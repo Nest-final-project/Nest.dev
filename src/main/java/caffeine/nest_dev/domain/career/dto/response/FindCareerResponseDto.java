@@ -2,7 +2,6 @@ package caffeine.nest_dev.domain.career.dto.response;
 
 import caffeine.nest_dev.domain.career.entity.Career;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
-import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -19,18 +18,21 @@ public class FindCareerResponseDto {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private CareerStatus careerStatus;
-    private List<Certificate> certificates;
+    private List<CertificateResponseDto> certificates;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static FindCareerResponseDto of(Career career) {
+    public static FindCareerResponseDto of(
+            Career career,
+            List<CertificateResponseDto> certificateList
+    ) {
         return FindCareerResponseDto.builder()
                 .id(career.getId())
                 .company(career.getCompany())
                 .startAt(career.getStartAt())
                 .endAt(career.getEndAt())
                 .careerStatus(career.getCareerStatus())
-                .certificates(career.getCertificates())
+                .certificates(certificateList)
                 .createdAt(career.getCreatedAt())
                 .updatedAt(career.getUpdatedAt())
                 .build();

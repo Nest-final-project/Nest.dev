@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.SliceResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
@@ -60,14 +61,14 @@ public class ChatRoomController {
      * @return 채팅방 목록
      */
     @GetMapping
-    public ResponseEntity<SliceResponse<ChatRoomResponseDto>> findAllChatRooms(
+    public ResponseEntity<SliceResponse<ChatRoomReadDto>> findAllChatRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorTime,
             @RequestParam(required = false) Long lastMessageId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
         Long userId = userDetails.getId();
-        Slice<ChatRoomResponseDto> dtoList = chatRoomService.findAllChatRooms(userId, lastMessageId, cursorTime,
+        Slice<ChatRoomReadDto> dtoList = chatRoomService.findAllChatRooms(userId, lastMessageId, cursorTime,
                 pageable);
         return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(dtoList));
     }
@@ -89,7 +90,7 @@ public class ChatRoomController {
             @PageableDefault(size = 10) Pageable pageable
     ) {
         Long userId = userDetails.getId();
-        Slice<MessageDto> messageList = chatRoomService.findAllMessage(chatRoomId, userId, lastMessageId, pageable);
+        Slice<MessageDto> messageList = chatRoomService.findAllMessage(userId, chatRoomId, lastMessageId, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(messageList));
     }
 }

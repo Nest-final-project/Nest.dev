@@ -1,6 +1,7 @@
 package caffeine.nest_dev.common.config;
 
 import caffeine.nest_dev.common.websocket.util.WebSocketSessionRegistry;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -33,17 +34,28 @@ public class WebSocketDecoratorConfig {
 
             @Override
             public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-                String userId = session.getPrincipal().getName();
-                log.info("afterConnectionEstablished : userId = {}", userId);
-                sessionRegistry.register(userId, session);
+                Principal principal = session.getPrincipal();
+                if (principal != null) {
+                    String userId = principal.getName();
+                    log.info("afterConnectionEstablished : userId = {}", userId);
+                    sessionRegistry.register(userId, session);
+                } else {
+                    log.warn("afterConnectionEstablished: 인증되지 않은 세션입니다.");
+                }
+
                 super.afterConnectionEstablished(session);
             }
 
             @Override
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-                String userId = session.getPrincipal().getName();
-                log.info("afterConnectionClosed : userId = {}", userId);
-                sessionRegistry.sessionClose(userId);
+                Principal principal = session.getPrincipal();
+                if (principal != null) {
+                    String userId = principal.getName();
+                    log.info("afterConnectionClosed : userId = {}", userId);
+                    sessionRegistry.sessionClose(userId);
+                } else {
+                    log.warn("afterConnectionClosed: 인증되지 않은 세션입니다.");
+                }
                 super.afterConnectionClosed(session, closeStatus);
             }
         };

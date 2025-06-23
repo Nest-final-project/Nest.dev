@@ -84,12 +84,11 @@ public class ProfileService {
         Category category = categoryRepository.findById(profileRequestDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
 
-
         List<Keyword> keywords = keywordRepository.findAllById(profileRequestDto.getKeywordId());
 
         // 프로필 정보 수정
-        profile.updateProfile(profileRequestDto.getTitle(), profileRequestDto.getIntroduction(), profileRequestDto.getImageUrl(), category);
-
+        profile.updateProfile(profileRequestDto.getTitle(), profileRequestDto.getIntroduction(),
+                profileRequestDto.getImageUrl(), category);
 
         profile.getProfileKeywords().clear();
         List<ProfileKeyword> profileKeywords = profileRequestDto.toProfileKeywords(profile, keywords);
@@ -105,7 +104,7 @@ public class ProfileService {
                 .toList();
     }
 
-
+    @Transactional(readOnly = true)
     public PagingResponse<ProfileResponseDto> getMyProfiles(Long userId, Pageable pageable) {
         Page<Profile> profiles = profileRepository.findByUserId(userId, pageable);
 
