@@ -2,6 +2,9 @@ package caffeine.nest_dev.domain.payment.service;
 
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
+import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
+import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentCancelRequestDto;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentConfirmRequestDto;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentPrepareRequestDto;
@@ -47,6 +50,7 @@ public class PaymentService {
     private final ReservationRepository reservationRepository; // 예약 데이터 조회
     private final UserRepository userRepository; // 유저 데이터 조회
     private final TicketRepository ticketRepository; // 티켓 데이터 조회
+    private final UserCouponRepository userCouponRepository;
     private final WebClient webClient; // 외부 API(Toss) 호출용 / 기존 RestTemplate 대신 WebClient 주입
 
     @Value("${toss.payments.client-secret}")
@@ -76,10 +80,29 @@ public class PaymentService {
             throw new BaseException(ErrorCode.NO_PAYMENT_AUTHORITY);
         }
 
+        int finalAmount = requestDto.getAmount();
+        UserCoupon userCoupon = null;
+
+        if (requestDto.getCouponId() != null) {
+            UserCouponId userCouponId = new UserCouponId(user.getId(), requestDto.getCouponId());
+            userCoupon = userCouponRepository.findById(userCouponId)
+                    .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER_COUPON));
+            if (userCoupon.isUsed()) {
+                log.warn("중복 사용 쿠폰: couponId={}, userId={}", userCoupon.getCoupon().getId(), userCoupon.getUser().getId());
+                throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
+            }
+
+            finalAmount -= userCoupon.getCoupon().getDiscountAmount();
+            if (finalAmount < 0) {
+                throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT); // 음수 방지
+            }
+        }
+
         // 결제 DB 생성 및 저장
-        Payment payment = Payment.builder().reservation(reservation).amount(requestDto.getAmount())
+        Payment payment = Payment.builder().reservation(reservation).amount(finalAmount)
                 .status(PaymentStatus.READY) // 결제 대기 상태로 생성
                 .payer(user).ticket(ticket).paymentType(PaymentType.TOSSPAY) // 토스 결제 한정?
+                .userCoupon(userCoupon)
                 .build();
         paymentRepository.save(payment);
 
@@ -118,6 +141,14 @@ public class PaymentService {
             log.info("[결제 승인 성공] orderId: {}", tossResponse.getOrderId());
             payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
                     tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
+
+            UserCoupon userCoupon = payment.getUserCoupon();
+            if (userCoupon != null) {
+                if (userCoupon.isUsed()) {
+                    throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
+                }
+                userCoupon.markAsUsed();
+            }
 
             // 응답 DTO 변환 후 반환
             return PaymentConfirmResponseDto.of(payment);
@@ -189,6 +220,12 @@ public class PaymentService {
         if (tossResponse != null && "CANCELED".equals(tossResponse.getStatus())) {
             payment.updateOnCancel(cancelDto.getCancelReason());
             log.info("결제가 성공적으로 취소되었습니다. paymentKey: {}", payment.getPaymentKey());
+
+            UserCoupon userCoupon = payment.getUserCoupon();
+            if (userCoupon != null && userCoupon.isUsed()) {
+                userCoupon.unmarkAsUsed();
+                log.info("쿠폰 사용 상태 복구 완료 - userCouponId={}", userCoupon.getId());
+            }
         } else {
             log.error("토스 결제 취소에 실패했습니다. paymentKey: {}", payment.getPaymentKey());
             throw new BaseException(ErrorCode.PAYMENT_CANCEL_FAILED);

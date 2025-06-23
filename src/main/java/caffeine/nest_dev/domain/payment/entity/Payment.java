@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.payment.entity;
 
 
+import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.payment.enums.PaymentStatus;
 import caffeine.nest_dev.domain.payment.enums.PaymentType;
 import caffeine.nest_dev.domain.payment.enums.TossPaymentMethod;
@@ -65,9 +66,12 @@ public class Payment {
     private String cancelReason;
     private String canceledAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UserCoupon userCoupon;
+
     @Builder
     public Payment(Reservation reservation, Integer amount, PaymentStatus status, User payer,
-            Ticket ticket, PaymentType paymentType, String requestedAt) {
+            Ticket ticket, PaymentType paymentType, String requestedAt, UserCoupon userCoupon) {
         this.reservation = reservation;
         this.amount = amount;
         this.status = status;
@@ -75,6 +79,7 @@ public class Payment {
         this.ticket = ticket;
         this.paymentType = paymentType;
         this.requestedAt = requestedAt;
+        this.userCoupon = userCoupon;
     }
 
     public void updateOnSuccess(String paymentKey, TossPaymentMethod tossPaymentMethod,
