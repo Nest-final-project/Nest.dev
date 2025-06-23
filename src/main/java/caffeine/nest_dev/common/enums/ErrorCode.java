@@ -72,6 +72,7 @@ public enum ErrorCode implements BaseCode {
     // 결제 내역/상태/검증 관련
     INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "주문 금액이 일치하지 않습니다."),
     ALREADY_PROCESSED_OR_CANCELED(HttpStatus.CONFLICT, "이미 처리되었거나 취소된 주문입니다."),
+    ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 완료된 예약입니다."),
     ONLY_PAID_CAN_BE_CANCELED(HttpStatus.BAD_REQUEST, "결제 완료 상태의 주문만 취소할 수 있습니다."),
 
     // 결제 내역 존재 관련

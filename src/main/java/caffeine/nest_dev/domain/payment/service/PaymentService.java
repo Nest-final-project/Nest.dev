@@ -27,6 +27,7 @@ import caffeine.nest_dev.domain.user.repository.UserRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,33 @@ public class PaymentService {
             throw new BaseException(ErrorCode.NO_PAYMENT_AUTHORITY);
         }
 
+        // 🔍 기존 결제 확인 - 중복 결제 방지
+        Optional<Payment> existingPayment = paymentRepository.findByReservationId(reservationPk);
+        if (existingPayment.isPresent()) {
+            Payment payment = existingPayment.get();
+            
+            // 이미 결제 완료된 경우
+            if (payment.getStatus() == PaymentStatus.PAID) {
+                log.warn("이미 결제 완료된 예약입니다: reservationId={}, paymentId={}", 
+                        reservationPk, payment.getId());
+                throw new BaseException(ErrorCode.ALREADY_PAID);
+            }
+            
+            // 기존 대기 중인 결제가 있는 경우 - 기존 결제 정보 반환
+            if (payment.getStatus() == PaymentStatus.READY) {
+                log.info("기존 대기 중인 결제 발견. 기존 결제 정보 반환: reservationId={}, paymentId={}", 
+                        reservationPk, payment.getId());
+                return new PaymentPrepareResponseDto(String.valueOf(reservation.getId()), ticket.getName());
+            }
+            
+            // 실패하거나 취소된 결제가 있는 경우 - 기존 결제 삭제 후 새로 생성
+            if (payment.getStatus() == PaymentStatus.FAILED || payment.getStatus() == PaymentStatus.CANCELED) {
+                log.info("실패/취소된 결제 발견. 기존 결제 삭제 후 새로 생성: reservationId={}, paymentId={}, status={}", 
+                        reservationPk, payment.getId(), payment.getStatus());
+                paymentRepository.delete(payment);
+            }
+        }
+
         int finalAmount = requestDto.getAmount();
         UserCoupon userCoupon = null;
 
@@ -104,7 +132,10 @@ public class PaymentService {
                 .payer(user).ticket(ticket).paymentType(PaymentType.TOSSPAY) // 토스 결제 한정?
                 .userCoupon(userCoupon)
                 .build();
-        paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+        
+        log.info("새 결제 생성 완료: reservationId={}, paymentId={}, amount={}", 
+                reservationPk, savedPayment.getId(), finalAmount);
 
         // 예약ID, 티켓명 반환 (프론트 결제창 오픈 등에 사용)
         return new PaymentPrepareResponseDto(String.valueOf(reservation.getId()), ticket.getName());
