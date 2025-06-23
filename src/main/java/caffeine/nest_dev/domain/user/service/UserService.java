@@ -10,6 +10,7 @@ import caffeine.nest_dev.domain.auth.repository.TokenRepository;
 import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
+import caffeine.nest_dev.domain.user.dto.response.UserInfoResponseDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.SocialType;
@@ -44,6 +45,13 @@ public class UserService {
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         return UserResponseDto.of(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getUserById(Long userId) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+
+        return UserInfoResponseDto.of(user.getId(), user.getName(), user.getUserRole());
     }
 
     @Transactional
