@@ -42,7 +42,7 @@ public class MessageService {
         log.info("메시지 저장 완료 {}", message.getContent());
         MessageResponseDto messageResponseDto = MessageResponseDto.of(message, sender, receiver);
 
-        // 메시지 전송 (수신자, 구독 경로, 보낼 메시지)
+        // 메시지 전송 (수신자, 구독 경로, 보낸 메시지)
         simpMessagingTemplate.convertAndSendToUser(
                 String.valueOf(receiver.getId()),
                 "/queue/message",
