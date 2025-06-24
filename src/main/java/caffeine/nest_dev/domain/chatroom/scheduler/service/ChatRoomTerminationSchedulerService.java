@@ -10,7 +10,6 @@ import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.ChatRoomScheduleRepository;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
-import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -124,7 +123,7 @@ public class ChatRoomTerminationSchedulerService {
             Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                     () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
             );
-            reservation.complete(ReservationStatus.COMPLETED);
+            reservation.complete();
 
             log.info("종료 작업 완료 : ScheduleId = {}", scheduleId);
             log.info("채팅방 종료 완료 : ChatRoomId = {}, mentor = {}, mentee = {}", chatRoom.getId(), mentorId, menteeId);
