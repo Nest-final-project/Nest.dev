@@ -1,7 +1,8 @@
-package caffeine.nest_dev.common.exception;
+package caffeine.nest_dev.common.websocket.exception;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.BaseCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
