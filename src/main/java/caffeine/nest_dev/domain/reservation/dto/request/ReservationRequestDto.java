@@ -16,9 +16,9 @@ public class ReservationRequestDto {
     private Long mentor;
     private Long ticket;
     private ReservationStatus reservationStatus;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime reservationStartAt;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime reservationEndAt;
 
 
