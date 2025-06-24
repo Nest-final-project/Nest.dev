@@ -1,7 +1,8 @@
 package caffeine.nest_dev.domain.consultation.repository;
 
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 public interface ConsultationQueryRepository {
-    boolean existsConsultation(Long userId, LocalDateTime startAt, LocalDateTime endAt);
+    boolean existsConsultation(Long userId, DayOfWeek dayOfWeek, LocalTime startAt, LocalTime endAt);
 }

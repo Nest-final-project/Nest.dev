@@ -1,7 +1,7 @@
 package caffeine.nest_dev.domain.reservation.service;
 
-import caffeine.nest_dev.common.config.WebSocketConfig;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.common.websocket.config.WebSocketConfig;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
@@ -11,7 +11,6 @@ import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import com.esotericsoftware.minlog.Log;
-import jakarta.validation.constraints.AssertTrue;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -69,11 +68,11 @@ public class ReservationTest {
 
         System.out.println("\n\n\n\n[concurrencyTestWithAOP]");
         IntStream.range(1, 1000).parallel().forEach(i -> {
-            try{
+            try {
                 reservationService.save((long) i, dto);
                 successCount.incrementAndGet();
 
-            }catch(BaseException e){
+            } catch (BaseException e) {
                 Log.error("실패: menteeId = " + i + ", 메시지 = " + e.getMessage());
                 failCount.incrementAndGet();
             }

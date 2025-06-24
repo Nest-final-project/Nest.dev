@@ -12,4 +12,6 @@ public interface ChatRoomScheduleRepository extends JpaRepository<ChatRoomSchedu
 
     List<ChatRoomSchedule> findAllByChatRoomTypeAndScheduleStatus(ChatRoomType chatRoomType,
             ScheduleStatus scheduleStatus);
+
+    boolean existsByReservationIdAndScheduleStatus(Long reservationId, ScheduleStatus scheduleStatus);
 }

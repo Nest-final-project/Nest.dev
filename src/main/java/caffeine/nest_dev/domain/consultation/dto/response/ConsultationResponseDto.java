@@ -1,8 +1,8 @@
 package caffeine.nest_dev.domain.consultation.dto.response;
 
 import caffeine.nest_dev.domain.consultation.entity.Consultation;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,15 +10,17 @@ import lombok.Getter;
 @Builder
 public class ConsultationResponseDto {
 
+    private Long id;
     private Long mentorId;
-    private List<String> availableDays;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
+    private DayOfWeek dayOfWeek;
+    private LocalTime startAt;
+    private LocalTime endAt;
 
     public static ConsultationResponseDto of(Consultation consultation) {
         return ConsultationResponseDto.builder()
+                .id(consultation.getId())
                 .mentorId(consultation.getMentor().getId())
-                .availableDays(List.of(consultation.getStartAt().getDayOfWeek().name())) // 날짜
+                .dayOfWeek(consultation.getDayOfWeek())// 날짜
                 .startAt(consultation.getStartAt())
                 .endAt(consultation.getEndAt())
                 .build();

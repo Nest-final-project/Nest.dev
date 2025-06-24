@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.consultation.repository;
 
 import caffeine.nest_dev.domain.consultation.entity.Consultation;
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     List<Consultation> findByMentorId(Long userId);
 
     Optional<Consultation> findByIdAndMentorId(Long consultationId, Long userId);
+
+    List<Consultation> findByMentorIdAndDayOfWeek(Long mentorId, DayOfWeek dayOfWeek);
 }

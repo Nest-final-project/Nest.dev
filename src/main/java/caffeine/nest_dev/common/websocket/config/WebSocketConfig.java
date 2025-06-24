@@ -1,6 +1,6 @@
-package caffeine.nest_dev.common.config;
+package caffeine.nest_dev.common.websocket.config;
 
-import caffeine.nest_dev.common.exception.StompExceptionHandler;
+import caffeine.nest_dev.common.websocket.exception.StompExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

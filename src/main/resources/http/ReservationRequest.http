@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: Bearer {{authorizationToken}}
 
 {
-  "mentor": 2,
-  "mentee": 1,
+  "mentor": 7,
+  "ticket": 2,
   "reservationStatus": "PAID",
-  "reservationStartAt": "2025-06-17 14:14:00",
-  "reservationEndAt": "2025-06-17 14:30:00"
+  "reservationStartAt": "2025-06-24 12:49:00",
+  "reservationEndAt": "2025-06-24 13:09:00"
 }

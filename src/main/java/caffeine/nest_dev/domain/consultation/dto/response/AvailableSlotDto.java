@@ -1,6 +1,6 @@
 package caffeine.nest_dev.domain.consultation.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AvailableSlotDto {
 
-    private LocalDateTime availableStartAt;
-    private LocalDateTime availableEndAt;
+    private LocalTime availableStartAt;
+    private LocalTime availableEndAt;
 
 }
