@@ -11,7 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,13 +35,16 @@ public class Consultation extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User mentor;
 
-    @Column(nullable = false)
-    private LocalDateTime startAt;
+    private DayOfWeek dayOfWeek;
 
     @Column(nullable = false)
-    private LocalDateTime endAt;
+    private LocalTime startAt;
 
-    public void update(LocalDateTime startAt, LocalDateTime endAt) {
+    @Column(nullable = false)
+    private LocalTime endAt;
+
+    public void update(DayOfWeek dayOfWeek, LocalTime startAt, LocalTime endAt) {
+        this.dayOfWeek = dayOfWeek;
         this.startAt = startAt;
         this.endAt = endAt;
     }
