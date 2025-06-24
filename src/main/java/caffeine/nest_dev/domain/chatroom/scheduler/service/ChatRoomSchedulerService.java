@@ -64,12 +64,11 @@ public class ChatRoomSchedulerService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registerChatRoomSchedule(Long reservationId, LocalDateTime startTime) {
 
-        try {
-            if (startTime.isBefore(LocalDateTime.now().minusSeconds(2))) {
-                log.warn("지정된 시작 시간이 이미 지났습니다. 예약 ID: {}", reservationId);
-                return;
-            }
+        validScheduleTime(startTime, reservationId);
 
+        validDuplicateSchedule(reservationId);
+
+        try {
             ChatRoomSchedule roomSchedule = ChatRoomSchedule.builder()
                     .reservationId(reservationId)
                     .scheduledTime(startTime)
@@ -82,8 +81,27 @@ public class ChatRoomSchedulerService {
 
         } catch (Exception e) {
             log.error("채팅방 예약 등록 실패 : {}", e.getMessage(), e);
+            throw new BaseException(ErrorCode.CHATROOM_SCHEDULE_REGISTER_FAILED);
         }
 
+    }
+
+    // 스케줄 등록 시간 체크
+    private void validScheduleTime(LocalDateTime startTime, Long reservationId) {
+        if (startTime.isBefore(LocalDateTime.now().minusSeconds(2))) {
+            log.warn("지정된 시작 시간이 이미 지났습니다. 예약 ID: {}", reservationId);
+            throw new BaseException(ErrorCode.INVALID_SCHEDULE_TIME);
+        }
+
+    }
+
+    // 중복 스케줄 등록 방지
+    private void validDuplicateSchedule(Long reservationId) {
+        boolean exists = scheduleRepository.existsByReservationIdAndScheduleStatus(reservationId,
+                ScheduleStatus.PENDING);
+        if (exists) {
+            throw new BaseException(ErrorCode.DUPLICATED_SCHEDULE);
+        }
     }
 
     // 예약된 시간에 실행될 작업

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
@@ -14,6 +15,14 @@ public class WebSocketSessionRegistry {
 
     // 사용자별로 세션 저장
     public void register(String userId, WebSocketSession socketSession) {
+        WebSocketSession existingSession = sessions.get(userId);
+        if (existingSession != null && existingSession.isOpen()) {
+            try {
+                existingSession.close(CloseStatus.NORMAL.withReason("새로운 연결로 인한 세션 종료"));
+            } catch (Exception e) {
+                log.warn("기존 세션 종료 실패 : {}", e.getMessage());
+            }
+        }
         sessions.put(userId, socketSession);
     }
 
@@ -24,8 +33,11 @@ public class WebSocketSessionRegistry {
     }
 
     public WebSocketSession getSession(String userId) {
-        log.info("session ID = {}", sessions.get(userId));
-        log.info("user ID = {}", sessions.keySet());
-        return sessions.get(userId);
+        WebSocketSession session = sessions.get(userId);
+        if (session != null && !session.isOpen()) {
+            sessions.remove(userId);
+            return null;
+        }
+        return session;
     }
 }

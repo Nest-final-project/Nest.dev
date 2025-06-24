@@ -1,4 +1,4 @@
-package caffeine.nest_dev.common.config;
+package caffeine.nest_dev.common.websocket.config;
 
 import caffeine.nest_dev.common.websocket.util.WebSocketSessionRegistry;
 import java.security.Principal;
