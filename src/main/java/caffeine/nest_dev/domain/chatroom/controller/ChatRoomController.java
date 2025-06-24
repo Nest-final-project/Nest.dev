@@ -6,6 +6,7 @@ import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomStatusResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
@@ -92,5 +93,15 @@ public class ChatRoomController {
         Long userId = userDetails.getId();
         Slice<MessageDto> messageList = chatRoomService.findAllMessage(userId, chatRoomId, lastMessageId, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(messageList));
+    }
+
+    @GetMapping("/{chatRoomId}/status")
+    public ResponseEntity<ChatRoomStatusResponseDto> isClosed(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long chatRoomId
+    ) {
+        Long userId = userDetails.getId();
+        ChatRoomStatusResponseDto responseDto = chatRoomService.isClosed(userId, chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

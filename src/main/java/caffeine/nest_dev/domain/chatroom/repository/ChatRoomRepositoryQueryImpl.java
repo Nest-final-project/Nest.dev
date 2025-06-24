@@ -48,15 +48,30 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
     @Override
     public Slice<ChatRoomReadDto> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
             Pageable pageable) {
+        
+        // 서브쿼리로 각 채팅방의 마지막 메시지 정보 조회
         List<ChatRoomReadDto> results = jpaQueryFactory.select(Projections.fields(
                         ChatRoomReadDto.class,
                         chatRoom.id.as("roomId"),
                         chatRoom.mentor.id.as("mentorId"),
                         chatRoom.mentor.name.as("mentorName"),
                         chatRoom.mentee.id.as("menteeId"),
-                        chatRoom.mentee.name.as("menteeName")
+                        chatRoom.mentee.name.as("menteeName"),
+                        // 마지막 메시지 정보 추가
+                        message.content.as("lastMessageContent"),
+                        message.createdAt.stringValue().as("lastMessageTime"),
+                        message.sender.id.as("lastMessageSenderId")
                 ))
                 .from(chatRoom)
+                .leftJoin(message).on(
+                    message.chatRoom.id.eq(chatRoom.id)
+                    .and(message.id.eq(
+                        // 각 채팅방의 가장 최신 메시지 ID를 찾는 서브쿼리
+                        jpaQueryFactory.select(message.id.max())
+                            .from(message)
+                            .where(message.chatRoom.id.eq(chatRoom.id))
+                    ))
+                )
                 .where(
                         chatRoom.mentor.id.eq(userId).or(chatRoom.mentee.id.eq(userId)),
                         gtUpdateAt(cursorTime, messageId)

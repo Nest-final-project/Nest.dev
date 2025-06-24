@@ -5,6 +5,7 @@ import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.dto.request.CreateChatRoomRequestDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomResponseDto;
+import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomStatusResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
@@ -116,4 +117,14 @@ public class ChatRoomService {
                 () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public ChatRoomStatusResponseDto isClosed(Long id, Long chatRoomId) {
+        userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
+
+        // 엔티티를 새로 조회하여 최신 상태 반영
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
+
+        return ChatRoomStatusResponseDto.from(chatRoom);
+    }
 }

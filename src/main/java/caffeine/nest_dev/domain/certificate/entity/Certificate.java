@@ -1,7 +1,6 @@
 package caffeine.nest_dev.domain.certificate.entity;
 
 import caffeine.nest_dev.domain.career.entity.Career;
-import caffeine.nest_dev.domain.certificate.dto.request.UpdateCertificateRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Builder
@@ -33,8 +33,8 @@ public class Certificate {
 
     private String fileUrl;
 
-    public void updateCertificate(UpdateCertificateRequestDto dto) {
-        this.fileUrl = dto.getFileUrl();
+    public void updateCertificate(MultipartFile file) {
+        this.fileUrl = file.getOriginalFilename();
     }
 
     public void updateCareer(Career career) {

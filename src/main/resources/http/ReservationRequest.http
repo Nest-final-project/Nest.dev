@@ -7,6 +7,6 @@ Authorization: Bearer {{authorizationToken}}
   "mentor": 7,
   "ticket": 2,
   "reservationStatus": "PAID",
-  "reservationStartAt": "2025-06-24 12:49:00",
-  "reservationEndAt": "2025-06-24 13:09:00"
+  "reservationStartAt": "2025-06-24T22:14:00.000",
+  "reservationEndAt": "2025-06-24T22:25:00.000"
 }

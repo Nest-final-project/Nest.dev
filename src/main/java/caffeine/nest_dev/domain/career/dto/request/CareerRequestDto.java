@@ -4,7 +4,6 @@ import caffeine.nest_dev.domain.career.entity.Career;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +20,6 @@ public class CareerRequestDto {
     private LocalDateTime startAt;
 
     private LocalDateTime endAt;
-
-    private List<String> certificates;
 
     public static Career toEntity(CareerRequestDto dto, Profile profile) {
         return Career.builder()

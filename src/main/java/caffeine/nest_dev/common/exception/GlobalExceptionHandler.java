@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 @Slf4j
 @RestControllerAdvice
@@ -18,6 +19,13 @@ public class GlobalExceptionHandler {
         BaseCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
                 .body(CommonResponse.of(errorCode));
+    }
+
+    // SSE 연결 끊김 예외 처리 (로그만 남기고 무시)
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncRequestNotUsableException(AsyncRequestNotUsableException e) {
+        log.warn("Servlet container error notification for disconnected client");
+        // SSE 연결이 끊어진 경우이므로 응답을 보낼 수 없음. 로그만 남김.
     }
 
     // Optionally → 모든 예외 (예상 못한 500)

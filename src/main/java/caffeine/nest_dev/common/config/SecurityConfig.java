@@ -66,7 +66,7 @@ public class SecurityConfig {
     };
 
     private static final String[] DELETE_METHOD_MENTOR_PATH = {
-            "/api/profiles/*/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
+            "/api/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
     };
 
 
