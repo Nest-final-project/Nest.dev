@@ -168,7 +168,7 @@ public class PaymentService {
                     // 디버깅을 위해 해당 예약이 존재하는지 확인
                     Optional<Reservation> reservation = reservationRepository.findById(reservationId);
                     if (reservation.isPresent()) {
-                        log.warn("⚠️ 예약은 존재하지만 결제 정보가 없습니다. 예약 ID: {}, 예약 상태: {}", 
+                        log.warn(" 예약은 존재하지만 결제 정보가 없습니다. 예약 ID: {}, 예약 상태: {}",
                                 reservationId, reservation.get().getReservationStatus());
                     } else {
                         log.error(" 예약 자체가 존재하지 않습니다. 예약 ID: {}", reservationId);
