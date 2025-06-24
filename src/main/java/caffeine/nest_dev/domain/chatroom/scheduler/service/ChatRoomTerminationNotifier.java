@@ -8,6 +8,7 @@ import caffeine.nest_dev.domain.notification.service.NotificationService;
 import caffeine.nest_dev.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,34 +26,59 @@ public class ChatRoomTerminationNotifier {
     private final NotificationScheduleRepository scheduleRepository;
 
     public void init() {
-        List<NotificationSchedule> findScheduleList = scheduleRepository.findAllByIsSent(false);
+        try {
 
-        if (findScheduleList.isEmpty()) {
-            log.info("저장된 작업이 없습니다.");
-            return;
-        }
-        log.info("불러온 알림 예약 작업 개수: {}", findScheduleList.size());
+            List<NotificationSchedule> findScheduleList = scheduleRepository.findAllByIsSent(false);
 
-        for (NotificationSchedule schedule : findScheduleList) {
-
-            if (schedule.getScheduledAt().isAfter(LocalDateTime.now())) {
-                startSchedule(schedule);
-                log.info("서버시작 후 실행되지 않은 작업이 등록되었습니다.");
+            if (findScheduleList.isEmpty()) {
+                log.info("저장된 작업이 없습니다.");
+                return;
             }
+            log.info("불러온 알림 예약 작업 개수: {}", findScheduleList.size());
+
+            List<NotificationSchedule> futureSchedules = new ArrayList<>();
+            List<NotificationSchedule> expiredSchedules = new ArrayList<>();
+
+            // 만료된 스케줄 분류
+            for (NotificationSchedule schedule : findScheduleList) {
+                if (schedule.getScheduledAt().isAfter(LocalDateTime.now())) {
+                    futureSchedules.add(schedule);
+                } else {
+                    expiredSchedules.add(schedule);
+                }
+            }
+            log.info("재등록 : {}개, 삭제 : {}개", futureSchedules.size(), expiredSchedules.size());
+
+            // 만료된 스케줄 제거
+            if (!expiredSchedules.isEmpty()) {
+                scheduleRepository.deleteAll(expiredSchedules);
+            }
+
+            for (NotificationSchedule schedule : futureSchedules) {
+                startSchedule(schedule);
+            }
+            log.info("채팅 알림 초기화 등록 완료");
+
+        } catch (Exception e) {
+            log.error("초기화 등록 오류", e);
         }
     }
 
 
     public void registerNotificationSchedule(Long chatRoomId, LocalDateTime endTime, User user) {
-        NotificationSchedule schedule = NotificationSchedule.builder()
-                .chatRoomId(chatRoomId)
-                .scheduledAt(endTime.minusMinutes(5))
-                .receiver(user)
-                .build();
+        try {
+            NotificationSchedule schedule = NotificationSchedule.builder()
+                    .chatRoomId(chatRoomId)
+                    .scheduledAt(endTime.minusMinutes(5))
+                    .receiver(user)
+                    .build();
 
-        NotificationSchedule savedSchedule = scheduleRepository.save(schedule);
+            NotificationSchedule savedSchedule = scheduleRepository.save(schedule);
 
-        startSchedule(savedSchedule);
+            startSchedule(savedSchedule);
+        } catch (Exception e) {
+            log.error("채팅 종료 알림 등록 실패");
+        }
     }
 
     private void startSchedule(NotificationSchedule schedule) {
