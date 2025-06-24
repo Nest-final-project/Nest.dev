@@ -15,6 +15,8 @@ public class PaymentsResponseDto {
     private Long id;
     private String mentorName;
     private String ticketName;
+    private Integer originalAmount;
+    private Integer discountAmount;
     private Integer amount;
     private PaymentStatus status;
     private PaymentType paymentType;
@@ -25,6 +27,8 @@ public class PaymentsResponseDto {
                 .id(payment.getId())
                 .mentorName(mentorName)
                 .ticketName(ticketName)
+                .originalAmount(payment.getOriginalAmount())
+                .discountAmount(payment.getDiscountAmount())
                 .amount(payment.getAmount())
                 .status(payment.getStatus())
                 .paymentType(payment.getPaymentType())
