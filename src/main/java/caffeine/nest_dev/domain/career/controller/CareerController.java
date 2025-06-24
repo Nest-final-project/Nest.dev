@@ -10,6 +10,7 @@ import caffeine.nest_dev.domain.career.dto.response.CareersResponseDto;
 import caffeine.nest_dev.domain.career.dto.response.FindCareerResponseDto;
 import caffeine.nest_dev.domain.career.service.CareerService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,11 +38,12 @@ public class CareerController {
     // 경력 생성
     @PostMapping("/profiles/{profileId}/careers")
     public ResponseEntity<CommonResponse<CareerResponseDto>> saveCareer(
-            @RequestBody CareerRequestDto dto,
+            @RequestPart("dto") CareerRequestDto dto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @PathVariable Long profileId
     ) {
 
-        CareerResponseDto responseDto = careerService.save(dto, profileId);
+        CareerResponseDto responseDto = careerService.save(dto, profileId, files);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_CREATED, responseDto));
@@ -86,13 +90,12 @@ public class CareerController {
     }
 
     // 경력 삭제
-    @DeleteMapping("/profiles/{profileId}/careers/{careerId}")
+    @DeleteMapping("/careers/{careerId}")
     public ResponseEntity<CommonResponse<Void>> deletedCareer(
-            @PathVariable Long profileId,
             @PathVariable Long careerId
     ) {
 
-        careerService.deleteCareer(profileId, careerId);
+        careerService.deleteCareer(careerId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_DELETED));
