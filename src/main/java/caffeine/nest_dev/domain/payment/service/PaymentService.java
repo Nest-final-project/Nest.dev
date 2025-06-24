@@ -112,8 +112,9 @@ public class PaymentService {
             }
         }
 
-        int finalAmount = requestDto.getAmount();
+        int originalAmount = requestDto.getAmount();
         UserCoupon userCoupon = null;
+        int discountAmount = 0;
 
         if (requestDto.getCouponId() != null) {
             UserCouponId userCouponId = new UserCouponId(user.getId(), requestDto.getCouponId());
@@ -124,27 +125,28 @@ public class PaymentService {
                 throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
             }
 
-            finalAmount -= userCoupon.getCoupon().getDiscountAmount();
-            if (finalAmount < 0) {
-                throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT); // 음수 방지
+            discountAmount = userCoupon.getCoupon().getDiscountAmount();
+            if (discountAmount > originalAmount) {
+                throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT); // 할인 금액이 원가보다 클 수 없음
             }
         }
 
-        // 쿠폰Id 로 쿠폰 조회 (null 이 아닐 시 if () 문 타도록)
-        // 쿠폰과 로그인한 유저가 일치하는지 검증
-        // 쿠폰이 사용되었는지 검증
-        // amount - userCoupon.getCoupon.getDiscountAmount() -> 최종 금액
-
-        // 결제 DB 생성 및 저장
-        Payment payment = Payment.builder().reservation(reservation).amount(finalAmount)
-                .status(PaymentStatus.READY) // 결제 대기 상태로 생성
-                .payer(user).ticket(ticket).paymentType(PaymentType.TOSSPAY) // 토스 결제 한정?
-                .userCoupon(userCoupon)
+        // 변경: DB에는 원가 저장, 쿠폰 할인은 결제 승인 시 처리
+        Payment payment = Payment.builder()
+                .reservation(reservation)
+                .amount(originalAmount)          // 원가 저장 (토스 결제 기준)
+                .originalAmount(originalAmount)  // 원가 별도 저장
+                .discountAmount(0)               // 아직 할인 적용 안함
+                .status(PaymentStatus.READY)     // 결제 대기 상태로 생성
+                .payer(user)
+                .ticket(ticket)
+                .paymentType(PaymentType.TOSSPAY)
+                .userCoupon(userCoupon)          // 쿠폰 정보만 연결
                 .build();
         Payment savedPayment = paymentRepository.save(payment);
         
-        log.info("새 결제 생성 완료: reservationId={}, paymentId={}, amount={}", 
-                reservationPk, savedPayment.getId(), finalAmount);
+        log.info("새 결제 생성 완료: reservationId={}, paymentId={}, originalAmount={}, coupon={}", 
+                reservationPk, savedPayment.getId(), originalAmount, userCoupon != null ? "적용" : "없음");
 
         // 예약ID, 티켓명 반환 (프론트 결제창 오픈 등에 사용)
         return new PaymentPrepareResponseDto(String.valueOf(reservation.getId()), ticket.getName());
@@ -154,17 +156,38 @@ public class PaymentService {
     @Transactional
     public PaymentConfirmResponseDto confirmPayment(PaymentConfirmRequestDto requestDto,
             String userEmail, Long reservationId) {
+        
+        log.info(" 결제 승인 요청 시작 - reservationId: {}, userEmail: {}", reservationId, userEmail);
+        log.info(" 결제 승인 요청 데이터: {}", requestDto);
+        
         // 결제 정보 DB 조회
         Payment payment = paymentRepository.findByReservationId(reservationId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_ORDER));
+                .orElseThrow(() -> {
+                    log.error(" 예약 ID {}에 대한 결제 정보를 찾을 수 없습니다", reservationId);
+                    
+                    // 디버깅을 위해 해당 예약이 존재하는지 확인
+                    Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+                    if (reservation.isPresent()) {
+                        log.warn(" 예약은 존재하지만 결제 정보가 없습니다. 예약 ID: {}, 예약 상태: {}",
+                                reservationId, reservation.get().getReservationStatus());
+                    } else {
+                        log.error(" 예약 자체가 존재하지 않습니다. 예약 ID: {}", reservationId);
+                    }
+                    
+                    return new BaseException(ErrorCode.NOT_FOUND_ORDER);
+                });
+
+        log.info(" 결제 정보 조회 성공 - paymentId: {}, status: {}", payment.getId(), payment.getStatus());
 
         // 결제자 확인
         if (!payment.getPayer().getEmail().equals(userEmail)) {
             throw new BaseException(ErrorCode.NO_PAYMENT_INFO_AUTHORITY);
         }
 
-        // 결제 금액 확인
-        if (!payment.getAmount().equals(requestDto.getAmount())) {
+        //  원가 기준으로 토스 결제 금액 검증
+        if (!payment.getOriginalAmount().equals(requestDto.getAmount())) {
+            log.error(" 결제 금액 불일치 - DB 원가: {}, 토스 결제: {}",
+                    payment.getOriginalAmount(), requestDto.getAmount());
             throw new BaseException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         }
 
@@ -179,19 +202,34 @@ public class PaymentService {
         // 결제 승인 -> DB 업데이트
         if (tossResponse != null && "DONE".equals(tossResponse.getStatus())) {
             log.info("[결제 승인 성공] orderId: {}", tossResponse.getOrderId());
-            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
-                    tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
-
+            
+            // 쿠폰 할인 적용 및 최종 금액 계산
+            int finalAmount = payment.getOriginalAmount(); // 원가부터 시작
+            int discountAmount = 0;
+            
             UserCoupon userCoupon = payment.getUserCoupon();
             if (userCoupon != null) {
                 if (userCoupon.isUsed()) {
                     throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
                 }
-                userCoupon.markAsUsed();
+                
+                discountAmount = userCoupon.getCoupon().getDiscountAmount();
+                finalAmount -= discountAmount; // 쿠폰 할인 적용
+                
+                userCoupon.markAsUsed(); // 쿠폰 사용 처리
+                log.info("🎫 쿠폰 할인 적용 - 원가: {}원, 할인: {}원, 최종: {}원", 
+                        payment.getOriginalAmount(), discountAmount, finalAmount);
             }
-
-            // 쿠폰 조회 (dto 에서 couponId 가져오기)
-            // 쿠폰 상태 업데이트
+            
+            // Payment 업데이트
+            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
+                    tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
+            
+            // 최종 금액 및 할인 금액 업데이트
+            payment.updateFinalAmount(finalAmount, discountAmount);
+            
+            log.info(" 결제 완료 - 토스 결제: {}원, 실제 차감: {}원",
+                    payment.getOriginalAmount(), finalAmount);
 
             // 응답 DTO 변환 후 반환
             return PaymentConfirmResponseDto.of(payment);

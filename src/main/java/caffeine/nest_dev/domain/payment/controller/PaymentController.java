@@ -39,7 +39,7 @@ public class PaymentController {
     public ResponseEntity<CommonResponse<PaymentPrepareResponseDto>> prepare(
             @RequestBody PaymentPrepareRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        String userEmail = userDetails.getEmail();
+        String userEmail = userDetails.getEmail(); 
         PaymentPrepareResponseDto responseDto = paymentService.preparePayment(requestDto,
                 userEmail);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,11 +49,10 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<CommonResponse<PaymentConfirmResponseDto>> confirmPayment(
             @RequestBody PaymentConfirmRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam("reservationId") Long reservationId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String userEmail = userDetails.getEmail();
         PaymentConfirmResponseDto responseDto = paymentService.confirmPayment(requestDto, userEmail,
-                reservationId);
+                requestDto.getReservationId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_PAYMENT_OK, responseDto));
     }
