@@ -1,6 +1,8 @@
 package caffeine.nest_dev.domain.reservation.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
+import caffeine.nest_dev.common.enums.ErrorCode;
+import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.ticket.entity.Ticket;
@@ -63,6 +65,14 @@ public class Reservation extends BaseEntity {
     public void update(ReservationCancelRequestDto cancelRequestDto) {
         this.cancellation = cancelRequestDto.getCancellation();
         this.reservationStatus = ReservationStatus.CANCELED;
+    }
+
+    public void markAsPaid() {
+        if (this.reservationStatus == ReservationStatus.REQUESTED) {
+            this.reservationStatus = ReservationStatus.PAID;
+        } else {
+            throw new BaseException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
     }
 
     public void complete() {
