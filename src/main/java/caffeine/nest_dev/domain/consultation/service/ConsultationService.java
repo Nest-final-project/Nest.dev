@@ -12,7 +12,8 @@ import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,8 @@ public class ConsultationService {
     public ConsultationResponseDto createConsultation(Long userId,
             ConsultationRequestDto requestDto) {
 
-        if (consultationRepository.existsConsultation(userId, requestDto.getStartAt(),
+        if (consultationRepository.existsConsultation(userId, requestDto.getDayOfWeek(),
+                requestDto.getStartAt(),
                 requestDto.getEndAt())) {
             throw new BaseException(ErrorCode.DUPLICATE_CONSULTATION_TIME);
         }
@@ -52,9 +54,11 @@ public class ConsultationService {
     }
 
     @Transactional(readOnly = true)
-    public List<AvailableSlotDto> getAvailableConsultationSlots(Long mentorId) {
-        // 멘토가 등록한 전체 시간 범위 조회
-        List<Consultation> availableTime = consultationRepository.findByMentorId(mentorId);
+    public List<AvailableSlotDto> getAvailableConsultationSlots(Long mentorId,
+            DayOfWeek dayOfWeek) {
+        // 멘토가 등록한 요일에 해당하는 시간 범위 조회
+        List<Consultation> availableTime = consultationRepository.findByMentorIdAndDayOfWeek(
+                mentorId, dayOfWeek);
 
         if (availableTime.isEmpty()) {
             throw new BaseException(ErrorCode.CONSULTATION_NOT_FOUND);
@@ -65,16 +69,16 @@ public class ConsultationService {
                 mentorId, ReservationStatus.CANCELED);
 
         // 10분 단위 시작 시간
-        List<LocalDateTime> availableSlots = new ArrayList<>();
+        List<LocalTime> availableSlots = new ArrayList<>();
 
         // 전체 상담 시간을 순회
         for (Consultation time : availableTime) {
-            LocalDateTime start = time.getStartAt();
-            LocalDateTime end = time.getEndAt();
+            LocalTime start = time.getStartAt();
+            LocalTime end = time.getEndAt();
 
             // 시작 시간부터 10분 단위로 이동
             while (start.isBefore(end)) {
-                LocalDateTime plussed = start.plusMinutes(10);
+                LocalTime plussed = start.plusMinutes(10);
 
                 // 종단 포인트
                 if (plussed.isAfter(end)) {
@@ -100,7 +104,8 @@ public class ConsultationService {
     public ConsultationResponseDto updateConsultation(Long userId, Long consultationId,
             ConsultationRequestDto requestDto) {
 
-        if (consultationRepository.existsConsultation(userId, requestDto.getStartAt(),
+        if (consultationRepository.existsConsultation(userId, requestDto.getDayOfWeek(),
+                requestDto.getStartAt(),
                 requestDto.getEndAt())) {
             throw new BaseException(ErrorCode.DUPLICATE_CONSULTATION_TIME);
         }
@@ -109,7 +114,8 @@ public class ConsultationService {
                         userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CONSULTATION_NOT_FOUND));
 
-        consultation.update(requestDto.getStartAt(), requestDto.getEndAt());
+        consultation.update(requestDto.getDayOfWeek(), requestDto.getStartAt(),
+                requestDto.getEndAt());
 
         return ConsultationResponseDto.of(consultation);
     }
@@ -124,11 +130,11 @@ public class ConsultationService {
         consultationRepository.delete(consultation);
     }
 
-    private boolean isBooked(LocalDateTime start, LocalDateTime plussed,
+    private boolean isBooked(LocalTime start, LocalTime plussed,
             List<Reservation> bookedReservations) {
         for (Reservation reservation : bookedReservations) {
-            if (start.isBefore(reservation.getReservationEndAt())
-                    && reservation.getReservationStartAt().isBefore(plussed)) {
+            if (start.isBefore(reservation.getReservationEndAt().toLocalTime())
+                    && reservation.getReservationStartAt().toLocalTime().isBefore(plussed)) {
                 return true;
             }
         }

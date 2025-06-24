@@ -108,10 +108,7 @@ public class ProfileService {
     public PagingResponse<ProfileResponseDto> getMyProfiles(Long userId, Pageable pageable) {
         Page<Profile> profiles = profileRepository.findByUserId(userId, pageable);
 
-        // 본인 프로필이 없으면 예외처리
-        if (profiles.getTotalElements() == 0) {
-            throw new BaseException(ErrorCode.PROFILE_NOT_FOUND);
-        }
+
 
         Page<ProfileResponseDto> map = profiles.map(
                 profile -> ProfileResponseDto.from(profile, profile.getUser()));
