@@ -36,7 +36,9 @@ public class Payment {
 
     private String paymentKey;
 
-    private Integer amount;
+    private Integer amount;          // 최종 결제 금액 (쿠폰 할인 적용 후)
+    private Integer originalAmount;  // 할인 전 원가 (토스 결제 기준)
+    private Integer discountAmount;  // 쿠폰 할인 금액
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
@@ -70,10 +72,13 @@ public class Payment {
     private UserCoupon userCoupon;
 
     @Builder
-    public Payment(Reservation reservation, Integer amount, PaymentStatus status, User payer,
+    public Payment(Reservation reservation, Integer amount, Integer originalAmount,
+            Integer discountAmount, PaymentStatus status, User payer,
             Ticket ticket, PaymentType paymentType, String requestedAt, UserCoupon userCoupon) {
         this.reservation = reservation;
         this.amount = amount;
+        this.originalAmount = originalAmount;
+        this.discountAmount = discountAmount;
         this.status = status;
         this.payer = payer;
         this.ticket = ticket;
@@ -99,5 +104,11 @@ public class Payment {
         this.status = PaymentStatus.CANCELED;
         this.cancelReason = reason;
         this.canceledAt = LocalDateTime.now().toString(); // 취소된 시점 기록
+    }
+
+    // 쿠폰 할인 적용 후 최종 금액 업데이트
+    public void updateFinalAmount(Integer finalAmount, Integer discountAmount) {
+        this.amount = finalAmount;
+        this.discountAmount = discountAmount;
     }
 }
