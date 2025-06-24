@@ -90,6 +90,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
         List<Tuple> mainProfiles = queryFactory
                 .selectDistinct(
                         profile.id,
+                        user.id,
                         user.name,
                         profile.title,
                         category.name,
@@ -129,6 +130,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
         return mainProfiles.stream()
                 .map(tuple -> {
                     Long profileId = tuple.get(profile.id);
+                    Long userId = tuple.get(user.id);
                     String userName = tuple.get(user.name);
                     String profileTitle = tuple.get(profile.title);
                     String categoryName = tuple.get(category.name);
@@ -141,6 +143,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
 
                     return new RecommendedProfileResponseDto(
                             profileId,
+                            userId,
                             userName,
                             profileTitle,
                             categoryName,
