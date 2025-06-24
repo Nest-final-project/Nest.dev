@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +32,15 @@ public class CareerService {
 
     // 경력 생성
     @Transactional
-    public CareerResponseDto save(CareerRequestDto dto, Long profileId) {
-        // 경력 증명서가 3개 초과 되면 에러 발생
-        if (dto.getCertificates().size() > 3) {
+    public CareerResponseDto save(CareerRequestDto dto, Long profileId, List<MultipartFile> files) {
+
+        // 경력증명서 파일은 3개까지 가능
+        if (files != null && files.size() > 3) {
             throw new BaseException(ErrorCode.CAREER_CERTIFICATE_LIMIT_EXCEEDED);
         }
 
         // 경력증명서가 null 일 때 예외 발생
-        if (dto.getCertificates().isEmpty()) {
+        if (files == null || files.isEmpty() || files.stream().allMatch(MultipartFile::isEmpty)) {
             throw new BaseException(ErrorCode.CAREER_CERTIFICATE_EMPTY);
         }
 
@@ -50,9 +52,10 @@ public class CareerService {
         Career career = CareerRequestDto.toEntity(dto, profile);
 
         // 경력과 경력증명서 연관관계 설정
-        dto.getCertificates().stream()
+        files.stream()
+                .filter(file -> !file.isEmpty())
                 .map(url -> Certificate.builder()
-                        .fileUrl(url)
+                        .fileUrl(url.getOriginalFilename())
                         .build())
                 .forEach(career::addCertificate); // 경력에 경력증명서 추가
 
@@ -106,10 +109,11 @@ public class CareerService {
 
     // 경력 삭제
     @Transactional
-    public void deleteCareer(Long profileId, Long careerId) {
+    public void deleteCareer(Long careerId) {
 
         // 경력 조회
-        Career career = findByIdAndProfileId(careerId, profileId);
+        Career career = careerRepository.findById(careerId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
 
         // 경력 삭제
         careerRepository.delete(career);
@@ -122,7 +126,8 @@ public class CareerService {
     }
 
     @Transactional(readOnly = true)
-    public PagingResponse<CareersResponseDto> getCareers(Pageable pageable, UserDetailsImpl userDetails) {
+    public PagingResponse<CareersResponseDto> getCareers(Pageable pageable,
+            UserDetailsImpl userDetails) {
 
         List<Profile> profiles = profileRepository.findByUserIdAndIsDeletedFalse(
                 userDetails.getId());
