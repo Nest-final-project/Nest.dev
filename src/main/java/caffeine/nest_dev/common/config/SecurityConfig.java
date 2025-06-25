@@ -4,8 +4,8 @@ import caffeine.nest_dev.common.exception.CustomAccessDeniedHandler;
 import caffeine.nest_dev.common.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,7 +61,7 @@ public class SecurityConfig {
             "/api/profiles/me"
     };
     private static final String[] PATCH_METHOD_MENTOR_PATH = {
-            "/api/profiles/*/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
+            "/api/careers/*", "/api/careers/**", "/api/mentor/consultations/*",
             "/api/profiles/*"
     };
 
