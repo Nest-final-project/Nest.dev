@@ -1,17 +1,9 @@
 package caffeine.nest_dev.domain.chatroom.scheduler.service;
 
-import caffeine.nest_dev.common.enums.ErrorCode;
-import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.common.websocket.util.WebSocketSessionRegistry;
-import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
-import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.chatroom.scheduler.entity.ChatRoomSchedule;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.ChatRoomScheduleRepository;
-import caffeine.nest_dev.domain.reservation.entity.Reservation;
-import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -20,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
 @Service
@@ -30,12 +20,8 @@ public class ChatRoomTerminationSchedulerService {
 
     // 스케줄링을 위한 빈
     private final TaskScheduler taskScheduler;
-    private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomScheduleRepository chatRoomScheduleRepository;
-    private final ReservationRepository reservationRepository;
-
-    // 사용자 Id , Session 매핑한 저장소
-    private final WebSocketSessionRegistry sessionRegistry;
+    private final ChatRoomTerminationRunService runService;
 
     // 서버 재시작 시 초기화 작업
     public void init() {
@@ -66,7 +52,6 @@ public class ChatRoomTerminationSchedulerService {
      * @param reservationId 예약 ID
      * @param endTime       예약 종료 시간 (채팅 종료 시간)
      */
-    @Transactional
     public void registerChatRoomCloseSchedule(Long reservationId, LocalDateTime endTime) {
         ChatRoomSchedule closeSchedule = ChatRoomSchedule.builder()
                 .reservationId(reservationId)
@@ -92,57 +77,8 @@ public class ChatRoomTerminationSchedulerService {
      */
     private Runnable disconnectUsersAndCloseRoom(Long scheduleId) {
         return () -> {
-            ChatRoomSchedule schedule = chatRoomScheduleRepository.findById(scheduleId).orElseThrow(
-                    () -> new BaseException(ErrorCode.CHATROOM_SCHEDULE_NOT_FOUND)
-            );
-
-            if (ScheduleStatus.COMPLETE.equals(schedule.getScheduleStatus())) {
-                log.info("이미 완료된 스케줄입니다. ID: {}", scheduleId);
-                return;
-            }
-
-            // 종료 후 상태 업데이트
-            schedule.updateStatus();
-            chatRoomScheduleRepository.save(schedule);
-
-            Long reservationId = schedule.getReservationId();
-            ChatRoom chatRoom = chatRoomRepository.findByReservationId(reservationId).orElseThrow(
-                    () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND)
-            );
-
-            // isClosed == true 설정
-            chatRoom.close();
-            chatRoomRepository.save(chatRoom);
-
-            // 사용자별 세션 종료
-            String mentorId = chatRoom.getMentor().getId().toString();
-            String menteeId = chatRoom.getMentee().getId().toString();
-            disconnectUser(mentorId);
-            disconnectUser(menteeId);
-
-            Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
-                    () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
-            );
-            reservation.complete();
-
-            log.info("종료 작업 완료 : ScheduleId = {}", scheduleId);
-            log.info("채팅방 종료 완료 : ChatRoomId = {}, mentor = {}, mentee = {}", chatRoom.getId(), mentorId, menteeId);
+            runService.transactionRunnable(scheduleId);
         };
     }
 
-    /**
-     * 특정 사용자 ID의 WebSocket 세션 종료
-     *
-     * @param userId 종료할 사용자 ID
-     */
-    private void disconnectUser(String userId) {
-        WebSocketSession session = sessionRegistry.getSession(userId);
-        if (session != null && session.isOpen()) {
-            try {
-                session.close(new CloseStatus(4000, "채팅 종료"));
-            } catch (Exception e) {
-                log.warn("세션 종료 실패 : {}", userId, e);
-            }
-        }
-    }
 }
