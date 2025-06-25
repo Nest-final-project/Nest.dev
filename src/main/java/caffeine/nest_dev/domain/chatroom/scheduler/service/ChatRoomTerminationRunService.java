@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
 @Service
@@ -55,8 +53,8 @@ public class ChatRoomTerminationRunService {
         // 사용자별 세션 종료
         String mentorId = chatRoom.getMentor().getId().toString();
         String menteeId = chatRoom.getMentee().getId().toString();
-        disconnectUser(mentorId);
-        disconnectUser(menteeId);
+//        disconnectUser(mentorId);
+//        disconnectUser(menteeId);
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
@@ -72,15 +70,15 @@ public class ChatRoomTerminationRunService {
      *
      * @param userId 종료할 사용자 ID
      */
-    private void disconnectUser(String userId) {
-        WebSocketSession session = sessionRegistry.getSession(userId);
-        log.info("종료할 세션 Id : {}, userId : {}", session.getId(), userId);
-        if (session != null && session.isOpen()) {
-            try {
-                session.close(new CloseStatus(4000, "채팅 종료"));
-            } catch (Exception e) {
-                log.warn("세션 종료 실패 : {}", userId, e);
-            }
-        }
-    }
+//    private void disconnectUser(String userId) {
+//        WebSocketSession session = sessionRegistry.getSession(userId);
+//        log.info("종료할 세션 Id : {}, userId : {}", session.getId(), userId);
+//        if (session != null && session.isOpen()) {
+//            try {
+//                session.close(new CloseStatus(4000, "채팅 종료"));
+//            } catch (Exception e) {
+//                log.warn("세션 종료 실패 : {}", userId, e);
+//            }
+//        }
+//    }
 }
