@@ -39,7 +39,7 @@ public class ChatRoomEventListener {
     public void scheduleChatRoomCreationAfterPayment(SaveCreateRoomEvent event) {
         try {
             log.info("채팅방 생성 작업 트랜잭션 시작 - reservationId: {}", event.getReservationId());
-            schedulerService.registerChatRoomCloseSchedule(event.getReservationId(), event.getStartAt());
+            chatRoomSchedulerService.registerChatRoomSchedule(event.getReservationId(), event.getStartAt());
             log.info("채팅방 생성 스케줄 등록 완료 - reservationId: {}", event.getReservationId());
         } catch (Exception e) {
             log.error("채팅방 생성 스케줄 등록 실패 - reservationId: {}", event.getReservationId(), e);
