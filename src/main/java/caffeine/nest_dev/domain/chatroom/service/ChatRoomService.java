@@ -10,6 +10,7 @@ import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomTerminationSchedulerService;
+import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveSchedulerEvent;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class ChatRoomService {
     private final ReservationRepository reservationRepository;
     private final UserService userService;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     // 채팅방 종료 예약 스케줄러
     private final ChatRoomTerminationSchedulerService schedulerService;
 
@@ -39,7 +43,6 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomResponseDto createChatRooms(CreateChatRoomRequestDto requestDto) {
 
-        // 예약이 유효한지 확인
         Reservation reservation = reservationRepository.findById(requestDto.getReservationId()).orElseThrow(
                 () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
         );
@@ -55,11 +58,8 @@ public class ChatRoomService {
             return ChatRoomResponseDto.of(existChatRoom.get());
         }
 
-        // 멘토, 멘티 정보 추출
         User mentor = reservation.getMentor();
         User mentee = reservation.getMentee();
-        log.info("mentorID = {}", mentor.getId());
-        log.info("menteeID = {}", mentee.getId());
 
         ChatRoom chatRoom = requestDto.toEntity(mentor, mentee, reservation);
 
@@ -67,7 +67,7 @@ public class ChatRoomService {
         log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
 
         // 채팅방 자동 종료 작업 등록
-        schedulerService.registerChatRoomCloseSchedule(reservation.getId(), reservation.getReservationEndAt());
+        eventPublisher.publishEvent(new SaveSchedulerEvent(reservation.getId(), reservation.getReservationEndAt()));
 
         return ChatRoomResponseDto.of(savedChatRoom);
     }
