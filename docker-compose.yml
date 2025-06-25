@@ -1,22 +1,22 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0.36
-    container_name: mysql-nest
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    command:
-        [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - nest-network
+#  mysql:
+#    image: mysql:8.0.36
+#    container_name: mysql-nest
+#    environment:
+#      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_DATABASE: ${DB_NAME}
+#      MYSQL_USER: ${DB_USERNAME}
+#      MYSQL_PASSWORD: ${DB_PASSWORD}
+#    command:
+#        [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
+#    ports:
+#      - "3307:3306"
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+#    networks:
+#      - nest-network
 
   redis:
     image: redis:alpine
@@ -26,15 +26,17 @@ services:
     networks:
       - nest-network
 
+#도커허브 이미지 퓨시 (image: nest-app/도커허브계정명)
   nest_app:
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: nest-app
+    image: leeyounseung/nest
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+#      - mysql
       - redis
     environment:
       SPRING_DATASOURCE_URL: ${DB_URL}

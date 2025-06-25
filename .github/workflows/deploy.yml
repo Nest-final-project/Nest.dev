@@ -31,6 +31,16 @@ jobs:
           ls -la ./build/libs
           ls -la ./
 
+      # 도커허브: 도커파일 기준으로 도커헙에 푸쉬
+      - name: Build Docker image
+        run: docker build -t leeyounseung/nest .
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push Docker image to DockerHub
+        run: docker push leeyounseung/nest
+
       - name: Create .env file
         run: |
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
@@ -38,6 +48,10 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+          echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> .env
         # secrets에 정의된 값을 사용하여 .env 파일을 생성
       - name: Copy all docker-related files to server
         uses: appleboy/scp-action@v0.1.7
@@ -46,8 +60,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }} # 서버 접속 SSH Private Key
           port: 22
-          source: '.env,./docker-compose.yml,./Dockerfile,./build/libs/*.jar'
-          target: "~/Nest.dev"
+          source: '.env,./docker-compose.yml'
+          target: "/home/ubuntu/Nest.dev"
 
       - name: SSH and deploy via docker-compose
         uses: appleboy/ssh-action@v0.1.6
@@ -58,11 +72,6 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            cd ~/Nest.dev
-            
-            docker-compose down || true
-            
-            docker-compose up --build -d
-            
-            docker-compose logs --tail=30
-            
+            cd Nest.dev
+#            새로운 명령어
+
