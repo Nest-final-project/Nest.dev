@@ -109,6 +109,8 @@ public enum ErrorCode implements BaseCode {
 
     // OAuth2
     INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST, "소셜 로그인 타입이 일치하지 않습니다."),
+    DTO_NOT_FOUND(HttpStatus.BAD_REQUEST, "dto가 존재하지 않습니다."),
+    INVALID_SOCIAL_CODE(HttpStatus.BAD_REQUEST, "코드가 일치하지 않습니다."),
 
 
     // ChatRoom

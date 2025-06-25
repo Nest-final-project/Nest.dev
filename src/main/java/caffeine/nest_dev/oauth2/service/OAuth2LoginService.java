@@ -12,8 +12,10 @@ import caffeine.nest_dev.oauth2.dto.response.OAuth2LoginResponseDto;
 import caffeine.nest_dev.oauth2.userinfo.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
@@ -24,15 +26,20 @@ public class OAuth2LoginService {
     private final TokenRepository tokenRepository;
     private final AuthService authService;
     private final StringRedisTemplate stringRedisTemplate;
+    private final RedisTemplate<String, Object> objectRedisTemplate;
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
+    @Value("60000")
+    private long socialInfoExpresion;
+
+    private static final String SUFFIX = "SOCIAL";
 
     public String generateLoginPageUrl(SocialType provider) {
         return oAuth2ClientService.generateLoginPageUrl(provider);
     }
 
-    public OAuth2LoginResponseDto login(SocialType provider, String authorizationCode,
+    public String login(SocialType provider, String authorizationCode,
             String state) {
 
         // state 값 유효성 검증
@@ -54,11 +61,22 @@ public class OAuth2LoginService {
         if (user.getUserRole() == null || user.getPhoneNumber() == null || user.getName() == null) {
             // 임시 토큰 발급
             String tempAccessToken = jwtUtil.createTempAccessToken(user);
-            return OAuth2LoginResponseDto.of(user, tempAccessToken, null, true);
-        }
 
-        // socialType 변경
-        user.updateSocialType(provider, userInfo.getId());
+            // redis 에 로그인된 유저의 정보 담기(토큰, 정보, isNew 등)
+            OAuth2LoginResponseDto dto = OAuth2LoginResponseDto.of(user, tempAccessToken, null,
+                    true);
+            tokenRepository.saveSocial(dto.getId(), dto, socialInfoExpresion);
+
+            // Redis에 DTO를 저장할 때 사용한 userId를 일회성 코드로 사용
+            String oneTimeCode = String.valueOf(dto.getId());
+
+            String redirectUrl = "http://localhost:3000/oauth2/callback";
+            String finalRedirectUrl = UriComponentsBuilder.fromUriString(redirectUrl)
+                    .queryParam("code", SUFFIX + oneTimeCode).build()
+                    .toUriString();
+
+            return finalRedirectUrl;
+        }
 
         // accessToken 발급
         String accessToken = jwtUtil.createAccessToken(user);
@@ -68,6 +86,37 @@ public class OAuth2LoginService {
         // redis 에 refreshToken 저장
         tokenRepository.save(user.getId(), refreshToken, refreshTokenExpiration);
 
-        return OAuth2LoginResponseDto.of(user, accessToken, refreshToken, false);
+        // redis 에 로그인된 유저의 정보 담기(토큰, 정보, isNew 등)
+        OAuth2LoginResponseDto dto = OAuth2LoginResponseDto.of(user, accessToken,
+                refreshToken, false);
+        tokenRepository.saveSocial(dto.getId(), dto, socialInfoExpresion);
+
+        // Redis에 DTO를 저장할 때 사용한 userId를 일회성 코드로 사용
+        String oneTimeCode = String.valueOf(dto.getId());
+
+        String redirectUrl = "http://localhost:3000/oauth2/callback";
+        String finalRedirectUrl = UriComponentsBuilder.fromUriString(redirectUrl)
+                .queryParam("code", SUFFIX + oneTimeCode).build()
+                .toUriString();
+
+        return finalRedirectUrl;
+    }
+
+    public OAuth2LoginResponseDto loginCheck(String code) {
+        // code로 redis에서 값 불러오기
+        OAuth2LoginResponseDto dto = (OAuth2LoginResponseDto) objectRedisTemplate.opsForValue()
+                .get(code);
+
+        if (dto == null) {
+            throw new BaseException(ErrorCode.DTO_NOT_FOUND);
+        }
+
+        // code 에서 접두사 뺀 값과 userId 가 일치하는지 확인
+        String replace = code.replace(SUFFIX, "");
+        if (!dto.getId().toString().equals(replace)) {
+            throw new BaseException(ErrorCode.INVALID_SOCIAL_CODE);
+        }
+
+        return dto;
     }
 }

@@ -98,10 +98,10 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponseDto updateExtraInfo(Long userId, ExtraInfoRequestDto dto) {
+    public LoginResponseDto updateExtraInfo(ExtraInfoRequestDto dto) {
 
         // 유저 조회
-        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+        User user = findByIdAndIsDeletedFalseOrElseThrow(dto.getId());
 
         if (dto.getUserRole() == null || dto.getPhoneNumber() == null || dto.getName() == null) {
             throw new BaseException(ErrorCode.EXTRA_INFO_REQUIRED);

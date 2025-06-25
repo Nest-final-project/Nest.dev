@@ -84,11 +84,10 @@ public class UserController {
     // MENTEE or MENTOR 선택 / 전화번호 입력 (추가정보)
     @PatchMapping("/me/extraInfo")
     public ResponseEntity<CommonResponse<LoginResponseDto>> extraInfo(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ExtraInfoRequestDto dto
     ) {
 
-        LoginResponseDto responseDto = userService.updateExtraInfo(userDetails.getId(), dto);
+        LoginResponseDto responseDto = userService.updateExtraInfo(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_UPDATE_EXTRA_INFO, responseDto));

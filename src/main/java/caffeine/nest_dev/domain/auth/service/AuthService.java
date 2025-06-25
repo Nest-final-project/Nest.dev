@@ -162,6 +162,9 @@ public class AuthService {
     @Transactional
     public User findUserByEmail(OAuth2UserInfo userInfo, SocialType provider) {
         return userRepository.findByEmailAndIsDeletedFalse(userInfo.getEmail())
+                .map(existinUser -> {existinUser.updateSocialType(provider, userInfo.getId());
+                    return existinUser;
+                })
                 .orElseGet(() -> registerIfAbsent(userInfo, provider));
     }
 
