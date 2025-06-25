@@ -98,10 +98,11 @@ public class CareerService {
 
     // 경력 수정
     @Transactional
-    public void updateCareer(Long profileId, Long careerId, UpdateCareerRequestDto dto) {
+    public void updateCareer(Long careerId, UpdateCareerRequestDto dto) {
 
         // 경력 조회
-        Career career = findByIdAndProfileId(careerId, profileId);
+        Career career = careerRepository.findById(careerId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
 
         // 경력 수정
         career.updateCareer(dto);

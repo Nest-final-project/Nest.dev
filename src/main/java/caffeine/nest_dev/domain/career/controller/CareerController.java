@@ -76,14 +76,13 @@ public class CareerController {
     }
 
     // 경력 수정
-    @PatchMapping("/profiles/{profileId}/careers/{careerId}")
+    @PatchMapping("/careers/{careerId}")
     public ResponseEntity<CommonResponse<Void>> updateCareer(
-            @PathVariable Long profileId,
             @PathVariable Long careerId,
             @RequestBody UpdateCareerRequestDto dto
     ) {
 
-        careerService.updateCareer(profileId, careerId, dto);
+        careerService.updateCareer(careerId, dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CAREER_UPDATED));
