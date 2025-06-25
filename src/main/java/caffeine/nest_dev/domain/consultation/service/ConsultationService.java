@@ -60,9 +60,6 @@ public class ConsultationService {
         List<Consultation> availableTime = consultationRepository.findByMentorIdAndDayOfWeek(
                 mentorId, dayOfWeek);
 
-        if (availableTime.isEmpty()) {
-            throw new BaseException(ErrorCode.CONSULTATION_NOT_FOUND);
-        }
 
         // 예약이 취소된 것들을 제외한 모든 예약 조회
         List<Reservation> bookedReservations = reservationRepository.findByMentorIdAndReservationStatusNot(

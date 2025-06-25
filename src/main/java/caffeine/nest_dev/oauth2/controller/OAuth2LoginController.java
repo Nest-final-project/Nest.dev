@@ -38,16 +38,27 @@ public class OAuth2LoginController {
 
     // 소셜 로그인
     @GetMapping("/oauth2/callback/{provider}")
-    public ResponseEntity<CommonResponse<OAuth2LoginResponseDto>> oauth2Login(
+    public void oauth2Login(
             @PathVariable SocialType provider,
             @RequestParam("code") String authorizationCode,
-            @RequestParam("state") String state
-    ) {
+            @RequestParam("state") String state,
+            HttpServletResponse response
+    ) throws IOException {
 
-        OAuth2LoginResponseDto responseDto = oAuth2LoginService.login(provider, authorizationCode,
+        String url = oAuth2LoginService.login(provider, authorizationCode,
                 state);
 
+        response.sendRedirect(url);
+    }
+
+    // 소셜 로그인 정보 확인
+    @GetMapping("/oauth2/callback")
+    public ResponseEntity<CommonResponse<OAuth2LoginResponseDto>> oauth2LoginCheck(
+            @RequestParam("code") String code
+    ) {
+        OAuth2LoginResponseDto dto = oAuth2LoginService.loginCheck(code);
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, responseDto));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_USER_LOGIN, dto));
     }
 }

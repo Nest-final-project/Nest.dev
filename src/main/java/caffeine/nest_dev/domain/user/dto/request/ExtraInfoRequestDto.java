@@ -11,6 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ExtraInfoRequestDto {
 
+    private Long id;
+
     @NotBlank(message = "이름은 필수 입니다.")
     private String name;
 
