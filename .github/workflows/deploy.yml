@@ -73,5 +73,9 @@ jobs:
           script_stop: true
           script: |
             cd Nest.dev
-#            새로운 명령어
+            docker pull leeyounseung/nest
+            docker-compose down
+            docker container prune -f
+            docker-compose up -d
+
 
