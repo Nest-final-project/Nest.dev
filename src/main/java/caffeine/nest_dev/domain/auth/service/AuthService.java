@@ -161,8 +161,13 @@ public class AuthService {
     // DB에서 유저 조회
     @Transactional
     public User findUserByEmail(OAuth2UserInfo userInfo, SocialType provider) {
-        return userRepository.findByEmailAndIsDeletedFalse(userInfo.getEmail())
-                .map(existinUser -> {existinUser.updateSocialType(provider, userInfo.getId());
+        return userRepository.findByEmail(userInfo.getEmail())
+                .map(existinUser -> {
+                    // isDeleted 검증
+                    if (existinUser.isDeleted()) {
+                        throw new BaseException(ErrorCode.ALREADY_DELETED_USER);
+                    }
+                    existinUser.updateSocialType(provider, userInfo.getId());
                     return existinUser;
                 })
                 .orElseGet(() -> registerIfAbsent(userInfo, provider));
