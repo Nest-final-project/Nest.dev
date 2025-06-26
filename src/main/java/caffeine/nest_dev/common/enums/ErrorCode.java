@@ -134,7 +134,11 @@ public enum ErrorCode implements BaseCode {
     NOTIFICATION_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 알림 작업이 존재하지 않습니다."),
     DUPLICATED_SCHEDULE(HttpStatus.BAD_REQUEST, "이미 등록된 작업입니다."),
     INVALID_SCHEDULE_TIME(HttpStatus.BAD_REQUEST, "지정된 예약 시간이 지났습니다."),
-    CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다.");
+    CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다."),
+
+    // S3
+    S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다.")
+    ;
 
 
     private final HttpStatus httpStatus;

@@ -14,7 +14,9 @@ import caffeine.nest_dev.domain.career.repository.CareerRepository;
 import caffeine.nest_dev.domain.certificate.entity.Certificate;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
+import caffeine.nest_dev.domain.s3.S3Service;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ public class CareerService {
 
     private final CareerRepository careerRepository;
     private final ProfileRepository profileRepository;
+    private final S3Service s3Service;
 
     // 경력 생성
     @Transactional
@@ -51,14 +54,23 @@ public class CareerService {
         // 경력 Entity 생성 및 profile 과 연관관계 설정
         Career career = CareerRequestDto.toEntity(dto, profile);
 
-        // 경력과 경력증명서 연관관계 설정
-        files.stream()
+        // s3에 업로드 및 URL을 엔티티에 저장
+        List<Certificate> certificates = files.stream()
                 .filter(file -> !file.isEmpty())
-                .map(url -> Certificate.builder()
-                        .fileUrl(url.getOriginalFilename())
-                        .build())
-                .forEach(career::addCertificate); // 경력에 경력증명서 추가
+                .map(file -> {
+                    try {
+                        String fileUrl = s3Service.uploadFile(file);
+                        return Certificate.builder()
+                                .fileUrl(fileUrl)
+                                .build();
+                    } catch (IOException e) {
+                        throw new BaseException(ErrorCode.S3_UPLOAD_FAILED);
+                    }
+                })
+                .toList();
 
+        // 경력과 경력증명서 연관관계 설정
+        certificates.forEach(career::addCertificate); // 경력에 경력증명서 추가
         // 경력 저장
         Career saved = careerRepository.save(career);
 

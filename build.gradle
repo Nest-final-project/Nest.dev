@@ -93,6 +93,13 @@ dependencies {
     // SMTP
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // AWS SDK for S3
+    implementation 'software.amazon.awssdk:s3:2.25.1'
+    // AWS SDK HTTP 클라이언트 (Apache HttpClient 사용 권장)
+    implementation 'software.amazon.awssdk:url-connection-client:2.25.1'
+
+
+
 }
 
 // Querydsl 빌드 옵션 설정
