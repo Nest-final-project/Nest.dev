@@ -5,13 +5,16 @@ import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.common.config.PasswordEncoder;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
+import caffeine.nest_dev.domain.auth.dto.request.AuthCodeRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.AuthRequestDto;
+import caffeine.nest_dev.domain.auth.dto.request.EmailAuthRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.LoginRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.RefreshTokenRequestDto;
 import caffeine.nest_dev.domain.auth.dto.response.AuthResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
 import caffeine.nest_dev.domain.auth.repository.TokenRepository;
+import caffeine.nest_dev.domain.email.EmailService;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
@@ -41,6 +44,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate stringRedisTemplate;
+    private final EmailService emailService;
     private final AwsSesMailService awsSesMailService; // ses 서비스 로직 의존 추가
 
     @Value("${jwt.refresh-token-expiration}")
@@ -48,11 +52,6 @@ public class AuthService {
 
     @Transactional
     public AuthResponseDto signup(AuthRequestDto dto) {
-
-        // 이메일 중복 검증
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
-        }
 
         // 비밀번호 인코딩
         String encoded = passwordEncoder.encode(dto.getPassword());
@@ -73,6 +72,27 @@ public class AuthService {
 
         return AuthResponseDto.of(savedUser);
     }
+
+    // 인증 코드 보내기
+    @Transactional
+    public void signupCode(EmailAuthRequestDto dto) {
+
+        // 이메일 중복 검증
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
+        }
+
+        // 인증 코드 보내기
+        emailService.sendAuthCodeEmail(dto.getEmail());
+    }
+
+    // 입력받은 인증 코드로 검증
+    public void verifyCode(AuthCodeRequestDto dto) {
+        if (!emailService.checkAuthCode(dto.getEmail(), dto.getAuthCode())) {
+            throw new BaseException(ErrorCode.INVALID_AUTH_CODE);
+        }
+    }
+
 
     @Transactional
     public LoginResponseDto login(LoginRequestDto dto) {
@@ -172,8 +192,13 @@ public class AuthService {
     // DB에서 유저 조회
     @Transactional
     public User findUserByEmail(OAuth2UserInfo userInfo, SocialType provider) {
-        return userRepository.findByEmailAndIsDeletedFalse(userInfo.getEmail())
-                .map(existinUser -> {existinUser.updateSocialType(provider, userInfo.getId());
+        return userRepository.findByEmail(userInfo.getEmail())
+                .map(existinUser -> {
+                    // isDeleted 검증
+                    if (existinUser.isDeleted()) {
+                        throw new BaseException(ErrorCode.ALREADY_DELETED_USER);
+                    }
+                    existinUser.updateSocialType(provider, userInfo.getId());
                     return existinUser;
                 })
                 .orElseGet(() -> registerIfAbsent(userInfo, provider));

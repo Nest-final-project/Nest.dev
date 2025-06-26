@@ -15,6 +15,8 @@ public enum ErrorCode implements BaseCode {
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "입력받은 유저는 멘토가 아닙니다."),
     INVALID_ROLE_FOR_SIGNUP(HttpStatus.BAD_REQUEST, "회원가입에 사용할 수 없는 역할입니다. "),
     INVALID_RESERVATION_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 예약 상태입니다."),
+    ALREADY_DELETED_USER(HttpStatus.BAD_REQUEST, "이미 회원가입한 이메일입니다."),
+    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
 
     // User
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
@@ -132,7 +134,11 @@ public enum ErrorCode implements BaseCode {
     NOTIFICATION_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 알림 작업이 존재하지 않습니다."),
     DUPLICATED_SCHEDULE(HttpStatus.BAD_REQUEST, "이미 등록된 작업입니다."),
     INVALID_SCHEDULE_TIME(HttpStatus.BAD_REQUEST, "지정된 예약 시간이 지났습니다."),
-    CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다.");
+    CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다."),
+
+    // S3
+    S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다.")
+    ;
 
 
     private final HttpStatus httpStatus;
