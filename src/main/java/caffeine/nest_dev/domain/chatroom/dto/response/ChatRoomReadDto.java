@@ -18,7 +18,8 @@ public class ChatRoomReadDto {
     private String mentorName;
     private Long menteeId;
     private String menteeName;
-    
+    private Long reservationId;
+
     // 마지막 메시지 정보 추가
     private String lastMessageContent;
     private String lastMessageTime;
@@ -36,10 +37,10 @@ public class ChatRoomReadDto {
                 // 마지막 메시지는 쿼리에서 설정
                 .build();
     }
-    
+
     // 마지막 메시지 정보를 설정하는 생성자
-    public static ChatRoomReadDto of(ChatRoom chatRoom, String lastMessageContent, 
-                                   String lastMessageTime, Long lastMessageSenderId) {
+    public static ChatRoomReadDto of(ChatRoom chatRoom, String lastMessageContent,
+            String lastMessageTime, Long lastMessageSenderId) {
         User mentor = chatRoom.getMentor();
         User mentee = chatRoom.getMentee();
         return ChatRoomReadDto.builder()
@@ -48,6 +49,7 @@ public class ChatRoomReadDto {
                 .mentorName(mentor.getName())
                 .menteeId(mentee.getId())
                 .menteeName(mentee.getName())
+                .reservationId(chatRoom.getReservation().getId())
                 .lastMessageContent(lastMessageContent)
                 .lastMessageTime(lastMessageTime)
                 .lastMessageSenderId(lastMessageSenderId)
