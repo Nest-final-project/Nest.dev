@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.auth.service;
 
+import caffeine.nest_dev.common.aws.AwsSesMailService;
 import caffeine.nest_dev.common.config.JwtUtil;
 import caffeine.nest_dev.common.config.PasswordEncoder;
 import caffeine.nest_dev.common.enums.ErrorCode;
@@ -19,6 +20,12 @@ import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
 import caffeine.nest_dev.oauth2.userinfo.OAuth2UserInfo;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +45,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate stringRedisTemplate;
     private final EmailService emailService;
+    private final AwsSesMailService awsSesMailService; // ses 서비스 로직 의존 추가
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
@@ -58,6 +66,9 @@ public class AuthService {
         };
 
         User savedUser = userRepository.save(user);
+
+        // 회원가입이 완료되면 해당 이메일로 이메일 수신
+        awsSesMailService.sendWelcomeEmail(savedUser.getEmail());
 
         return AuthResponseDto.of(savedUser);
     }
