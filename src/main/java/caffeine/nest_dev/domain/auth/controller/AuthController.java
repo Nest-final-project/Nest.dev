@@ -2,7 +2,9 @@ package caffeine.nest_dev.domain.auth.controller;
 
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
+import caffeine.nest_dev.domain.auth.dto.request.AuthCodeRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.AuthRequestDto;
+import caffeine.nest_dev.domain.auth.dto.request.EmailAuthRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.LoginRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.LogoutRequestDto;
 import caffeine.nest_dev.domain.auth.dto.request.RefreshTokenRequestDto;
@@ -33,12 +35,37 @@ public class AuthController {
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<CommonResponse<AuthResponseDto>> signup(
-            @Valid @RequestBody AuthRequestDto dto) {
+            @Valid @RequestBody AuthRequestDto dto
+    ) {
 
         AuthResponseDto responseDto = authService.signup(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_SIGNUP, responseDto));
+    }
+
+    // 인증코드 보내기
+    @PostMapping("/signup/code")
+    public ResponseEntity<CommonResponse<Void>> signupCode(
+            @Valid @RequestBody EmailAuthRequestDto dto
+    ) {
+
+        authService.signupCode(dto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CODE_SEND));
+    }
+
+    // 입력받은 인증코드 검증
+    @PostMapping("/signup/code/verify")
+    public ResponseEntity<CommonResponse<Void>> verifyCode(
+            @RequestBody AuthCodeRequestDto dto
+    ) {
+
+        authService.verifyCode(dto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_CODE_VERIFY));
     }
 
     // 로그인
