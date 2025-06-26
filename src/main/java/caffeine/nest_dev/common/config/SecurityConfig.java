@@ -27,7 +27,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
             "/ws-nest/**", "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
-            "/oauth2/callback"
+            "/oauth2/callback", "/api/auth/signup/**"
 
     };
 

@@ -163,8 +163,10 @@ public class UserService {
         User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         // 비밀번호 일치 검증
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new BaseException(ErrorCode.INVALID_PASSWORD);
+        if (SocialType.LOCAL.equals(user.getSocialType())) {
+            if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+                throw new BaseException(ErrorCode.INVALID_PASSWORD);
+            }
         }
 
         // access 토큰 redis에 블랙리스트 추가
