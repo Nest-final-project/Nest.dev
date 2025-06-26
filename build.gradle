@@ -86,6 +86,10 @@ dependencies {
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
+    // AWS SES
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'com.amazonaws:aws-java-sdk-ses:1.12.3'
+
 }
 
 // Querydsl 빌드 옵션 설정
