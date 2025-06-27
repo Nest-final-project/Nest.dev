@@ -12,11 +12,13 @@ import lombok.Getter;
 public class NotificationResponse {
 
     private String content;
+    private Long chatRoomId;
     private LocalDateTime createdAt;
 
     public static NotificationResponse from(Notification notification) {
         return NotificationResponse.builder()
                 .content(notification.getContent())
+                .chatRoomId(notification.getChatRoomId())
                 .createdAt(notification.getCreatedAt())
                 .build();
     }

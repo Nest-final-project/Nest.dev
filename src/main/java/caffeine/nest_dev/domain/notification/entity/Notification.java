@@ -1,13 +1,12 @@
 package caffeine.nest_dev.domain.notification.entity;
 
-import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,13 +29,21 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;  // 알림 수신자
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "receiver_id", nullable = false)
+//    private User receiver;  // 알림 수신자
+
+    private Long receiverId;
+
+    private Long chatRoomId;
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    private ChatRoomType chatRoomType;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
 
 }

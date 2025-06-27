@@ -3,6 +3,7 @@ package caffeine.nest_dev.domain.chatroom.scheduler.service;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.chatroom.scheduler.entity.NotificationSchedule;
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.repository.NotificationScheduleRepository;
 import caffeine.nest_dev.domain.notification.service.NotificationService;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -98,8 +99,10 @@ public class ChatRoomTerminationNotifier {
                 log.info("이미 완료된 스케줄입니다. ID : {}", scheduleId);
                 return;
             }
-
-            notificationService.send(schedule.getReceiver(), "채팅 종료까지 5분 남았습니다.");
+            Long chatRoomId = schedule.getChatRoomId();
+            Long receiverId = schedule.getReceiver().getId();
+            notificationService.send(receiverId, "채팅 종료까지 5분 남았습니다.", ChatRoomType.CLOSE,
+                    chatRoomId);
 
             // isSent : false -> true, 전송시간 기록
             schedule.markAsSent();
