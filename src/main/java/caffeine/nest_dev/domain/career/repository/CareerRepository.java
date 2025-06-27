@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CareerRepository extends JpaRepository<Career, Long> {
 
-    @Query("select c from Career c where c.careerStatus = 'UNAUTHORIZED'")
+    @Query("select c from Career c")
     Page<Career> findByCareerStatus(Pageable pageable);
 
     Optional<Career> findByIdAndProfileId(Long careerId, Long profileId);
