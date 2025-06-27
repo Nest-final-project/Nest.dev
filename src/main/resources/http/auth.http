@@ -86,3 +86,7 @@ Content-Type: application/json;charset=UTF-8
 %}
 
 
+
+### Socket Token 발급
+POST {{root-path}}/socket/token
+Authorization: Bearer {{authorizationToken}}
