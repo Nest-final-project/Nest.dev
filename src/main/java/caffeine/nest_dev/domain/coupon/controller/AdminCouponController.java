@@ -43,7 +43,7 @@ public class AdminCouponController {
     ) {
         PagingResponse<AdminCouponResponseDto> responseDtos = adminCouponService.getCoupon(pageable);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_READ, responseDtos));
+                .body(CommonResponse.of(SuccessCode.SUCCESS_ADMIN_COUPON_READ, responseDtos));
     }
 
     @PatchMapping("/{couponId}")

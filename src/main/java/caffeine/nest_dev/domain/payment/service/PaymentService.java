@@ -7,6 +7,7 @@ import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveCreateRoomEvent;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
 import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
+import caffeine.nest_dev.domain.coupon.service.UserCouponService;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentCancelRequestDto;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentConfirmRequestDto;
 import caffeine.nest_dev.domain.payment.dto.request.PaymentPrepareRequestDto;
@@ -29,6 +30,7 @@ import caffeine.nest_dev.domain.ticket.repository.TicketRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
@@ -59,6 +61,7 @@ public class PaymentService {
     private final UserRepository userRepository; // 유저 데이터 조회
     private final TicketRepository ticketRepository; // 티켓 데이터 조회
     private final UserCouponRepository userCouponRepository;
+    private final UserCouponService userCouponService;
     private final WebClient webClient; // 외부 API(Toss) 호출용 / 기존 RestTemplate 대신 WebClient 주입
 
     @Value("${toss.payments.client-secret}")
@@ -123,7 +126,6 @@ public class PaymentService {
 
         int originalAmount = requestDto.getAmount();
         UserCoupon userCoupon = null;
-        int discountAmount = 0;
 
         if (requestDto.getCouponId() != null) {
             UserCouponId userCouponId = new UserCouponId(user.getId(), requestDto.getCouponId());
@@ -135,9 +137,13 @@ public class PaymentService {
                 throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
             }
 
-            discountAmount = userCoupon.getCoupon().getDiscountAmount();
-            if (discountAmount > originalAmount) {
-                throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT); // 할인 금액이 원가보다 클 수 없음
+            // 새로운 쿠폰 검증 및 할인 계산 로직 사용
+            BigDecimal orderAmount = BigDecimal.valueOf(originalAmount);
+            userCouponService.validateCouponForUse(userCoupon.getCoupon(), orderAmount);
+            
+            BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), orderAmount);
+            if (calculatedDiscount.compareTo(orderAmount) > 0) {
+                throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT);
             }
         }
 
@@ -225,7 +231,8 @@ public class PaymentService {
             log.info("[결제 승인 성공] orderId: {}", tossResponse.getOrderId());
 
             // 쿠폰 할인 적용 및 최종 금액 계산
-            int finalAmount = payment.getOriginalAmount(); // 원가부터 시작
+            BigDecimal originalAmountBD = BigDecimal.valueOf(payment.getOriginalAmount());
+            BigDecimal finalAmountBD = originalAmountBD;
             int discountAmount = 0;
 
             UserCoupon userCoupon = payment.getUserCoupon();
@@ -234,13 +241,17 @@ public class PaymentService {
                     throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
                 }
 
-                discountAmount = userCoupon.getCoupon().getDiscountAmount();
-                finalAmount -= discountAmount; // 쿠폰 할인 적용
+                // 새로운 할인 계산 로직 사용
+                BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), originalAmountBD);
+                discountAmount = calculatedDiscount.intValue();
+                finalAmountBD = originalAmountBD.subtract(calculatedDiscount);
 
                 userCoupon.markAsUsed(); // 쿠폰 사용 처리
                 log.info(" 쿠폰 할인 적용 - 원가: {}원, 할인: {}원, 최종: {}원",
-                        payment.getOriginalAmount(), discountAmount, finalAmount);
+                        payment.getOriginalAmount(), discountAmount, finalAmountBD.intValue());
             }
+
+            int finalAmount = finalAmountBD.intValue();
 
             // Payment 업데이트
             payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
