@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-/**
+/*
  * 사용자에게 전송되는 알림 정보 저장
  */
 @Entity
@@ -29,10 +29,6 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "receiver_id", nullable = false)
-//    private User receiver;  // 알림 수신자
-
     private Long receiverId;
 
     private Long chatRoomId;
@@ -44,6 +40,5 @@ public class Notification {
 
     @CreatedDate
     private LocalDateTime createdAt;
-
 
 }
