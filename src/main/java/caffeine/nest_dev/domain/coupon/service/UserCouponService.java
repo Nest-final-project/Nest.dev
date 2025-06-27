@@ -8,6 +8,7 @@ import caffeine.nest_dev.domain.coupon.dto.response.UserCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.entity.Coupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
+import caffeine.nest_dev.domain.coupon.enums.CouponDiscountType;
 import caffeine.nest_dev.domain.coupon.repository.AdminCouponRepository;
 import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +56,24 @@ public class UserCouponService {
         UserCoupon userCoupon = userCouponRepository.findById(userCouponId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER_COUPON));
         userCoupon.modifyUseStatus(requestDto);
+    }
+
+    public BigDecimal calculateDiscount(Coupon coupon, BigDecimal orderAmount) {
+        if (orderAmount.compareTo(BigDecimal.valueOf(coupon.getMinOrderAmount())) < 0) {
+            throw new BaseException(ErrorCode.COUPON_MIN_ORDER_AMOUNT_NOT_MET);
+        }
+        
+        if (coupon.getDiscountType() == CouponDiscountType.FIXED_AMOUNT) {
+            return BigDecimal.valueOf(coupon.getDiscountAmount());
+        } else {
+            BigDecimal discountRate = BigDecimal.valueOf(coupon.getDiscountAmount()).divide(BigDecimal.valueOf(100));
+            return orderAmount.multiply(discountRate);
+        }
+    }
+
+    public void validateCouponForUse(Coupon coupon, BigDecimal orderAmount) {
+        if (orderAmount.compareTo(BigDecimal.valueOf(coupon.getMinOrderAmount())) < 0) {
+            throw new BaseException(ErrorCode.COUPON_MIN_ORDER_AMOUNT_NOT_MET);
+        }
     }
 }

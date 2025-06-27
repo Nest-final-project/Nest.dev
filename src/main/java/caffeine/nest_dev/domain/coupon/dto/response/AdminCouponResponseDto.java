@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.coupon.dto.response;
 
 import caffeine.nest_dev.domain.coupon.entity.Coupon;
+import caffeine.nest_dev.domain.coupon.enums.CouponDiscountType;
 import caffeine.nest_dev.domain.coupon.enums.CouponUseStatus;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import java.time.LocalDateTime;
@@ -21,6 +22,8 @@ public class AdminCouponResponseDto {
     private final LocalDateTime validFrom;
     private final LocalDateTime validTo;
     private final UserGrade minGrade;
+    private final Integer minOrderAmount;
+    private final CouponDiscountType discountType;
     private final boolean canIssue;
 
     public static AdminCouponResponseDto of(Coupon coupon) {
@@ -33,6 +36,8 @@ public class AdminCouponResponseDto {
                 .validFrom(coupon.getValidFrom())
                 .validTo(coupon.getValidTo())
                 .minGrade(coupon.getMinGrade())
+                .minOrderAmount(coupon.getMinOrderAmount())
+                .discountType(coupon.getDiscountType())
                 .canIssue(coupon.canIssue())
                 .build();
     }
