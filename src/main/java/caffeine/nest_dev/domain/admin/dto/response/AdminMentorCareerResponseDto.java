@@ -15,8 +15,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminMentorCareerResponseDto {
 
-    private  Long mentorId;
-    private  Long careerId;
+    private Long careerId;
+    private String mentorName;
+    private String mentorEmail;
     private  String company;
     private  LocalDateTime startAt;
     private  LocalDateTime endAt;
@@ -27,8 +28,9 @@ public class AdminMentorCareerResponseDto {
     public static AdminMentorCareerResponseDto of(Career career) {
         User user = career.getProfile().getUser();
         return AdminMentorCareerResponseDto.builder()
-                .mentorId(user.getId())
                 .careerId(career.getId())
+                .mentorName(user.getName())
+                .mentorEmail(user.getEmail())
                 .company(career.getCompany())
                 .startAt(career.getStartAt())
                 .endAt(career.getEndAt())

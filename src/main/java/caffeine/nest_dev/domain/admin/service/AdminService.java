@@ -38,6 +38,7 @@ public class AdminService {
     /**
      * 멘토 경력 확인 요청 단건 조회
      */
+    @Transactional(readOnly = true)
     public AdminMentorCareerResponseDto getMentorCareerById(Long careerId) {
         Career career = careerRepository.findById(careerId)
                 .orElseThrow(()-> new BaseException(ErrorCode.ADMIN_MENTOR_CAREER_NOT_FOUND));

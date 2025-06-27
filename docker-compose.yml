@@ -51,6 +51,9 @@ services:
       AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY}
       AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY}
       AWS_SES_FROM_EMAIL: ${AWS_SES_FROM_EMAIL}
+      GMAIL: ${GMAIL}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+
 
     networks:
       - nest-network
