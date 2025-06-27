@@ -10,13 +10,15 @@ import lombok.Getter;
 @Getter
 public class MessageResponseDto {
 
+    private Long chatRoomId;
     private Long senderId;
     private Long receiverId;
     private String content;
     private LocalDateTime sentAt;
 
-    public static MessageResponseDto of(Message message, User sender, User receiver) {
+    public static MessageResponseDto of(Message message, User sender, User receiver, Long chatRoomId) {
         return MessageResponseDto.builder()
+                .chatRoomId(chatRoomId)
                 .senderId(sender.getId())
                 .receiverId(receiver.getId())
                 .content(message.getContent())

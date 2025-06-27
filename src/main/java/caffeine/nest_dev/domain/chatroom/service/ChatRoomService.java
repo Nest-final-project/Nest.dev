@@ -9,7 +9,6 @@ import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomStatusResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
-import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomTerminationSchedulerService;
 import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveTerminationRoomEvent;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
@@ -36,9 +35,6 @@ public class ChatRoomService {
     private final UserService userService;
 
     private final ApplicationEventPublisher eventPublisher;
-
-    // 채팅방 종료 예약 스케줄러
-    private final ChatRoomTerminationSchedulerService schedulerService;
 
     // 채팅방 생성
     @Transactional
