@@ -20,12 +20,6 @@ import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
 import caffeine.nest_dev.oauth2.userinfo.OAuth2UserInfo;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +46,11 @@ public class AuthService {
 
     @Transactional
     public AuthResponseDto signup(AuthRequestDto dto) {
+
+        // 이메일 중복 검증
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
+        }
 
         // 비밀번호 인코딩
         String encoded = passwordEncoder.encode(dto.getPassword());
