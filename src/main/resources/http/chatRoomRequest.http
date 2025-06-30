@@ -1,5 +1,5 @@
 ### POST - 채팅방 생성
-POST {{root-path}}/api/chatrooms
+POST {{root-path}}/api/chat_rooms
 Content-Type: application/json
 Authorization: Bearer {{authorizationToken}}
 

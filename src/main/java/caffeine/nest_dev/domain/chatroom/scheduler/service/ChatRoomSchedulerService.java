@@ -16,6 +16,7 @@ import caffeine.nest_dev.domain.user.service.UserService;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+/*
+ * 채팅방을 예약 시작시간에 맞춰 자동으로 생성해주는 스케줄러입니다.
+ *
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,22 +46,46 @@ public class ChatRoomSchedulerService {
 
     // 서버 재시작 시 다시 등록
     public void init() {
-        // 예약중이던 작업 가져오기
-        List<ChatRoomSchedule> findScheduleList = scheduleRepository.findAllByScheduleStatus(ScheduleStatus.PENDING);
+        try {
+            // 예약중이던 작업 가져오기
+            List<ChatRoomSchedule> findSchedules = scheduleRepository.findAllByScheduleStatus(ScheduleStatus.PENDING);
 
-        if (findScheduleList.isEmpty()) {
-            log.info("저장된 작업이 없습니다.");
-            return;
-        }
-        log.info("불러온 채팅방 생성 예약 작업 개수: {}", findScheduleList.size());
-
-        // 예약시간이 지나지 않았다면 작업을 다시 등록함
-        for (ChatRoomSchedule roomSchedule : findScheduleList) {
-
-            if (roomSchedule.getScheduledTime().isAfter(LocalDateTime.now())) {
-                startSchedule(roomSchedule);
-                log.info("서버시작 후 실행되지 않은 작업이 등록되었습니다.");
+            if (findSchedules.isEmpty()) {
+                log.info("저장된 작업이 없습니다.");
+                return;
             }
+
+            log.info("불러온 채팅방 생성 예약 작업 개수: {}", findSchedules.size());
+
+            List<ChatRoomSchedule> createRoomSchedule = new ArrayList<>();
+            List<ChatRoomSchedule> expiredCreateRoomSchedules = new ArrayList<>();
+
+            // 예약 작업 분류
+            for (ChatRoomSchedule roomSchedule : findSchedules) {
+                if (roomSchedule.getScheduledTime().isAfter(LocalDateTime.now())) {
+                    createRoomSchedule.add(roomSchedule);
+                } else {
+                    expiredCreateRoomSchedules.add(roomSchedule);
+                }
+            }
+            log.info("재등록 : {}개, 삭제 : {}개", createRoomSchedule.size(), expiredCreateRoomSchedules.size());
+
+            // 만료된 예약 처리
+            if (!expiredCreateRoomSchedules.isEmpty()) {
+                for (ChatRoomSchedule expiredCreateRoomSchedule : expiredCreateRoomSchedules) {
+                    log.info("생성되지 않은 예약 : {}", expiredCreateRoomSchedule.getReservationId());
+                }
+                scheduleRepository.deleteAll(expiredCreateRoomSchedules);
+            }
+
+            // 작업 등록
+            for (ChatRoomSchedule schedule : createRoomSchedule) {
+                startSchedule(schedule);
+            }
+            log.info("채팅방 생성작업 초기화 등록 완료");
+
+        } catch (Exception e) {
+            log.error("초기화 등록 오류", e);
         }
     }
 
@@ -145,13 +174,15 @@ public class ChatRoomSchedulerService {
 
         notifier.registerNotificationSchedule(
                 responseDto.getRoomId(),
+                reservationId,
                 reservation.getReservationEndAt(),
-                mentor
+                mentor.getId()
         );
         notifier.registerNotificationSchedule(
                 responseDto.getRoomId(),
+                reservationId,
                 reservation.getReservationEndAt(),
-                mentee
+                mentee.getId()
         );
     }
 
@@ -161,6 +192,5 @@ public class ChatRoomSchedulerService {
                 createSchedule(roomSchedule.getId()),
                 Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()));
     }
-
 
 }

@@ -13,7 +13,6 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import java.net.URI;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat_rooms")
@@ -49,7 +47,6 @@ public class ChatRoomController {
     public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
             @RequestBody CreateChatRoomRequestDto requestDto
     ) {
-        log.info("chatRoom 생성 api 진입");
         ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
         return ResponseEntity.created(URI.create("/api/chat_rooms"))
                 .body(CommonResponse.of(SuccessCode.SUCCESS_CHATROOM_CREATED, responseDto));

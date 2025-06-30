@@ -8,7 +8,8 @@ import org.springframework.data.domain.Slice;
 
 public interface ChatRoomRepositoryQuery {
 
-    Slice<MessageDto> findAllMessagesByChatRoomId(Long chatRoomId, Long messageId, Pageable pageable);
+    Slice<MessageDto> findAllMessagesByChatRoomId(Long chatRoomId, Long messageId, Long currentUserId,
+            Pageable pageable);
 
     Slice<ChatRoomReadDto> findAllByMentorIdOrMenteeId(Long userId, Long messageId, LocalDateTime cursorTime,
             Pageable pageable);

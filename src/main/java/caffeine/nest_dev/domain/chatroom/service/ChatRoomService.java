@@ -9,7 +9,9 @@ import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomStatusResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveTerminationRoomEvent;
+import caffeine.nest_dev.domain.notification.service.NotificationService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
@@ -35,6 +37,7 @@ public class ChatRoomService {
     private final UserService userService;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final NotificationService notificationService;
 
     // 채팅방 생성
     @Transactional
@@ -63,6 +66,15 @@ public class ChatRoomService {
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
 
+        try {
+            notificationService.send(mentee.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId(),
+                    reservation.getId());
+            notificationService.send(mentor.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId(),
+                    reservation.getId());
+        } catch (Exception e) {
+            log.warn("채팅방 생성 알림 발송 실패", e);
+        }
+
         // 채팅방 자동 종료 작업 등록
         eventPublisher.publishEvent(SaveTerminationRoomEvent.from(reservation));
 
@@ -77,13 +89,9 @@ public class ChatRoomService {
             Pageable pageable
     ) {
 
-        Slice<ChatRoomReadDto> findChatRoomList = chatRoomRepository.findAllByMentorIdOrMenteeId(userId,
-                lastMessageId,
-                cursorTime,
-                pageable);
-
-        return findChatRoomList;
+        return chatRoomRepository.findAllByMentorIdOrMenteeId(userId, lastMessageId, cursorTime, pageable);
     }
+
 
     // 채팅 내역 조회
     @Transactional(readOnly = true)
@@ -92,21 +100,14 @@ public class ChatRoomService {
             Long lastMessageId,
             Pageable pageable
     ) {
+
         Long userId = userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
 
-        Slice<MessageDto> messageDtoList = chatRoomRepository.findAllMessagesByChatRoomId(
+        return chatRoomRepository.findAllMessagesByChatRoomId(
                 chatRoomId,
                 lastMessageId,
+                userId,
                 pageable);
-
-        // 자신이 보낸 메시지인지 판별
-        for (MessageDto messageDto : messageDtoList.getContent()) {
-            if (messageDto.getSenderId().equals(userId)) {
-                messageDto.markAsMine();
-            }
-        }
-
-        return messageDtoList;
     }
 
     public ChatRoom findByIdOrElseThrow(Long chatRoomId) {
@@ -114,6 +115,7 @@ public class ChatRoomService {
                 () -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
     }
 
+    // 채팅방 종료 상태 확인
     @Transactional(readOnly = true)
     public ChatRoomStatusResponseDto isClosed(Long id, Long chatRoomId) {
         userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
