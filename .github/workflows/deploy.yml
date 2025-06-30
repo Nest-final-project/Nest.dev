@@ -52,6 +52,8 @@ jobs:
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
           echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> .env
+          echo "GMAIL=${{ secrets.GMAIL }}" >> .env
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
         # secrets에 정의된 값을 사용하여 .env 파일을 생성
       - name: Copy all docker-related files to server
         uses: appleboy/scp-action@v0.1.7
