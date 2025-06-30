@@ -174,13 +174,15 @@ public class ChatRoomSchedulerService {
 
         notifier.registerNotificationSchedule(
                 responseDto.getRoomId(),
+                reservationId,
                 reservation.getReservationEndAt(),
-                mentor
+                mentor.getId()
         );
         notifier.registerNotificationSchedule(
                 responseDto.getRoomId(),
+                reservationId,
                 reservation.getReservationEndAt(),
-                mentee
+                mentee.getId()
         );
     }
 

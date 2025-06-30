@@ -67,8 +67,10 @@ public class ChatRoomService {
         log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
 
         try {
-            notificationService.send(mentee.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
-            notificationService.send(mentor.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
+            notificationService.send(mentee.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId(),
+                    reservation.getId());
+            notificationService.send(mentor.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId(),
+                    reservation.getId());
         } catch (Exception e) {
             log.warn("채팅방 생성 알림 발송 실패", e);
         }

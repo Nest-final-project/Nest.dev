@@ -33,6 +33,8 @@ public class Notification {
 
     private Long chatRoomId;
 
+    private Long reservationId;
+
     private String content;
 
     @Enumerated(EnumType.STRING)

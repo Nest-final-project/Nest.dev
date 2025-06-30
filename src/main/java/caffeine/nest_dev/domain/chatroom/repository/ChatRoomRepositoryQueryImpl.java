@@ -64,7 +64,7 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
                         chatRoom.reservation.id.as("reservationId"),
                         // 마지막 메시지 정보 추가
                         message.content.as("lastMessageContent"),
-                        message.createdAt.stringValue().as("lastMessageTime"),
+                        message.createdAt.as("lastMessageTime"),
                         message.sender.id.as("lastMessageSenderId")
                 ))
                 .from(chatRoom)

@@ -84,9 +84,9 @@ public class NotificationService {
 
     // 알림을 만들어 로그인한 사용자에게 데이터 전송
     @Transactional
-    public void send(Long receiverId, String content, ChatRoomType chatRoomType, Long chatRoomId) {
+    public void send(Long receiverId, String content, ChatRoomType chatRoomType, Long chatRoomId, Long reservationId) {
         // 수신자, 내용을 담아서 알림 객체 생성
-        Notification notification = createNotification(receiverId, content, chatRoomType, chatRoomId);
+        Notification notification = createNotification(receiverId, content, chatRoomType, chatRoomId, reservationId);
         notificationRepository.save(notification);
 
         String userId = String.valueOf(receiverId);
@@ -113,10 +113,11 @@ public class NotificationService {
 
     // Notification 객체 생성
     private Notification createNotification(Long receiverId, String content, ChatRoomType chatRoomType,
-            Long chatRoomId) {
+            Long chatRoomId, Long reservationId) {
         return Notification.builder()
                 .receiverId(receiverId)
                 .chatRoomId(chatRoomId)
+                .reservationId(reservationId)
                 .content(content)
                 .chatRoomType(chatRoomType)
                 .createdAt(LocalDateTime.now())
