@@ -49,11 +49,15 @@ jobs:
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
+          echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}" >> .env
           echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
           echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
           echo "CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> .env
           echo "GMAIL=${{ secrets.GMAIL }}" >> .env
           echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+          echo "AWS_SES_ACCESS_KEY=${{ secrets.AWS_SES_ACCESS_KEY }}" >> .env
+          echo "AWS_SES_SECRET_KEY=${{ secrets.AWS_SES_SECRET_KEY }}" >> .env
+          echo "AWS_SES_FROM_EMAIL=${{ secrets.AWS_SES_FROM_EMAIL }}" >> .env
         # secrets에 정의된 값을 사용하여 .env 파일을 생성
       - name: Copy all docker-related files to server
         uses: appleboy/scp-action@v0.1.7
