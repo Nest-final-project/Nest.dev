@@ -101,8 +101,7 @@ public class ChatRoomTerminationNotifier {
             }
             Long chatRoomId = schedule.getChatRoomId();
             Long receiverId = schedule.getReceiver().getId();
-            notificationService.send(receiverId, "채팅 종료까지 5분 남았습니다.", ChatRoomType.CLOSE,
-                    chatRoomId);
+            notificationService.send(receiverId, "채팅 종료까지 5분 남았습니다.", ChatRoomType.CLOSE, chatRoomId);
 
             // isSent : false -> true, 전송시간 기록
             schedule.markAsSent();
