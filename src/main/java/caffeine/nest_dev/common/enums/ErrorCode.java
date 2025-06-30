@@ -37,6 +37,7 @@ public enum ErrorCode implements BaseCode {
     COMPLAINT_NOT_FOUND(HttpStatus.NOT_FOUND, "민원을 찾을 수 없습니다."),
     DUPLICATED_COMPLAINT(HttpStatus.CONFLICT, "이미 생성된 민원이 있습니다."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "문의 종류를 선택하세요"),
+    COMPLAINT_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "민원은 작성자와 관리자만 접근 가능합니다."),
 
     // AdminCoupon
     NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),

@@ -67,6 +67,16 @@ public class AdminComplaintController {
 
     }
 
+
+    @GetMapping("/complaints/{complaintId}/answers")
+    public ResponseEntity<CommonResponse<AnswerResponseDto>> getAnswer(@PathVariable Long complaintId){
+        AnswerResponseDto answer = adminComplaintService.getAnswer(complaintId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_ANSWER, answer));
+    }
+
+
     @PatchMapping("/answers/{answerId}")
     public ResponseEntity<CommonResponse<Void>> update(@PathVariable Long answerId,
             @AuthenticationPrincipal UserDetailsImpl authUser,

@@ -4,9 +4,12 @@ import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.complaint.dto.request.ComplaintRequestDto;
+import caffeine.nest_dev.domain.complaint.dto.response.AnswerResponseDto;
 import caffeine.nest_dev.domain.complaint.dto.response.ComplaintResponseDto;
+import caffeine.nest_dev.domain.complaint.entity.Answer;
 import caffeine.nest_dev.domain.complaint.entity.Complaint;
 import caffeine.nest_dev.domain.complaint.enums.ComplaintType;
+import caffeine.nest_dev.domain.complaint.repository.AnswerRepository;
 import caffeine.nest_dev.domain.complaint.repository.ComplaintRepository;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
@@ -14,6 +17,7 @@ import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +31,7 @@ public class ComplaintService {
     private final ReservationRepository reservationRepository;
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
-
+    private final AnswerRepository answerRepository;
 
     @Transactional
     public ComplaintResponseDto save(Long userId, ComplaintRequestDto complaintRequestDto) {
@@ -115,7 +119,27 @@ public class ComplaintService {
         return PagingResponse.from(complaintResponseDtos);
     }
 
-    public void deleteComplant(Long id, Long complaintId) {
+    @Transactional(readOnly = true)
+    public AnswerResponseDto getAnswer(Long userId, Long complaintId) {
+        Complaint complaint = complaintRepository.findById(complaintId).orElseThrow(()-> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
+
+        Optional<Answer> answer = answerRepository.findByComplaint_Id(complaintId);
+
+        if (complaint.getComplaintType() == ComplaintType.COMPLAINT) {
+            if (!complaint.getUser().getId().equals(userId)) {
+                throw new BaseException(ErrorCode.COMPLAINT_ACCESS_DENIED);
+            }
+        }
+
+        if (answer.isEmpty()) {
+            return new AnswerResponseDto(null, userId, complaintId, "답변이 아직 등록되지 않았습니다.");
+        }
+
+        return AnswerResponseDto.of(answer.get());
+    }
+
+
+    public void deleteComplaint(Long id, Long complaintId) {
         Complaint complaint = complaintRepository.findById(complaintId)
                 .orElseThrow(() -> new BaseException(ErrorCode.COMPLAINT_NOT_FOUND));
         if (!complaint.getUser().getId().equals(id)) {

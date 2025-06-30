@@ -13,6 +13,7 @@ import caffeine.nest_dev.domain.complaint.repository.AnswerRepository;
 import caffeine.nest_dev.domain.complaint.repository.ComplaintRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +66,19 @@ public class AdminComplaintService {
 
         return ComplaintResponseDto.of(complaint);
     }
+
+    @Transactional(readOnly = true)
+    public AnswerResponseDto getAnswer(Long complaintId){
+
+       Optional<Answer> answer = answerRepository.findByComplaint_Id(complaintId);
+
+       if(answer.isEmpty()){
+           throw new BaseException(ErrorCode.ANSWER_NOT_FOUND);
+       }
+
+        return AnswerResponseDto.of(answer.get());
+    }
+
 
     @Transactional
     public void update(Long userId, Long answerId, AnswerUpdateRequestDto answerUpdateRequestDto) {

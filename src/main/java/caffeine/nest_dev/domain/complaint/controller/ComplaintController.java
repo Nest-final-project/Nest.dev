@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.complaint.dto.request.ComplaintRequestDto;
+import caffeine.nest_dev.domain.complaint.dto.response.AnswerResponseDto;
 import caffeine.nest_dev.domain.complaint.dto.response.ComplaintResponseDto;
 import caffeine.nest_dev.domain.complaint.service.ComplaintService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
@@ -88,16 +89,28 @@ public class ComplaintController {
                 .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_COMPLAINTS, getMyComplaints));
 
     }
+
+    @GetMapping("/complaints/{complaintId}/answers")
+    public ResponseEntity<CommonResponse<AnswerResponseDto>> getAnswer(@PathVariable Long complaintId,
+            @AuthenticationPrincipal UserDetailsImpl authUser){
+
+        AnswerResponseDto answer = complaintService.getAnswer(authUser.getId(), complaintId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_ANSWER, answer));
+    }
+
+
     /**
      * 민원 삭제(본인의 민원)
      */
     @DeleteMapping("/complaints/{complaintId}")
-    public ResponseEntity<CommonResponse> deleteComplaint(
+    public ResponseEntity<CommonResponse<Void>> deleteComplaint(
             @PathVariable Long complaintId,
             @AuthenticationPrincipal UserDetailsImpl authUser
     ){
         Long id = authUser.getId();
-        complaintService.deleteComplant(id, complaintId);
+        complaintService.deleteComplaint(id, complaintId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_COMPLAINT));
     }

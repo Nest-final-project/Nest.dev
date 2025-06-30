@@ -112,6 +112,7 @@ public enum SuccessCode implements BaseCode {
 
     // Answer
     SUCCESS_CREATE_ANSWER(HttpStatus.CREATED, "답변이 등록되었습니다."),
+    SUCCESS_SHOW_ANSWER(HttpStatus.OK, "답변이 조회되었습니다."),
     SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다.");
 
 
