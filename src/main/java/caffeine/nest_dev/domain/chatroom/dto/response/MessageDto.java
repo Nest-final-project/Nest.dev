@@ -21,9 +21,5 @@ public class MessageDto {
     private String content;
     private LocalDateTime sentAt;
 
-    private boolean isMine; // 현재 로그인한 사용자인지 여부 -> 프론트에서 ui 정렬 시 편함
-
-    public void markAsMine() {
-        this.isMine = true;
-    }
+    private Boolean isMine; // 현재 로그인한 사용자인지 여부 -> 프론트에서 ui 정렬 시 편함
 }

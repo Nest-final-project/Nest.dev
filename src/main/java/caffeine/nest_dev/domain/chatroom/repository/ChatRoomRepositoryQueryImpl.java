@@ -5,6 +5,7 @@ import static caffeine.nest_dev.domain.message.entity.QMessage.message;
 
 import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomReadDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,7 +22,8 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<MessageDto> findAllMessagesByChatRoomId(Long chatRoomId, Long messageId, Pageable pageable) {
+    public Slice<MessageDto> findAllMessagesByChatRoomId(Long chatRoomId, Long messageId, Long currentUserId,
+            Pageable pageable) {
         List<MessageDto> results = jpaQueryFactory.select(Projections.fields(
                         MessageDto.class,
                         message.id.as("messageId"),
@@ -30,8 +32,10 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
                         message.mentee.id.as("menteeId"),
                         message.sender.id.as("senderId"),
                         message.content.as("content"),
-                        message.createdAt.as("sentAt")
-
+                        message.createdAt.as("sentAt"),
+                        ExpressionUtils.as(
+                                message.sender.id.eq(currentUserId), "isMine"
+                        )
                 ))
                 .from(message)
                 .where(
@@ -60,7 +64,7 @@ public class ChatRoomRepositoryQueryImpl implements ChatRoomRepositoryQuery {
                         chatRoom.reservation.id.as("reservationId"),
                         // 마지막 메시지 정보 추가
                         message.content.as("lastMessageContent"),
-                        message.createdAt.stringValue().as("lastMessageTime"),
+                        message.createdAt.as("lastMessageTime"),
                         message.sender.id.as("lastMessageSenderId")
                 ))
                 .from(chatRoom)

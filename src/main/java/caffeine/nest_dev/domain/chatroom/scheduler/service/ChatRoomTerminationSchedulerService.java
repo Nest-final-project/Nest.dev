@@ -25,6 +25,8 @@ public class ChatRoomTerminationSchedulerService {
 
     // 서버 재시작 시 초기화 작업
     public void init() {
+        LocalDateTime now = LocalDateTime.now();
+
         List<ChatRoomSchedule> scheduleList = chatRoomScheduleRepository.findAllByChatRoomTypeAndScheduleStatus(
                 ChatRoomType.CLOSE, ScheduleStatus.PENDING);
 
@@ -34,16 +36,30 @@ public class ChatRoomTerminationSchedulerService {
         }
         log.info("예약 종료 스케줄 {}건", scheduleList.size());
 
-        // 예약시간이 지나지 않았다면 작업을 다시 등록함
+        int scheduledCount = 0;
+        int executedCount = 0;
+
         for (ChatRoomSchedule roomSchedule : scheduleList) {
-            if (roomSchedule.getScheduledTime().isAfter(LocalDateTime.now())) {
+            if (roomSchedule.getScheduledTime().isAfter(now)) {
+                // 미래 시각이면 예약 등록
                 taskScheduler.schedule(
                         disconnectUsersAndCloseRoom(roomSchedule.getId()),
-                        java.sql.Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()));
-                log.info("서버시작 후 실행되지 않은 작업이 등록되었습니다.");
+                        Date.from(roomSchedule.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant())
+                );
+                scheduledCount++;
+            } else {
+                // 이미 지난 예약이면 즉시 실행
+                log.info("예약 시간이 지난 종료 스케줄을 즉시 실행합니다. 예약ID: {}", roomSchedule.getId());
+                try {
+                    runService.transactionRunnable(roomSchedule.getId());
+                    executedCount++;
+                } catch (Exception e) {
+                    log.error("종료 작업 즉시 실행 실패. 예약ID: {}", roomSchedule.getId(), e);
+                }
             }
         }
 
+        log.info("종료 예약 재등록 완료. 등록: {}건, 즉시 실행: {}건", scheduledCount, executedCount);
     }
 
     /**

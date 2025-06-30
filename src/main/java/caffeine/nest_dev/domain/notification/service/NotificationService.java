@@ -1,17 +1,21 @@
 package caffeine.nest_dev.domain.notification.service;
 
+import static caffeine.nest_dev.domain.notification.enums.NotificationEventType.CHAT_OPEN;
+import static caffeine.nest_dev.domain.notification.enums.NotificationEventType.CHAT_TERMINATION;
+
+import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.notification.dto.response.NotificationResponse;
 import caffeine.nest_dev.domain.notification.entity.Notification;
+import caffeine.nest_dev.domain.notification.enums.NotificationEventType;
 import caffeine.nest_dev.domain.notification.repository.EmitterRepository;
 import caffeine.nest_dev.domain.notification.repository.NotificationRepository;
-import caffeine.nest_dev.domain.user.entity.User;
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
@@ -32,7 +36,7 @@ public class NotificationService {
      * @param lastEventId 마지막으로 발생한 eventId
      * @return 서버에서 클라이언트와 매핑되는 Sse 통신 객체
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public SseEmitter subscribe(Long userId, String lastEventId) {
 
         // 데이터의 유실 시점을 파악하기 위해 시간을 함께 저장함
@@ -62,22 +66,30 @@ public class NotificationService {
 
         // 유실된 데이터가 있다면 데이터를 찾아 다시 클라이언트에게 전송
         if (lastEventId != null && !lastEventId.isEmpty()) {
-            Map<String, Notification> events = emitterRepository.findAllEventCacheByUserId(
-                    String.valueOf(userId));
+            Map<String, Notification> events = emitterRepository.findAllEventCacheByUserId(String.valueOf(userId));
+
+            long lastId = Long.parseLong(lastEventId);
             events.entrySet().stream()
-                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
+                    .filter(entry -> Long.parseLong(entry.getKey()) > lastId)
+                    .forEach(entry -> {
+                        NotificationResponse response = NotificationResponse.from(entry.getValue());
+                        NotificationEventType eventType = ChatRoomType.CLOSE.equals(entry.getValue().getChatRoomType())
+                                ? CHAT_TERMINATION
+                                : CHAT_OPEN;
+                        sendNotification(emitter, entry.getKey(), response, eventType.getEventName());
+                    });
         }
         return emitter;
     }
 
     // 알림을 만들어 로그인한 사용자에게 데이터 전송
     @Transactional
-    public void send(User receiver, String content) {
-        Notification notification = createNotification(receiver, content);
+    public void send(Long receiverId, String content, ChatRoomType chatRoomType, Long chatRoomId, Long reservationId) {
+        // 수신자, 내용을 담아서 알림 객체 생성
+        Notification notification = createNotification(receiverId, content, chatRoomType, chatRoomId, reservationId);
         notificationRepository.save(notification);
 
-        String userId = String.valueOf(receiver.getId());
+        String userId = String.valueOf(receiverId);
 
         // 로그인한 유저의 SseEmitter 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterByUserId(userId);
@@ -86,38 +98,43 @@ public class NotificationService {
             log.debug("userId {}에 대한 활성 SSE 연결이 없습니다.", userId);
             return;
         }
+        NotificationResponse notificationResponse = NotificationResponse.from(notification);
+        NotificationEventType eventType = ChatRoomType.CLOSE.equals(notification.getChatRoomType())
+                ? CHAT_TERMINATION
+                : CHAT_OPEN;
 
         sseEmitters.forEach(
                 (key, emitter) -> {
                     // 유실된 데이터를 처리하기 위해 데이터 캐시 저장
                     emitterRepository.saveEventCache(key, notification);
-                    // 데이터 전송
-                    sendToClient(emitter, key, NotificationResponse.from(notification));
-                }
-        );
+                    sendNotification(emitter, key, notificationResponse, eventType.getEventName());
+                });
     }
 
     // Notification 객체 생성
-    private Notification createNotification(User receiver, String content) {
+    private Notification createNotification(Long receiverId, String content, ChatRoomType chatRoomType,
+            Long chatRoomId, Long reservationId) {
         return Notification.builder()
-                .receiver(receiver)
+                .receiverId(receiverId)
+                .chatRoomId(chatRoomId)
+                .reservationId(reservationId)
                 .content(content)
+                .chatRoomType(chatRoomType)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    // 채팅 종료 알림을 클라이언트에게 전송
-    private void sendToClient(SseEmitter emitter, String id, Object data) {
+    private void sendNotification(SseEmitter emitter, String id, Object data, String eventName) {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
-                    .name("chat-termination")
+                    .name(eventName)
                     .data(data));
         } catch (IOException e) {
-            // 로그만 남기고 exception을 던지지 않음 (scheduled task에서 호출되므로)
+            // 로그만 남기고 예외를 던지지 않음 (scheduled task에서 호출되므로)
             log.warn("SSE 연결이 끊어진 클라이언트에게 알림 전송 실패. emitterId: {}, error: {}", id, e.getMessage());
             emitterRepository.deleteById(id);
-            // RuntimeException을 던지지 않음으로써 scheduled task 실행 중단 방지
+            // 런타임 예외를 던지지 않음으로써 scheduled task 실행 중단 방지
         }
     }
 }
