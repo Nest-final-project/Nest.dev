@@ -13,6 +13,8 @@ import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +57,21 @@ public class ConsultationService {
 
     @Transactional(readOnly = true)
     public List<AvailableSlotDto> getAvailableConsultationSlots(Long mentorId,
-            DayOfWeek dayOfWeek) {
+            LocalDate localDate) {
+        DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+
         // 멘토가 등록한 요일에 해당하는 시간 범위 조회
         List<Consultation> availableTime = consultationRepository.findByMentorIdAndDayOfWeek(
                 mentorId, dayOfWeek);
 
+        // localDate 를 LocalDateTime 타입으로 변환
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
         // 예약이 취소된 것들을 제외한 모든 예약 조회
-        List<Reservation> bookedReservations = reservationRepository.findByMentorIdAndReservationStatusNot(
-                mentorId, ReservationStatus.CANCELED);
+        List<Reservation> bookedReservations = reservationRepository
+                .findByMentorIdAndReservationStatusNotAndReservationStartAtBetween(
+                mentorId, ReservationStatus.CANCELED, startOfDay, endOfDay);
 
         // 10분 단위 시작 시간
         List<LocalTime> availableSlots = new ArrayList<>();
@@ -111,8 +119,7 @@ public class ConsultationService {
                         userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CONSULTATION_NOT_FOUND));
 
-        consultation.update(requestDto.getDayOfWeek(), requestDto.getStartAt(),
-                requestDto.getEndAt());
+        consultation.update(requestDto.getStartAt(), requestDto.getEndAt());
 
         return ConsultationResponseDto.of(consultation);
     }

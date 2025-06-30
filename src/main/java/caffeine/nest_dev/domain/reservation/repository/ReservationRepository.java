@@ -34,8 +34,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("endAt") LocalDateTime endAt,
             @Param("canceledStatus") ReservationStatus canceledStatus);
 
-    List<Reservation> findByMentorIdAndReservationStatusNot(Long mentorId,
-            ReservationStatus status);
+    List<Reservation> findByMentorIdAndReservationStatusNotAndReservationStartAtBetween(Long mentorId,
+            ReservationStatus status, LocalDateTime startAt, LocalDateTime endAt);
 
 
     Page<Reservation> findByMentorIdAndReservationStatus(Long userId,
