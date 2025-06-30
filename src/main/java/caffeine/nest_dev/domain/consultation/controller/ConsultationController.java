@@ -7,7 +7,7 @@ import caffeine.nest_dev.domain.consultation.dto.response.AvailableSlotDto;
 import caffeine.nest_dev.domain.consultation.dto.response.ConsultationResponseDto;
 import caffeine.nest_dev.domain.consultation.service.ConsultationService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,10 +65,10 @@ public class ConsultationController {
     @GetMapping("/mentor/{mentorId}/availableConsultations")
     public ResponseEntity<CommonResponse<List<AvailableSlotDto>>> getSlots(
             @PathVariable Long mentorId, // 멘토의 ID
-            @RequestParam DayOfWeek dayOfWeek
+            @RequestParam LocalDate localDate
     ) {
         List<AvailableSlotDto> responseDto = consultationService.getAvailableConsultationSlots(
-                mentorId, dayOfWeek);
+                mentorId, localDate);
         return ResponseEntity.ok(CommonResponse.of(SuccessCode.SUCCESS_SLOTS_READ, responseDto));
     }
 

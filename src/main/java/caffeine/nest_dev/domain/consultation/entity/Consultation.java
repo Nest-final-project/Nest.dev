@@ -43,8 +43,7 @@ public class Consultation extends BaseEntity {
     @Column(nullable = false)
     private LocalTime endAt;
 
-    public void update(DayOfWeek dayOfWeek, LocalTime startAt, LocalTime endAt) {
-        this.dayOfWeek = dayOfWeek;
+    public void update(LocalTime startAt, LocalTime endAt) {
         this.startAt = startAt;
         this.endAt = endAt;
     }
