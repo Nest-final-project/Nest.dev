@@ -66,8 +66,12 @@ public class ChatRoomService {
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
         log.info("채팅방 : chatRoomId = {}", chatRoom.getId());
 
-        notificationService.send(mentee.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
-        notificationService.send(mentor.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
+        try {
+            notificationService.send(mentee.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
+            notificationService.send(mentor.getId(), "채팅방이 생성되었습니다.", ChatRoomType.OPEN, savedChatRoom.getId());
+        } catch (Exception e) {
+            log.warn("채팅방 생성 알림 발송 실패", e);
+        }
 
         // 채팅방 자동 종료 작업 등록
         eventPublisher.publishEvent(SaveTerminationRoomEvent.from(reservation));
@@ -94,20 +98,14 @@ public class ChatRoomService {
             Long lastMessageId,
             Pageable pageable
     ) {
+
         Long userId = userService.findByIdAndIsDeletedFalseOrElseThrow(id).getId();
 
-        Slice<MessageDto> messageDtoList = chatRoomRepository.findAllMessagesByChatRoomId(
+        return chatRoomRepository.findAllMessagesByChatRoomId(
                 chatRoomId,
                 lastMessageId,
+                userId,
                 pageable);
-
-        // 자신이 보낸 메시지인지 판별
-        for (MessageDto messageDto : messageDtoList.getContent()) {
-            if (messageDto.getSenderId().equals(userId)) {
-                messageDto.markAsMine();
-            }
-        }
-        return messageDtoList;
     }
 
     public ChatRoom findByIdOrElseThrow(Long chatRoomId) {
