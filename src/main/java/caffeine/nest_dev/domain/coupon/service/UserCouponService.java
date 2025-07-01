@@ -11,8 +11,8 @@ import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
 import caffeine.nest_dev.domain.coupon.enums.CouponDiscountType;
 import caffeine.nest_dev.domain.coupon.repository.AdminCouponRepository;
 import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
+import caffeine.nest_dev.domain.reservation.lock.DistributedLock;
 import caffeine.nest_dev.domain.user.entity.User;
-import caffeine.nest_dev.domain.user.repository.UserRepository;
 import caffeine.nest_dev.domain.user.service.UserService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class UserCouponService {
     private final AdminCouponRepository adminCouponRepository;
     private final UserService userService;
 
-    @Transactional
+    @DistributedLock(key = "'coupon-issue:' + #requestDto.couponId")
     public UserCouponResponseDto saveUserCoupon(UserCouponRequestDto requestDto) {
         Coupon coupon = adminCouponRepository.findById(requestDto.getCouponId())
                 .orElseThrow(() -> new BaseException(
@@ -72,8 +72,6 @@ public class UserCouponService {
     }
 
     public void validateCouponForUse(Coupon coupon, BigDecimal orderAmount) {
-        if (orderAmount.compareTo(BigDecimal.valueOf(coupon.getMinOrderAmount())) < 0) {
-            throw new BaseException(ErrorCode.COUPON_MIN_ORDER_AMOUNT_NOT_MET);
-        }
+        coupon.validateForUse(orderAmount);
     }
 }
