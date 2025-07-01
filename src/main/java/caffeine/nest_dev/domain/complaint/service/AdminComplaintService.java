@@ -80,13 +80,13 @@ public class AdminComplaintService {
     }
 
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(Long userId, Long answerId, AnswerUpdateRequestDto answerUpdateRequestDto) {
 
 
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new BaseException(ErrorCode.ANSWER_NOT_FOUND));
 
-        if(!answer.getId().equals(userId)) {
+        if(!answer.getUser().getId().equals(userId)) {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
