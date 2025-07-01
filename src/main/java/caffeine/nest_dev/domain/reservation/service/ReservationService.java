@@ -89,12 +89,14 @@ public class ReservationService {
 
     }
 
+    @SuppressWarnings("checkstyle:OperatorWrap")
     @Transactional(readOnly = true)
     public ReservationResponseDto getReservation(Long reservationId, Long userId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!reservation.getMentee().getId().equals(userId)) {
+        if (!reservation.getMentee().getId().equals(userId) &&
+                !reservation.getMentor().getId().equals(userId)) {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
