@@ -147,7 +147,7 @@ public class PaymentService {
             }
         }
 
-        // 변경: DB에는 원가 저장, 쿠폰 할인은 결제 승인 시 처리
+        // DB에는 원가 저장, 쿠폰 할인은 결제 승인 시 처리
         Payment payment = Payment.builder()
                 .reservation(reservation)
                 .amount(originalAmount)          // 원가 저장 (토스 결제 기준)
