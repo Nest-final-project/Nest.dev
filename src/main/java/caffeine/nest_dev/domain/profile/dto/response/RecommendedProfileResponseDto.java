@@ -1,7 +1,6 @@
 package caffeine.nest_dev.domain.profile.dto.response;
 
 import caffeine.nest_dev.domain.keyword.dto.response.KeywordResponseDto;
-import caffeine.nest_dev.domain.keyword.entity.Keyword;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,5 +15,6 @@ public class RecommendedProfileResponseDto {
     private String profileTitle;
     private String categoryName;
     private List<KeywordResponseDto> keywords;
+    private String imgUrl;
 
 }

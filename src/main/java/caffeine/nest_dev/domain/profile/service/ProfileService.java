@@ -97,7 +97,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<ProfileResponseDto> searchMentorProfilesByKeyword(String keyword) {
         List<Profile> profiles = profileRepository.searchMentorProfilesByKeyword(keyword);
-
+        
         return profiles.stream()
                 .map(profile -> ProfileResponseDto.from(profile, profile.getUser()))
                 .toList();

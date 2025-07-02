@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class ProfileResponseDto {
+
     private Long id;
     private Long userId;
     private String role;
@@ -27,6 +28,7 @@ public class ProfileResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String name;
+    private String imgUrl;
 
     public static ProfileResponseDto from(Profile profile, User user) {
         return ProfileResponseDto.builder()
@@ -43,6 +45,7 @@ public class ProfileResponseDto {
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
                 .name(user.getName())
+                .imgUrl(user.getImgUrl())
                 .build();
     }
 }
