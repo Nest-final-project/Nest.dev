@@ -20,3 +20,8 @@ Authorization: Bearer {{authorizationToken}}
 GET {{root-path}}/api/chat_rooms
 Content-Type: application/json
 Authorization: Bearer {{authorizationToken}}
+
+### GET - 알림 내역 조회
+GET {{root-path}}/sse/notifications
+Content-Type: application/json
+Authorization: Bearer {{authorizationToken}}

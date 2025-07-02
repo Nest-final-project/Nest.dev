@@ -3,17 +3,23 @@ package caffeine.nest_dev.domain.notification.service;
 import static caffeine.nest_dev.domain.notification.enums.NotificationEventType.CHAT_OPEN;
 import static caffeine.nest_dev.domain.notification.enums.NotificationEventType.CHAT_TERMINATION;
 
+import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.notification.dto.response.NotificationResponse;
+import caffeine.nest_dev.domain.notification.dto.response.NotificationResponseDto;
 import caffeine.nest_dev.domain.notification.entity.Notification;
 import caffeine.nest_dev.domain.notification.enums.NotificationEventType;
 import caffeine.nest_dev.domain.notification.repository.EmitterRepository;
 import caffeine.nest_dev.domain.notification.repository.NotificationRepository;
+import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.service.UserService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -28,6 +34,7 @@ public class NotificationService {
 
     private final EmitterRepository emitterRepository;
     private final NotificationRepository notificationRepository;
+    private final UserService userService;
 
     /**
      * 새로운 SseEmitter 생성 메서드
@@ -136,5 +143,17 @@ public class NotificationService {
             emitterRepository.deleteById(id);
             // 런타임 예외를 던지지 않음으로써 scheduled task 실행 중단 방지
         }
+    }
+
+    // 알림 내역 조회
+    @Transactional(readOnly = true)
+    public PagingResponse<NotificationResponseDto> getNotifications(Long id, Pageable pageable) {
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(id);
+
+        Page<Notification> notifications = notificationRepository.findAllByReceiverId(user.getId(), pageable);
+
+        Page<NotificationResponseDto> responseDtos = notifications.map(NotificationResponseDto::from);
+
+        return PagingResponse.from(responseDtos);
     }
 }
