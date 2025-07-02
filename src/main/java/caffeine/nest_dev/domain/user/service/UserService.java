@@ -260,10 +260,10 @@ public class UserService {
         User user = findByIdAndIsDeletedFalseOrElseThrow(id);
 
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("프로필 사진이 없습니다.");
+            throw new BaseException(ErrorCode.IMAGE_NOT_FOUND);
         }
         if (user.getImgUrl() != null) {
-            throw new IllegalArgumentException("이미 등록되었습니다.");
+            throw new BaseException(ErrorCode.IMAGE_ALREADY_EXISTS);
         }
         try {
             String folder = "profile/";
