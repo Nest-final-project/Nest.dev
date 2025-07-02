@@ -88,4 +88,14 @@ public class RedisConfig {
         return new ChannelTopic("chatroom");
     }
 
+    @Bean
+    public RedisTemplate<String, String> imgTemplate(
+            RedisConnectionFactory connectionFactory
+    ) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
+    }
 }

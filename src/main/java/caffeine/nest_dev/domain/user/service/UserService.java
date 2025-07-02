@@ -7,9 +7,12 @@ import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.auth.dto.request.DeleteRequestDto;
 import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.repository.TokenRepository;
+import caffeine.nest_dev.domain.profile.dto.response.ProfileImageResponseDto;
+import caffeine.nest_dev.domain.s3.S3Service;
 import caffeine.nest_dev.domain.user.dto.request.ExtraInfoRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UpdatePasswordRequestDto;
 import caffeine.nest_dev.domain.user.dto.request.UserRequestDto;
+import caffeine.nest_dev.domain.user.dto.response.ProfileImageUploadResponseDto;
 import caffeine.nest_dev.domain.user.dto.response.UserInfoResponseDto;
 import caffeine.nest_dev.domain.user.dto.response.UserResponseDto;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -17,13 +20,17 @@ import caffeine.nest_dev.domain.user.enums.SocialType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +41,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
+
+    private final RedisTemplate<String, String> imgTemplate;
+    private final S3Service s3Service;
+
+    private static final String CACHE_KEY_PREFIX = "profile_image:";
+    private static final String NO_IMAGE_MARKER = "NO_IMAGE";
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
@@ -213,6 +226,96 @@ public class UserService {
                 // 80,000원 이상 -> NEST
                 user.updateUserGrade(UserGrade.NEST);
             }
+        }
+    }
+
+    // 이미지 조회
+    @Transactional(readOnly = true)
+    public ProfileImageResponseDto getUserProfileImage(Long id) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(id);
+
+        Long userId = user.getId();
+        String key = CACHE_KEY_PREFIX + user.getId();
+        String cached = imgTemplate.opsForValue().get(key);
+
+        // 캐시 조회 - 존재하면 바로 반환
+        if (cached != null) {
+            String cachedUrl = NO_IMAGE_MARKER.equals(cached) ? null : cached;
+            return ProfileImageResponseDto.of(userId, cachedUrl);
+        }
+
+        String imgUrl = user.getImgUrl();
+
+        // 캐시 저장
+        String valueToCache = imgUrl != null ? imgUrl : NO_IMAGE_MARKER;
+        imgTemplate.opsForValue().set(key, valueToCache, Duration.ofHours(1));
+
+        String responseUrl = NO_IMAGE_MARKER.equals(valueToCache) ? null : valueToCache;
+        return ProfileImageResponseDto.of(userId, responseUrl);
+    }
+
+    // 이미지 저장
+    @Transactional
+    public ProfileImageUploadResponseDto saveImg(Long id, MultipartFile file) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(id);
+
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("프로필 사진이 없습니다.");
+        }
+        if (user.getImgUrl() != null) {
+            throw new IllegalArgumentException("이미 등록되었습니다.");
+        }
+        try {
+            String folder = "profile/";
+            String fileUrl = s3Service.uploadFile(file, folder);
+            user.saveImg(fileUrl);
+            // 캐시 무효화
+            String key = CACHE_KEY_PREFIX + user.getId();
+            imgTemplate.delete(key);
+            return new ProfileImageUploadResponseDto(fileUrl);
+        } catch (IOException e) {
+            throw new BaseException(ErrorCode.S3_UPLOAD_FAILED);
+        }
+    }
+
+    @Transactional
+    public void deleteImage(Long userId) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+        String imgUrl = user.getImgUrl();
+
+        // s3 삭제
+        if (imgUrl != null && !imgUrl.isEmpty()) {
+            s3Service.deleteFile(imgUrl);
+        }
+        user.removeImg();
+        // 캐시 삭제
+        String key = CACHE_KEY_PREFIX + user.getId();
+        imgTemplate.delete(key);
+    }
+
+    @Transactional
+    public ProfileImageUploadResponseDto updateImage(Long userId, MultipartFile file) {
+        User user = findByIdAndIsDeletedFalseOrElseThrow(userId);
+        String imgUrl = user.getImgUrl();
+
+        // s3 삭제
+        if (imgUrl != null && !imgUrl.isEmpty()) {
+            s3Service.deleteFile(imgUrl);
+        }
+
+        try {
+            String folder = "profile/";
+            String fileUrl = s3Service.uploadFile(file, folder);
+
+            user.saveImg(fileUrl);
+
+            // 캐시 무효화
+            String key = CACHE_KEY_PREFIX + user.getId();
+            imgTemplate.delete(key);
+
+            return new ProfileImageUploadResponseDto(fileUrl);
+        } catch (IOException e) {
+            throw new BaseException(ErrorCode.S3_UPLOAD_FAILED);
         }
     }
 }
