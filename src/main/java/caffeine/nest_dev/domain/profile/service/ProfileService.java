@@ -87,8 +87,7 @@ public class ProfileService {
         List<Keyword> keywords = keywordRepository.findAllById(profileRequestDto.getKeywordId());
 
         // 프로필 정보 수정
-        profile.updateProfile(profileRequestDto.getTitle(), profileRequestDto.getIntroduction(),
-                profileRequestDto.getImageUrl(), category);
+        profile.updateProfile(profileRequestDto.getTitle(), profileRequestDto.getIntroduction(), category);
 
         profile.getProfileKeywords().clear();
         List<ProfileKeyword> profileKeywords = profileRequestDto.toProfileKeywords(profile, keywords);
@@ -98,7 +97,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<ProfileResponseDto> searchMentorProfilesByKeyword(String keyword) {
         List<Profile> profiles = profileRepository.searchMentorProfilesByKeyword(keyword);
-
+        
         return profiles.stream()
                 .map(profile -> ProfileResponseDto.from(profile, profile.getUser()))
                 .toList();
@@ -107,8 +106,6 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public PagingResponse<ProfileResponseDto> getMyProfiles(Long userId, Pageable pageable) {
         Page<Profile> profiles = profileRepository.findByUserId(userId, pageable);
-
-
 
         Page<ProfileResponseDto> map = profiles.map(
                 profile -> ProfileResponseDto.from(profile, profile.getUser()));

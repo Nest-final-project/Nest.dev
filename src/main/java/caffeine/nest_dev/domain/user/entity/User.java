@@ -61,6 +61,8 @@ public class User extends BaseEntity {
 
     private String accountNumber;
 
+    private String imgUrl;
+
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
@@ -177,5 +179,13 @@ public class User extends BaseEntity {
 
     public void updateTotalPrice(Integer totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public void saveImg(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public void removeImg() {
+        this.imgUrl = null;
     }
 }
