@@ -80,7 +80,7 @@ public class AdminComplaintService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void update(Long userId, Long answerId, AnswerUpdateRequestDto answerUpdateRequestDto) {
 
 
