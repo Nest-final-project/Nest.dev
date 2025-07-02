@@ -68,7 +68,7 @@ public class AdminComplaintController {
     }
 
 
-    @GetMapping("/complaints/{complaintId}/answers")
+    @GetMapping("/complaints/{complaintId}/answer")
     public ResponseEntity<CommonResponse<AnswerResponseDto>> getAnswer(@PathVariable Long complaintId){
         AnswerResponseDto answer = adminComplaintService.getAnswer(complaintId);
 

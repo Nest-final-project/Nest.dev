@@ -86,7 +86,7 @@ public class AdminComplaintService {
 
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new BaseException(ErrorCode.ANSWER_NOT_FOUND));
 
-        if(!answer.getId().equals(userId)) {
+        if(!answer.getUser().getId().equals(userId)) {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
