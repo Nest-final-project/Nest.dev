@@ -128,7 +128,7 @@ public class UserController {
     }
 
     // 이미지 수정
-    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/profile-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommonResponse<ProfileImageUploadResponseDto>> updateImage(
             @RequestPart(value = "files", required = false) MultipartFile files,
             @AuthenticationPrincipal UserDetailsImpl userDetails
