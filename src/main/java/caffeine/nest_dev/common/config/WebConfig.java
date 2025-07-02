@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600); // Pre-flight 요청 결과를 캐시할 시간 (초 단위)
 
         registry.addMapping("/sse/**") // SSE 엔드포인트만 제한적으로 허용
-                .allowedOrigins("https://nest-frontend-eight.vercel.app", "http://localhost:3000")
+                .allowedOrigins("http://localhost:3000")
                 .allowedMethods("GET")
                 .allowedHeaders("Authorization", "Content-Type", "Last-Event-Id")
                 .allowCredentials(true)

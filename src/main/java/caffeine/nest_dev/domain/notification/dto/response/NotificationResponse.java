@@ -14,12 +14,14 @@ public class NotificationResponse {
 
     private String content;
     private Long chatRoomId;
+    private Long reservationId;
     private LocalDateTime createdAt;
 
     public static NotificationResponse from(Notification notification) {
         return NotificationResponse.builder()
                 .content(notification.getContent())
                 .chatRoomId(notification.getChatRoomId())
+                .reservationId(notification.getReservationId())
                 .createdAt(notification.getCreatedAt())
                 .build();
     }
