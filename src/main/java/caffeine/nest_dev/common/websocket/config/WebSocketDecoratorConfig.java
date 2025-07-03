@@ -1,7 +1,6 @@
 package caffeine.nest_dev.common.websocket.config;
 
 import caffeine.nest_dev.common.websocket.util.WebSocketSessionRegistry;
-import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +33,9 @@ public class WebSocketDecoratorConfig {
 
             @Override
             public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-                Principal principal = session.getPrincipal();
-                if (principal != null) {
-                    String userId = principal.getName();
+                Object userIdObj = session.getAttributes().get("userId");
+                if (userIdObj != null) {
+                    String userId = userIdObj.toString();
                     log.info("afterConnectionEstablished : userId = {}", userId);
                     sessionRegistry.register(userId, session);
                 } else {
@@ -48,9 +47,10 @@ public class WebSocketDecoratorConfig {
 
             @Override
             public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-                Principal principal = session.getPrincipal();
-                if (principal != null) {
-                    String userId = principal.getName();
+                Object userIdObj = session.getAttributes().get("userId");
+
+                if (userIdObj != null) {
+                    String userId = userIdObj.toString();
                     log.info("afterConnectionClosed : userId = {}", userId);
                     sessionRegistry.sessionClose(userId);
                 } else {

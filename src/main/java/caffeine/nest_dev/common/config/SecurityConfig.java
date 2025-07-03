@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,7 +27,7 @@ public class SecurityConfig {
     // 모든 사용자가 접근 가능한 URL 목록 (인증 불필요)
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
-            "/ws-nest/**", "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
+            "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
             "/oauth2/callback", "/api/auth/signup/**"
 
     };
@@ -74,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> {})
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(authorize -> {

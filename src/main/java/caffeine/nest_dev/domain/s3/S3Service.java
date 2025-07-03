@@ -83,7 +83,7 @@ public class S3Service {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
             // 업로드된 파일의 URL 생성 (퍼블릭 접근이 설정되어 있다면)
-            // AWS S3 객체 URL 형식: https://버킷이름.s3.리전.amazonaws.com/파일이름
+            // AWS S3 객체 URL 형식: https://xn--jx2bx8c95n7jj.s3.xn--oy2bi6x.amazonaws.com/%ED%8C%8C%EC%9D%BC%EC%9D%B4%EB%A6%84
             return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region,
                     s3FileName);
 

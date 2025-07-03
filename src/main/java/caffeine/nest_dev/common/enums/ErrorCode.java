@@ -139,7 +139,11 @@ public enum ErrorCode implements BaseCode {
     CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다."),
 
     // S3
-    S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다.")
+    S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다."),
+
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "이미지가 존재하지 않습니다."),
+    IMAGE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 이미지입니다."),
+
     ;
 
 

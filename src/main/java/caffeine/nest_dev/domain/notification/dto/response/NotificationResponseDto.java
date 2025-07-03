@@ -2,26 +2,27 @@ package caffeine.nest_dev.domain.notification.dto.response;
 
 import caffeine.nest_dev.domain.notification.entity.Notification;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class NotificationResponse {
+@AllArgsConstructor
+public class NotificationResponseDto {
 
-    private String content;
+    private Long id;
+    private Long receiverId;
     private Long chatRoomId;
-    private Long reservationId;
+    private String content;
     private LocalDateTime createdAt;
 
-    public static NotificationResponse from(Notification notification) {
-        return NotificationResponse.builder()
-                .content(notification.getContent())
+    public static NotificationResponseDto from(Notification notification) {
+        return NotificationResponseDto.builder()
+                .id(notification.getId())
+                .receiverId(notification.getReceiverId())
                 .chatRoomId(notification.getChatRoomId())
-                .reservationId(notification.getReservationId())
+                .content(notification.getContent())
                 .createdAt(notification.getCreatedAt())
                 .build();
     }

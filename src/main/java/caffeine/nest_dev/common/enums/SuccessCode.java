@@ -17,6 +17,8 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_UPDATE_PASSWORD(HttpStatus.OK, "비밀번호 수정을 성공하였습니다."),
     SUCCESS_DELETE_USER(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."),
     SUCCESS_UPDATE_EXTRA_INFO(HttpStatus.OK, "추가 정보 입력이 완료되었습니다."),
+    SUCCESS_IMAGE_UPLOAD(HttpStatus.CREATED, "이미지가 등록되었습니다."),
+    SUCCESS_IMAGE_DELETED(HttpStatus.OK, "이미지가 삭제되었습니다."),
 
     // Ticket
     SUCCESS_TICKET_CREATED(HttpStatus.CREATED, "이용권에 등록을 성공하였습니다."),
@@ -83,6 +85,8 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_PROFILE_UPDATED(HttpStatus.OK, "프로필 정보가 수정되었습니다."),
     SUCCESS_PROFILE_KEYWORD_READ(HttpStatus.OK, "멘토프로필 키워드 검색이 완료되었습니다"),
     SUCCESS_RECOMMENDED_PROFILE_READ(HttpStatus.OK, "추천 멘토 조회에 성공했습니다."),
+    SUCCESS_PROFILE_IMAGE_READ(HttpStatus.OK, "유저의 프로필 이미지 조회 완료"),
+    SUCCESS_UPDATE_MAIN_PROFILE(HttpStatus.OK, "메인 프로필이 설정되었습니다."),
 
     // Certificate
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),
@@ -113,7 +117,9 @@ public enum SuccessCode implements BaseCode {
     // Answer
     SUCCESS_CREATE_ANSWER(HttpStatus.CREATED, "답변이 등록되었습니다."),
     SUCCESS_SHOW_ANSWER(HttpStatus.OK, "답변이 조회되었습니다."),
-    SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다.");
+    SUCCESS_UPDATE_ANSWER(HttpStatus.OK, "답변이 수정되었습니다."),
+
+    SUCCESS_NOTIFICATION_READ(HttpStatus.OK, "알림 내역이 조회되었습니다.");
 
 
     private final HttpStatus httpStatus;

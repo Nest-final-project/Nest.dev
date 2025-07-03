@@ -36,7 +36,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
         return queryFactory
                 .selectDistinct(profile)
                 .from(profile)
-                .join(profile.user, user)
+                .join(profile.user, user).fetchJoin()
                 .leftJoin(profile.profileKeywords, profileKeyword)
                 .leftJoin(profileKeyword.keyword, keywordEntity)
                 .where(
@@ -93,6 +93,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                         profile.id,
                         user.id,
                         user.name,
+                        user.imgUrl,
                         profile.title,
                         category.name,
                         profile.createdAt
@@ -133,6 +134,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                     Long profileId = tuple.get(profile.id);
                     Long userId = tuple.get(user.id);
                     String userName = tuple.get(user.name);
+                    String userImgUrl = tuple.get(user.imgUrl);
                     String profileTitle = tuple.get(profile.title);
                     String categoryName = tuple.get(category.name);
                     List<Keyword> keywords = keywordMap.getOrDefault(profileId, Collections.emptyList());
@@ -148,7 +150,8 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                             userName,
                             profileTitle,
                             categoryName,
-                            keywordDtos  // 수정된 부분
+                            keywordDtos,  // 수정된 부분
+                            userImgUrl
                     );
                 })
                 .collect(Collectors.toCollection(ArrayList::new));

@@ -1,9 +1,17 @@
 package caffeine.nest_dev.domain.notification.controller;
 
+import caffeine.nest_dev.common.dto.CommonResponse;
+import caffeine.nest_dev.common.dto.PagingResponse;
+import caffeine.nest_dev.common.enums.SuccessCode;
+import caffeine.nest_dev.domain.notification.dto.response.NotificationResponseDto;
 import caffeine.nest_dev.domain.notification.service.NotificationService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,5 +46,19 @@ public class NotificationController {
             @RequestHeader(value = "Last-Event-Id", required = false, defaultValue = "") String lastEventId) {
         Long userId = userDetails.getId();
         return notificationService.subscribe(userId, lastEventId);
+    }
+
+    // 알림 내역 조회
+    @GetMapping("/notifications")
+    public ResponseEntity<CommonResponse<PagingResponse<NotificationResponseDto>>> getNotifications(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PageableDefault() Pageable pageable
+    ) {
+        PagingResponse<NotificationResponseDto> dtoList = notificationService.getNotifications(userDetails.getId(),
+                pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_NOTIFICATION_READ,
+                        dtoList));
     }
 }

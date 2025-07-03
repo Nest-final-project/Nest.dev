@@ -17,5 +17,6 @@ public class RecommendedProfileResponseDto {
     private String profileTitle;
     private String categoryName;
     private List<KeywordResponseDto> keywords;
+    private String imgUrl;
 
 }

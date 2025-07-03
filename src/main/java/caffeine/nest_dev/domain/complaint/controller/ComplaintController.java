@@ -90,7 +90,7 @@ public class ComplaintController {
 
     }
 
-    @GetMapping("/complaints/{complaintId}/answers")
+    @GetMapping("/complaints/{complaintId}/answer")
     public ResponseEntity<CommonResponse<AnswerResponseDto>> getAnswer(@PathVariable Long complaintId,
             @AuthenticationPrincipal UserDetailsImpl authUser){
 

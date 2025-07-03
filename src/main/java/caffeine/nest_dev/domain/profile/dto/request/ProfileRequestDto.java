@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class ProfileRequestDto {
+
     private String title;
     private String introduction;
-    private String imageUrl;
     private List<Long> keywordId;
     private Long categoryId;
     private String accountNumber;
@@ -31,11 +31,11 @@ public class ProfileRequestDto {
                 .category(category)
                 .title(title)
                 .introduction(introduction)
-                .imageUrl(imageUrl)
                 .profileKeywords(new ArrayList<>())
                 .accountNumber(accountNumber)
                 .build();
     }
+
     public List<ProfileKeyword> toProfileKeywords(Profile profile, List<Keyword> keywords) {
         return keywords.stream()
                 .map(keyword -> ProfileKeyword.builder()

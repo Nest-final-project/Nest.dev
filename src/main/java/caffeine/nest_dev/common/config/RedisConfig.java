@@ -1,6 +1,11 @@
 package caffeine.nest_dev.common.config;
 
 import java.time.Duration;
+import caffeine.nest_dev.common.websocket.config.RedisSubscriber;
+import caffeine.nest_dev.oauth2.dto.response.OAuth2LoginResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -12,9 +17,13 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 public class RedisConfig {
@@ -50,6 +59,24 @@ public class RedisConfig {
 
         template.afterPropertiesSet();
         return template;
+    }
+
+    // 발행된 메시지 처리를 위한 리스너 설정
+    @Bean
+    RedisMessageListenerContainer redisMessageListenerContainer(
+            RedisConnectionFactory connectionFactory,
+            MessageListenerAdapter listenerAdapter
+    ) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.addMessageListener(listenerAdapter, new PatternTopic("chat_room_*"));
+        return container;
+    }
+
+    // RedisMessageListenerContainer 로부터 메시지를 dispatch 받고, 실제로 메시지를 처리하는 비지니스 로직이 담긴 subscriber를 추가함
+    @Bean
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
     }
 
     @Bean
@@ -92,12 +119,36 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<String, Object> chatRedisTemplate(
-            RedisConnectionFactory redisConnectionFactory
+            RedisConnectionFactory connectionFactory
     ) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setConnectionFactory(connectionFactory);
+
+        // GenericJackson2JsonRedisSerializer 사용
+        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+                .modules(new JavaTimeModule())
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
+
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
+
+        template.afterPropertiesSet();
         return template;
     }
 
+    @Bean
+    public RedisTemplate<String, String> imgTemplate(
+            RedisConnectionFactory connectionFactory
+    ) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
+    }
 }
