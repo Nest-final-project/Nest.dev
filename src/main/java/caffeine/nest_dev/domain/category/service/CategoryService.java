@@ -1,18 +1,15 @@
 package caffeine.nest_dev.domain.category.service;
 
-import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.domain.admin.dto.response.AdminMentorCareerResponseDto;
-import caffeine.nest_dev.domain.career.entity.Career;
-import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.category.dto.request.CategoryRequestDto;
 import caffeine.nest_dev.domain.category.dto.response.CategoryResponseDto;
 import caffeine.nest_dev.domain.category.entity.Category;
 import caffeine.nest_dev.domain.category.repository.CategoryRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
+    @CacheEvict(value = "categoriesPage", allEntries = true)
     public CategoryResponseDto creatCategory(CategoryRequestDto categoryRequestDto) {
 
         categoryRepository.findByName(categoryRequestDto.getName())
@@ -39,6 +37,8 @@ public class CategoryService {
 
     }
 
+    @Cacheable(value = "categoriesPage",
+            key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.isUnsorted()")
     public PagingResponse<CategoryResponseDto> getCategories(Pageable pageable) {
 
         Page<Category> categories = categoryRepository.findAll(pageable);
@@ -49,7 +49,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto) {
+    @CacheEvict(value = "categoriesPage", allEntries = true)
+    public CategoryResponseDto updateCategory(Long categoryId,
+            CategoryRequestDto categoryRequestDto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -67,6 +69,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categoriesPage", allEntries = true)
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));

@@ -9,6 +9,7 @@ import caffeine.nest_dev.domain.reservation.repository.ReservationRepository;
 import caffeine.nest_dev.domain.review.dto.request.ReviewRequestDto;
 import caffeine.nest_dev.domain.review.dto.response.ReviewResponseDto;
 import caffeine.nest_dev.domain.review.entity.Review;
+import caffeine.nest_dev.domain.review.enums.ReviewStatus;
 import caffeine.nest_dev.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class ReviewService {
             throw new BaseException(ErrorCode.NO_PERMISSION);
         }
 
-        if(!reservation.getReservationStatus().equals(ReservationStatus.COMPLETED)){
+        if (!reservation.getReservationStatus().equals(ReservationStatus.COMPLETED)) {
             throw new BaseException(ErrorCode.RESERVATION_NOT_COMPLETED);
         }
 
@@ -53,7 +54,8 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public PagingResponse<ReviewResponseDto> getMentorReviews(Long mentorId, Pageable pageable) {
 
-        Page<Review> reviewPage = reviewRepository.findByMentorId(mentorId, pageable);
+        Page<Review> reviewPage = reviewRepository.findByMentorIdAndReviewStatus(mentorId, pageable,
+                ReviewStatus.ACTIVE);
         Page<ReviewResponseDto> responseDtos = reviewPage.map(ReviewResponseDto::of);
 
         return PagingResponse.from(responseDtos);
@@ -63,7 +65,8 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public PagingResponse<ReviewResponseDto> getMyReviews(Long mentee, Pageable pageable) {
 
-        Page<Review> reviews = reviewRepository.findByMenteeId(mentee, pageable);
+        Page<Review> reviews = reviewRepository.findByMenteeIdAndReviewStatus(mentee, pageable,
+                ReviewStatus.ACTIVE);
         Page<ReviewResponseDto> responseDtos = reviews.map(ReviewResponseDto::of);
 
         return PagingResponse.from(responseDtos);
