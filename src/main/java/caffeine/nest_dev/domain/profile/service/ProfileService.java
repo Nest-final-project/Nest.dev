@@ -17,6 +17,7 @@ import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -77,6 +78,7 @@ public class ProfileService {
     }
 
     @Transactional
+    @CacheEvict(value = "mentorsList", allEntries = true)
     public void updateProfile(Long id, Long profileId, ProfileRequestDto profileRequestDto) {
 
         Profile profile = profileRepository.findById(profileId)
@@ -125,6 +127,7 @@ public class ProfileService {
     }
 
     @Transactional
+    @CacheEvict(value = "mentorsList", allEntries = true)
     public void deleteProfile(Long userId, Long profileId) {
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 

@@ -153,13 +153,13 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponseDto reissue(RefreshTokenRequestDto dto, Long userId) {
+    public TokenResponseDto reissue(RefreshTokenRequestDto dto) {
 
         String refreshToken = dto.getRefreshToken();
 
-        // refreshToken 일치 여부 검증
-        String refreshTokenByUserId = tokenRepository.findByUserId(userId);
-        if (!refreshToken.equals(refreshTokenByUserId)) {
+        // refreshToken 존재 여부 검증
+        Long userId = jwtUtil.getUserIdFromToken(refreshToken);
+        if (userId == null) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
 
@@ -175,8 +175,7 @@ public class AuthService {
         }
 
         // 새로운 access 토큰 발급
-        Long userIdFromToken = jwtUtil.getUserIdFromToken(refreshToken);
-        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userIdFromToken);
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
         String newAccessToken = jwtUtil.createAccessToken(user);
 
         return TokenResponseDto.of(newAccessToken);
