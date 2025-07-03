@@ -102,27 +102,4 @@ public class ReservationService {
 
         return ReservationResponseDto.of(reservation);
     }
-
-    @Transactional
-    public void update(UserDetailsImpl authUser, Long reservationId,
-            ReservationCancelRequestDto cancelRequestDto) {
-
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
-
-        Long userId = authUser.getId();
-        UserRole userRole = authUser.getUserRole();
-
-        if (userRole.equals(UserRole.MENTEE) || userRole.equals(UserRole.MENTOR)) {
-            if (!reservation.getMentee().getId().equals(userId) && !reservation.getMentor().getId()
-                    .equals(userId)) {
-                throw new BaseException(ErrorCode.NO_PERMISSION);
-            }
-        }
-
-        reservation.update(cancelRequestDto);
-
-    }
-
-
 }
