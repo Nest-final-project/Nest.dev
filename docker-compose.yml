@@ -31,7 +31,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       node-exporter: # healthcheck 사용을 위해 명시적으로 서비스 이름 뒤에 아무것도 붙이지 않거나 service_healthy로 변경
         condition: service_healthy # <--- node-exporter가 healthy해질 때까지 기다림
