@@ -33,7 +33,7 @@ public class Coupon {
     private Integer totalQuantity; // 전체 발급 가능 수량
 
     @Column(nullable = false)
-    private Integer issuedQuantity; // 현재 발급된 수량
+    private Integer issuedQuantity = 0; // 현재 발급된 수량
 
     @Column(nullable = false)
     private LocalDateTime validFrom; // 유효 시작일
