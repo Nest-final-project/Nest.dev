@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long>, ProfileRepositoryQuery {
 
-    Page<Profile> findByUserId(Long userId, Pageable pageable);
+    Page<Profile> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
 
     List<Profile> findByUserIdAndIsDeletedFalse(Long userId);
 
-    Optional<Profile> findByUserIdAndCategoryId(Long userId, Long categoryId);
+    Optional<Profile> findByIdAndUserId(Long profileId, Long id);
+
+    boolean existsByUserIdAndCategoryIdAndIsDeletedFalse(Long userId, Long categoryId);
 }

@@ -42,7 +42,7 @@ public class ProfileService {
                 .orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Long categoryId = category.getId();
-        if (profileRepository.findByUserIdAndCategoryId(userId, categoryId).isPresent()) {
+        if (profileRepository.existsByUserIdAndCategoryIdAndIsDeletedFalse(userId, categoryId)) {
             throw new BaseException(ErrorCode.PROFILE_ALREADY_EXISTS);
         }
         // 키워드 조회
@@ -109,7 +109,7 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public PagingResponse<ProfileResponseDto> getMyProfiles(Long userId, Pageable pageable) {
-        Page<Profile> profiles = profileRepository.findByUserId(userId, pageable);
+        Page<Profile> profiles = profileRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
 
         Page<ProfileResponseDto> map = profiles.map(
                 profile -> ProfileResponseDto.from(profile, profile.getUser()));
@@ -120,5 +120,15 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<RecommendedProfileResponseDto> getRecommendedProfiles(Long categoryId) {
         return profileRepository.searchRecommendedMentorProfiles(categoryId);
+    }
+
+    @Transactional
+    public void deleteProfile(Long userId, Long profileId) {
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
+
+        Profile profile = profileRepository.findByIdAndUserId(profileId, user.getId()).orElseThrow(
+                () -> new RuntimeException("프로필을 찾을 수 없음")
+        );
+        profile.deleteProfile();
     }
 }
