@@ -104,26 +104,6 @@ public class ConsultationService {
                 .collect(Collectors.toList());
     }
 
-
-    @Transactional
-    public ConsultationResponseDto updateConsultation(Long userId, Long consultationId,
-            ConsultationRequestDto requestDto) {
-
-        if (consultationRepository.existsConsultation(userId, requestDto.getDayOfWeek(),
-                requestDto.getStartAt(),
-                requestDto.getEndAt())) {
-            throw new BaseException(ErrorCode.DUPLICATE_CONSULTATION_TIME);
-        }
-
-        Consultation consultation = consultationRepository.findByIdAndMentorId(consultationId,
-                        userId)
-                .orElseThrow(() -> new BaseException(ErrorCode.CONSULTATION_NOT_FOUND));
-
-        consultation.update(requestDto.getStartAt(), requestDto.getEndAt());
-
-        return ConsultationResponseDto.of(consultation);
-    }
-
     @Transactional
     public void deleteConsultation(Long userId, Long consultationId) {
 

@@ -72,20 +72,6 @@ public class ConsultationController {
         return ResponseEntity.ok(CommonResponse.of(SuccessCode.SUCCESS_SLOTS_READ, responseDto));
     }
 
-    /**
-     * 상담 시간 수정
-     */
-    @PatchMapping("/mentor/consultations/{consultationId}")
-    public ResponseEntity<CommonResponse<ConsultationResponseDto>> updateConsultation(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long consultationId,
-            @RequestBody ConsultationRequestDto requestDto) {
-        ConsultationResponseDto updated = consultationService.updateConsultation(
-                userDetails.getId(), consultationId, requestDto);
-        return ResponseEntity.ok(
-                CommonResponse.of(SuccessCode.SUCCESS_CONSULTATION_UPDATED, updated));
-    }
-
     @DeleteMapping("/mentor/consultations/{consultationId}")
     public ResponseEntity<CommonResponse<Void>> deleteConsultation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
