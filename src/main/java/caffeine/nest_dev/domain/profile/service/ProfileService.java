@@ -17,6 +17,7 @@ import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -117,6 +118,7 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "mentorsList", key = "#categoryId")
     public List<RecommendedProfileResponseDto> getRecommendedProfiles(Long categoryId) {
         return profileRepository.searchRecommendedMentorProfiles(categoryId);
     }

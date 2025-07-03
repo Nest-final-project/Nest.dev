@@ -14,6 +14,7 @@ import caffeine.nest_dev.domain.user.entity.QUser;
 import caffeine.nest_dev.domain.user.enums.UserRole;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                         tuple -> tuple.get(profileKeyword.profile.id), // Map의 키: profileId
                         Collectors.mapping(
                                 tuple -> tuple.get(keywordEntity), // Map의 값: Keyword 엔티티
-                                Collectors.toList() // 값을 List로 수집
+                                Collectors.toCollection(ArrayList::new) // 값을 List로 수집
                         )
                 ));
 
@@ -139,7 +140,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                     // Keyword -> KeywordResponseDto 변환
                     List<KeywordResponseDto> keywordDtos = keywords.stream()
                             .map(k -> new KeywordResponseDto(k.getId(), k.getName()))
-                            .toList();
+                            .collect(Collectors.toCollection(ArrayList::new));
 
                     return new RecommendedProfileResponseDto(
                             profileId,
@@ -150,7 +151,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                             keywordDtos  // 수정된 부분
                     );
                 })
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
     }
 

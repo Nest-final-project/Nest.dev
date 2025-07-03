@@ -1,13 +1,14 @@
 package caffeine.nest_dev.domain.profile.dto.response;
 
 import caffeine.nest_dev.domain.keyword.dto.response.KeywordResponseDto;
-import caffeine.nest_dev.domain.keyword.entity.Keyword;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class RecommendedProfileResponseDto {
 
     private Long profileId;

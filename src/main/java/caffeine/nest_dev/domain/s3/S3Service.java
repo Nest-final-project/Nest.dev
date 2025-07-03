@@ -36,6 +36,11 @@ public class S3Service {
      * @throws IOException 파일 처리 중 발생할 수 있는 예외
      */
     public String uploadFile(MultipartFile file) throws IOException {
+        // 기본 경로 사용을 위해 folder 파라미터에 null을 전달합니다.
+        return uploadFile(file, null);
+    }
+
+    public String uploadFile(MultipartFile file, String folder) throws IOException {
 
         String originalFilename = file.getOriginalFilename();
 
@@ -55,8 +60,14 @@ public class S3Service {
         }
 
         // UUID + 원본 파일 확장자
-        String s3FileName =
-                (basePath.isEmpty() ? "" : basePath) + UUID.randomUUID().toString() + fileExtension;
+        String uploadPrefix;
+        if (folder != null && !folder.trim().isEmpty()) {
+            uploadPrefix = folder.endsWith("/") ? folder : folder + "/";
+        } else {
+            uploadPrefix = basePath.endsWith("/") ? basePath : basePath + "/";
+        }
+
+        String s3FileName = uploadPrefix + UUID.randomUUID().toString() + fileExtension;
 
         try {
             // PutObjectRequest 생성
