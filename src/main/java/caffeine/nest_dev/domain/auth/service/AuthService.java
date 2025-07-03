@@ -153,12 +153,12 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponseDto reissue(RefreshTokenRequestDto dto, Long userId) {
+    public TokenResponseDto reissue(RefreshTokenRequestDto dto) {
 
         String refreshToken = dto.getRefreshToken();
 
         // refreshToken 일치 여부 검증
-        String refreshTokenByUserId = tokenRepository.findByUserId(userId);
+        String refreshTokenByUserId = tokenRepository.findByUserId(dto.getUserId());
         if (!refreshToken.equals(refreshTokenByUserId)) {
             throw new BaseException(ErrorCode.INVALID_TOKEN);
         }
