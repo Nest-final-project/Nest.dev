@@ -41,6 +41,10 @@ public class ProfileService {
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new BaseException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        Long categoryId = category.getId();
+        if (profileRepository.findByUserIdAndCategoryId(userId, categoryId).isPresent()) {
+            throw new BaseException(ErrorCode.PROFILE_ALREADY_EXISTS);
+        }
         // 키워드 조회
         List<Keyword> keywords = keywordRepository.findAllById(requestDto.getKeywordId());
 
@@ -97,7 +101,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<ProfileResponseDto> searchMentorProfilesByKeyword(String keyword) {
         List<Profile> profiles = profileRepository.searchMentorProfilesByKeyword(keyword);
-        
+
         return profiles.stream()
                 .map(profile -> ProfileResponseDto.from(profile, profile.getUser()))
                 .toList();
