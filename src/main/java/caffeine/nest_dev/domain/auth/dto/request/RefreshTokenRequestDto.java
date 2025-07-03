@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RefreshTokenRequestDto {
 
-    private Long userId;
     private String refreshToken;
 
 }
