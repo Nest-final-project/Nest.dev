@@ -41,6 +41,7 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                 .leftJoin(profileKeyword.keyword, keywordEntity)
                 .where(
                         user.userRole.eq(UserRole.MENTOR),
+                        profile.isDeleted.isFalse(),
                         keyword != null && !keyword.isEmpty()
                                 ? keywordEntity.name.containsIgnoreCase(keyword)
                                 : null
@@ -70,7 +71,8 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                 .join(profile.user, user)
                 .where(
                         career.careerStatus.eq(CareerStatus.AUTHORIZED), // careerStatus 가 승인된 것만
-                        profile.category.id.eq(categoryId) // 카테고리에 해당하는 profile 조회 조건
+                        profile.category.id.eq(categoryId), // 카테고리에 해당하는 profile 조회 조건
+                        profile.isDeleted.isFalse()
                 )
                 .groupBy(user.id) // 한 유저의 프로필만 나오지 않도록
                 .orderBy(profile.createdAt.max().desc()) // 가장 최신 생성일 기준
@@ -102,7 +104,8 @@ public class ProfileRepositoryQueryImpl implements ProfileRepositoryQuery {
                 .join(profile.user, user)
                 .join(profile.category, category)
                 .where(
-                        profile.id.in(profileIds)  // 위에서 지정한 프로필 3개만 가져오기
+                        profile.id.in(profileIds),  // 위에서 지정한 프로필 3개만 가져오기
+                        profile.isDeleted.isFalse()
                 )
                 .orderBy(profile.createdAt.desc())
                 .fetch();

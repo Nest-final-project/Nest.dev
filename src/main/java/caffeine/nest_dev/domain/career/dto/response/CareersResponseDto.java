@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.career.dto.response;
 
 import caffeine.nest_dev.domain.career.entity.Career;
+import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class CareersResponseDto {
     private String company;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
+    private CareerStatus careerStatus;
 
     public static CareersResponseDto of(Career career) {
         return CareersResponseDto.builder()
@@ -24,6 +26,7 @@ public class CareersResponseDto {
                 .company(career.getCompany())
                 .startAt(career.getStartAt())
                 .endAt(career.getEndAt())
+                .careerStatus(career.getCareerStatus())
                 .build();
     }
 }
