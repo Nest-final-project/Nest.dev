@@ -60,7 +60,7 @@ public class SecurityConfig {
             "/api/mentor/consultations", "/api/profiles"
     };
     private static final String[] GET_METHOD_MENTOR_PATH = {
-            "/api/profiles/me"
+            "/api/profiles/me/**"
     };
     private static final String[] PATCH_METHOD_MENTOR_PATH = {
             "/api/careers/*", "/api/careers/**", "/api/mentor/consultations/*",

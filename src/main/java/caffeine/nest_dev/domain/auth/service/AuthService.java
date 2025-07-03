@@ -47,11 +47,6 @@ public class AuthService {
     @Transactional
     public AuthResponseDto signup(AuthRequestDto dto) {
 
-        // 이메일 중복 검증
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
-        }
-
         // 비밀번호 인코딩
         String encoded = passwordEncoder.encode(dto.getPassword());
 
@@ -73,7 +68,6 @@ public class AuthService {
     }
 
     // 인증 코드 보내기
-    @Transactional
     public void signupCode(EmailAuthRequestDto dto) {
 
         // 이메일 중복 검증

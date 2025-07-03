@@ -128,6 +128,11 @@ public class CareerService {
         Career career = careerRepository.findById(careerId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_CAREER));
 
+        // s3에서 이미지 삭제
+        career.getCertificates().forEach(certificate ->
+            s3Service.deleteFile(certificate.getFileUrl())
+        );
+
         // 경력 삭제
         careerRepository.delete(career);
     }
