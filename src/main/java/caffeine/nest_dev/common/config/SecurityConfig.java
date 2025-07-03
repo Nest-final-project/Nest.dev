@@ -27,7 +27,7 @@ public class SecurityConfig {
     // 모든 사용자가 접근 가능한 URL 목록 (인증 불필요)
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
-            "/ws-nest/**", "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
+            "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
             "/oauth2/callback", "/api/auth/signup/**"
 
     };

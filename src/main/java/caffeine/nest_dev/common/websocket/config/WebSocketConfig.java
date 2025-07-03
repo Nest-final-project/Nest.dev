@@ -49,12 +49,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addDecoratorFactory(decoratorFactory);
     }
 
-    // 인터셉터 등록 - 인증 헤더 처리
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(channelInterceptor);
-//    }
-
     /**
      * 서버와 클라이언트 간 메시지 송수신 경로 정의
      *
