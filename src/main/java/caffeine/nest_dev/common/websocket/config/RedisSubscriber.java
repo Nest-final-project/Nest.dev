@@ -1,6 +1,6 @@
 package caffeine.nest_dev.common.websocket.config;
 
-import caffeine.nest_dev.domain.message.dto.request.ChatMessageDto;
+import caffeine.nest_dev.domain.message.dto.response.MessageResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,15 +46,30 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
+            String channelName = new String(message.getChannel());
             String pubMessage = chatRedisTemplate.getStringSerializer().deserialize(message.getBody());
+            
+            log.info("🔔 Redis 메시지 수신 - 채널: {}, 내용: {}", channelName, pubMessage);
+            
             // JSON -> DTO
-            ChatMessageDto roomMessage = objectMapper.readValue(pubMessage, ChatMessageDto.class);
+            MessageResponseDto roomMessage = objectMapper.readValue(pubMessage, MessageResponseDto.class);
+
+            log.info("📤 STOMP로 전달 - 수신자: {}, 채팅방: {}, 메시지: {}", 
+                    roomMessage.getReceiverId(), 
+                    roomMessage.getChatRoomId(), 
+                    roomMessage.getContent());
 
             // STOMP 구독자에게 메시지 전달
-            messagingTemplate.convertAndSend("/sub/chat_room/" + roomMessage.getChatRoomId(), roomMessage);
+//            messagingTemplate.convertAndSend("/sub/chat_room/" + roomMessage.getChatRoomId(), roomMessage);
+            messagingTemplate.convertAndSendToUser(
+                    String.valueOf(roomMessage.getReceiverId()),
+                    "/queue/message",
+                    roomMessage
+            );
+            
+            log.info("✅ STOMP 메시지 전달 완료 - 수신자: {}", roomMessage.getReceiverId());
         } catch (Exception e) {
-            log.error("Redis 메시지 처리 실패", e);
+            log.error("❌ Redis 메시지 처리 실패", e);
         }
-
     }
 }
