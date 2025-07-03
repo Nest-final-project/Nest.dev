@@ -65,4 +65,7 @@ public class Profile extends BaseEntity {
         this.category = category;
     }
 
+    public void deleteProfile() {
+        this.isDeleted = true;
+    }
 }

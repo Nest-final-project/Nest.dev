@@ -87,6 +87,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_RECOMMENDED_PROFILE_READ(HttpStatus.OK, "추천 멘토 조회에 성공했습니다."),
     SUCCESS_PROFILE_IMAGE_READ(HttpStatus.OK, "유저의 프로필 이미지 조회 완료"),
     SUCCESS_UPDATE_MAIN_PROFILE(HttpStatus.OK, "메인 프로필이 설정되었습니다."),
+    SUCCESS_PROFILE_DELETED(HttpStatus.OK, "프로필이 삭제되었습니다."),
 
     // Certificate
     SUCCESS_CERTIFICATE_UPDATED(HttpStatus.OK, "경력증명서 수정이 완료되었습니다."),

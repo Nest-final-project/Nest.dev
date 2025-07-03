@@ -103,9 +103,13 @@ public enum ErrorCode implements BaseCode {
     // Profile
     PROFILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
 
+    PROFILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 해당 카테고리에 프로필이 등록되어있습니다."),
+
     // Career
     NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
+
     CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
+
     CAREER_CERTIFICATE_EMPTY(HttpStatus.BAD_REQUEST, "경력증명서는 반드시 필요합니다."),
 
     // Certificate
@@ -113,35 +117,46 @@ public enum ErrorCode implements BaseCode {
 
     // OAuth2
     INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST, "소셜 로그인 타입이 일치하지 않습니다."),
+
     DTO_NOT_FOUND(HttpStatus.BAD_REQUEST, "dto가 존재하지 않습니다."),
+
     INVALID_SOCIAL_CODE(HttpStatus.BAD_REQUEST, "코드가 일치하지 않습니다."),
 
 
     // ChatRoom
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+
     CHATROOM_NOT_CREATED(HttpStatus.BAD_REQUEST, "결제가 완료된 후 채팅방을 생성할 수 있습니다."),
 
     // Consultation
     CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
+
     DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
 
     // Answer
     ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 건입니다."),
+
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "답변을 찾을 수 없습니다."),
+
     ANSWER_COMPLAINT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 답변은 선택된 민원에 속하지 않습니다."),
 
 
     // schedule
     CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 작업이 존재하지 않습니다."),
+
     NOTIFICATION_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 알림 작업이 존재하지 않습니다."),
+
     DUPLICATED_SCHEDULE(HttpStatus.BAD_REQUEST, "이미 등록된 작업입니다."),
+
     INVALID_SCHEDULE_TIME(HttpStatus.BAD_REQUEST, "지정된 예약 시간이 지났습니다."),
+
     CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다."),
 
     // S3
     S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다."),
 
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "이미지가 존재하지 않습니다."),
+
     IMAGE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 이미지입니다."),
 
     ;

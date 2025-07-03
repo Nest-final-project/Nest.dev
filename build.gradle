@@ -22,8 +22,18 @@ configurations {
 repositories {
     mavenCentral()
 }
+
 ext {
     querydslVersion = "6.11" // 안정 버전 사용을 권장합니다.
+    springdocVersion = "2.8.9"
+}
+
+dependencyManagement {
+    dependencies {
+        dependency "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+        dependency "org.springdoc:springdoc-openapi-starter-webmvc-api:${springdocVersion}"
+        dependency "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}"
+    }
 }
 
 dependencies {
@@ -40,6 +50,11 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Swagger/OpenAPI Documentation
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springdocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}"
 
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.12.6'
