@@ -35,6 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
+        // Actuator 엔드포인트는 JWT 필터를 건너뛰기
+        String requestPath = request.getRequestURI();
+        if (requestPath.startsWith("/actuator")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String bearer = request.getHeader("Authorization");
         String accessToken = jwtUtil.resolveToken(bearer);
 
