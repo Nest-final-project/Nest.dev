@@ -13,6 +13,10 @@ import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
 import caffeine.nest_dev.domain.auth.service.AuthService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Auth", description = "인증 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -33,9 +38,11 @@ public class AuthController {
     private final AuthService authService;
 
     // 회원가입
+    @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다")
+    @ApiResponse(responseCode = "201", description = "회원가입 성공")
     @PostMapping("/signup")
     public ResponseEntity<CommonResponse<AuthResponseDto>> signup(
-            @Valid @RequestBody AuthRequestDto dto
+            @Parameter(description = "회원가입 요청 정보") @Valid @RequestBody AuthRequestDto dto
     ) {
 
         AuthResponseDto responseDto = authService.signup(dto);
@@ -45,9 +52,11 @@ public class AuthController {
     }
 
     // 인증코드 보내기
+    @Operation(summary = "인증코드 발송", description = "이메일로 인증코드를 발송합니다")
+    @ApiResponse(responseCode = "200", description = "인증코드 발송 성공")
     @PostMapping("/signup/code")
     public ResponseEntity<CommonResponse<Void>> signupCode(
-            @Valid @RequestBody EmailAuthRequestDto dto
+            @Parameter(description = "이메일 인증 요청 정보") @Valid @RequestBody EmailAuthRequestDto dto
     ) {
 
         authService.signupCode(dto);
@@ -57,9 +66,11 @@ public class AuthController {
     }
 
     // 입력받은 인증코드 검증
+    @Operation(summary = "인증코드 검증", description = "입력받은 인증코드를 검증합니다")
+    @ApiResponse(responseCode = "200", description = "인증코드 검증 성공")
     @PostMapping("/signup/code/verify")
     public ResponseEntity<CommonResponse<Void>> verifyCode(
-            @RequestBody AuthCodeRequestDto dto
+            @Parameter(description = "인증코드 검증 요청 정보") @RequestBody AuthCodeRequestDto dto
     ) {
 
         authService.verifyCode(dto);
@@ -69,9 +80,11 @@ public class AuthController {
     }
 
     // 로그인
+    @Operation(summary = "로그인", description = "사용자 로그인을 처리합니다")
+    @ApiResponse(responseCode = "200", description = "로그인 성공")
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponseDto>> login(
-            @RequestBody LoginRequestDto dto) {
+            @Parameter(description = "로그인 요청 정보") @RequestBody LoginRequestDto dto) {
 
         LoginResponseDto responseDto = authService.login(dto);
 
@@ -80,10 +93,12 @@ public class AuthController {
     }
 
     // 로그아웃
+    @Operation(summary = "로그아웃", description = "사용자 로그아웃을 처리합니다")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     @DeleteMapping("/logout")
     public ResponseEntity<CommonResponse<Void>> logout(
-            @RequestHeader("Authorization") String accessToken,
-            @RequestBody LogoutRequestDto dto
+            @Parameter(description = "JWT 액세스 토큰") @RequestHeader("Authorization") String accessToken,
+            @Parameter(description = "로그아웃 요청 정보") @RequestBody LogoutRequestDto dto
     ) {
 
         authService.logout(accessToken, dto.getRefreshToken());
@@ -93,10 +108,12 @@ public class AuthController {
     }
 
     // 토큰 재발급
+    @Operation(summary = "토큰 재발급", description = "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다")
+    @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
     @PostMapping("/token/refresh")
     public ResponseEntity<CommonResponse<TokenResponseDto>> reissue(
-            @RequestBody RefreshTokenRequestDto dto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @Parameter(description = "리프레시 토큰 요청 정보") @RequestBody RefreshTokenRequestDto dto,
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
 
         TokenResponseDto responseDto = authService.reissue(dto, userDetails.getId());
