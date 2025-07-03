@@ -28,7 +28,8 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
             "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
-            "/oauth2/callback", "/api/auth/signup/**"
+            "/oauth2/callback", "/api/auth/signup/**", "/swagger-ui/**", "/v3/api-docs/**",
+            "/swagger-ui.html"
 
     };
 
@@ -37,7 +38,7 @@ public class SecurityConfig {
             "/api/profiles/*/careers/**", "/api/mentors/profiles", "/api/users/*/profiles/*",
             "/api/complaints", "/api/complaints/*", "/api/keywords", "/api/mentors/*/reviews",
             "/api/ticket", "/api/mentor/*/availableConsultations", "/api/categories", "/api/profiles/*/careers",
-            "/api/users/*", "/api/tickets/*", "/api/reservations",
+            "/api/users/*", "/api/tickets/*", "/api/reservations"
     };
 
     // MENTEE 전용 경로
