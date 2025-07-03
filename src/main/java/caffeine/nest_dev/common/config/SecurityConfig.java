@@ -28,7 +28,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/api/auth/signup", "/api/auth/login", "/ws/**",
             "/oauth2/**", "/api/mentors/recommended-profiles", "/sse/**", "/error",
-            "/oauth2/callback", "/api/auth/signup/**"
+            "/oauth2/callback", "/api/auth/signup/**", "/actuator/**", "/actuator/prometheus", "/actuator/health", "/actuator/info"
 
     };
 
@@ -81,6 +81,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> {
 
                     authorize.requestMatchers(HttpMethod.OPTIONS).permitAll();
+                    // Actuator 엔드포인트 허용 (모든 HTTP 메소드)
+                    authorize.requestMatchers("/actuator/**").permitAll();
                     // 화이트리스트에 있는 경로는 누구나 접근 가능
                     authorize.requestMatchers(AUTH_WHITELIST).permitAll();
 
