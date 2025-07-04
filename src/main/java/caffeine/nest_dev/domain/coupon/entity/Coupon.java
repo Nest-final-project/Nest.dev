@@ -88,9 +88,6 @@ public class Coupon {
         if (this.totalQuantity <= 0) {
             throw new BaseException(ErrorCode.COUPON_OUT_OF_STOCK);
         }
-        if (this.issuedQuantity + 1 > this.totalQuantity) {
-            throw new BaseException(ErrorCode.COUPON_OUT_OF_STOCK);
-        }
         this.totalQuantity -= 1;
         this.issuedQuantity += 1;
     }

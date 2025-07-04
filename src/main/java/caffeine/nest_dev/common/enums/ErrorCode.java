@@ -48,6 +48,7 @@ public enum ErrorCode implements BaseCode {
     // UserCoupon
     NOT_FOUND_USER_COUPON(HttpStatus.NOT_FOUND, "보유하신 쿠폰이 없습니다."),
     COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다."),
+    COUPON_ALREADY_ISSUED(HttpStatus.CONFLICT, "이미 발급받은 쿠폰입니다."),
     INVALID_DISCOUNT_AMOUNT(HttpStatus.BAD_REQUEST, "할인 금액이 결제 금액보다 클 수 없습니다."),
     COUPON_MIN_ORDER_AMOUNT_NOT_MET(HttpStatus.NOT_FOUND, "주문 금액이 쿠폰 최소 사용 금액에 미달합니다."),
 
