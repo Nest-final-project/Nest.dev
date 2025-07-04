@@ -30,12 +30,19 @@ public class UserCouponService {
     private final AdminCouponRepository adminCouponRepository;
     private final UserService userService;
 
-    @DistributedLock(key = "'coupon-issue:' + #requestDto.couponId")
+    @DistributedLock(key = "'coupon:' + #requestDto.couponId")
     public UserCouponResponseDto saveUserCoupon(UserCouponRequestDto requestDto) {
         Coupon coupon = adminCouponRepository.findById(requestDto.getCouponId())
                 .orElseThrow(() -> new BaseException(
                         ErrorCode.NOT_FOUND_USER_COUPON));
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(requestDto.getUserId());
+        
+        // 중복 발급 방지 검증
+        UserCouponId userCouponId = new UserCouponId(requestDto.getCouponId(), requestDto.getUserId());
+        if (userCouponRepository.existsById(userCouponId)) {
+            throw new BaseException(ErrorCode.COUPON_ALREADY_ISSUED);
+        }
+        
         coupon.issue();
         UserCoupon userCoupon = requestDto.toEntity(coupon, user);
         userCouponRepository.save(userCoupon);
