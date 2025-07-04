@@ -10,6 +10,10 @@ import caffeine.nest_dev.domain.chatroom.dto.response.ChatRoomStatusResponseDto;
 import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "ChatRoom", description = "채팅방 관리 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat_rooms")
@@ -42,10 +47,12 @@ public class ChatRoomController {
      * @param requestDto 예약 Id
      * @return
      */
+    @Operation(summary = "채팅방 생성", description = "관리자가 테스트 또는 장애 복구를 위해 채팅방을 생성합니다")
+    @ApiResponse(responseCode = "201", description = "채팅방 생성 성공")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
-            @RequestBody CreateChatRoomRequestDto requestDto
+            @Parameter(description = "채팅방 생성 요청 정보") @RequestBody CreateChatRoomRequestDto requestDto
     ) {
         ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
         return ResponseEntity.created(URI.create("/api/chat_rooms"))
@@ -58,12 +65,14 @@ public class ChatRoomController {
      * @param userDetails 사용자 인증 객체
      * @return 채팅방 목록
      */
+    @Operation(summary = "채팅방 목록 조회", description = "사용자의 채팅방 목록을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "채팅방 목록 조회 성공")
     @GetMapping
     public ResponseEntity<SliceResponse<ChatRoomReadDto>> findAllChatRooms(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorTime,
-            @RequestParam(required = false) Long lastMessageId,
-            @PageableDefault(size = 10) Pageable pageable
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "커서 시간") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorTime,
+            @Parameter(description = "마지막 메시지 ID") @RequestParam(required = false) Long lastMessageId,
+            @Parameter(description = "페이지 정보") @PageableDefault(size = 10) Pageable pageable
     ) {
         Long userId = userDetails.getId();
         Slice<ChatRoomReadDto> dtoList = chatRoomService.findAllChatRooms(userId, lastMessageId, cursorTime,
@@ -80,22 +89,26 @@ public class ChatRoomController {
      * @param pageable      페이지객체
      * @return 채팅 내역
      */
+    @Operation(summary = "채팅 메시지 조회", description = "특정 채팅방의 메시지 내역을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "채팅 메시지 조회 성공")
     @GetMapping("{chatRoomId}/messages")
     public ResponseEntity<SliceResponse<MessageDto>> findAllMessages(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long chatRoomId,
-            @RequestParam(required = false) Long lastMessageId,
-            @PageableDefault(size = 10) Pageable pageable
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "채팅방 ID") @PathVariable Long chatRoomId,
+            @Parameter(description = "마지막 메시지 ID") @RequestParam(required = false) Long lastMessageId,
+            @Parameter(description = "페이지 정보") @PageableDefault(size = 10) Pageable pageable
     ) {
         Long userId = userDetails.getId();
         Slice<MessageDto> messageList = chatRoomService.findAllMessage(userId, chatRoomId, lastMessageId, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(SliceResponse.of(messageList));
     }
 
+    @Operation(summary = "채팅방 상태 확인", description = "채팅방이 닫혔는지 확인합니다")
+    @ApiResponse(responseCode = "200", description = "채팅방 상태 조회 성공")
     @GetMapping("/{chatRoomId}/status")
     public ResponseEntity<ChatRoomStatusResponseDto> isClosed(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long chatRoomId
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "채팅방 ID") @PathVariable Long chatRoomId
     ) {
         Long userId = userDetails.getId();
         ChatRoomStatusResponseDto responseDto = chatRoomService.isClosed(userId, chatRoomId);

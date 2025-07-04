@@ -8,6 +8,10 @@ import caffeine.nest_dev.domain.profile.dto.response.ProfileResponseDto;
 import caffeine.nest_dev.domain.profile.dto.response.RecommendedProfileResponseDto;
 import caffeine.nest_dev.domain.profile.service.ProfileService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Profile", description = "프로필 관리 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -34,10 +39,12 @@ public class ProfileController {
     /**
      * 프로필 생성
      */
+    @Operation(summary = "프로필 생성", description = "새로운 프로필을 생성합니다")
+    @ApiResponse(responseCode = "201", description = "프로필 생성 성공")
     @PostMapping("/profiles")
     public ResponseEntity<CommonResponse<ProfileResponseDto>> createProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ProfileRequestDto profileRequestDto) {
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "프로필 생성 요청 정보") @RequestBody ProfileRequestDto profileRequestDto) {
         ProfileResponseDto profile = profileService.createProfile(userDetails.getId(),
                 profileRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,10 +54,12 @@ public class ProfileController {
     /**
      * 내 프로필 전체조회
      */
+    @Operation(summary = "내 프로필 조회", description = "인증된 사용자의 모든 프로필을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "내 프로필 조회 성공")
     @GetMapping("/profiles/me")
     public ResponseEntity<CommonResponse<PagingResponse<ProfileResponseDto>>> getMyProfiles(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            Pageable pageable
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "페이지 정보") Pageable pageable
     ) {
         PagingResponse<ProfileResponseDto> myProfiles = profileService.getMyProfiles(
                 userDetails.getId(), pageable);
@@ -61,10 +70,12 @@ public class ProfileController {
     /**
      * 프로필 단건 조회
      */
+    @Operation(summary = "프로필 상세 조회", description = "특정 사용자의 특정 프로필을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "프로필 상세 조회 성공")
     @GetMapping("/users/{userId}/profiles/{profileId}")
     public ResponseEntity<CommonResponse<ProfileResponseDto>> getProfile(
-            @PathVariable Long userId,
-            @PathVariable Long profileId
+            @Parameter(description = "사용자 ID") @PathVariable Long userId,
+            @Parameter(description = "프로필 ID") @PathVariable Long profileId
     ) {
         ProfileResponseDto profile = profileService.getProfile(userId, profileId);
 
@@ -75,9 +86,11 @@ public class ProfileController {
     /**
      * 프로필 키워드 검색
      */
+    @Operation(summary = "멘토 프로필 키워드 검색", description = "키워드로 멘토 프로필을 검색합니다")
+    @ApiResponse(responseCode = "200", description = "멘토 프로필 키워드 검색 성공")
     @GetMapping("/mentors/profiles")
     public ResponseEntity<CommonResponse<List<ProfileResponseDto>>> getMentorProfiles(
-            @RequestParam(required = false) String keyword
+            @Parameter(description = "검색 키워드") @RequestParam(required = false) String keyword
     ) {
         List<ProfileResponseDto> profiles = profileService.searchMentorProfilesByKeyword(keyword);
 
@@ -89,9 +102,11 @@ public class ProfileController {
     /**
      * 추천 멘토 조회
      */
+    @Operation(summary = "추천 멘토 조회", description = "카테고리별 추천 멘토를 조회합니다")
+    @ApiResponse(responseCode = "200", description = "추천 멘토 조회 성공")
     @GetMapping("/mentors/recommended-profiles")
     public ResponseEntity<CommonResponse<List<RecommendedProfileResponseDto>>> getRecommendedProfiles(
-            @RequestParam Long categoryId
+            @Parameter(description = "카테고리 ID") @RequestParam Long categoryId
     ) {
         List<RecommendedProfileResponseDto> responseDto = profileService.getRecommendedProfiles(
                 categoryId);
@@ -103,11 +118,13 @@ public class ProfileController {
     /**
      * 프로필 수정
      */
+    @Operation(summary = "프로필 수정", description = "기존 프로필 정보를 수정합니다")
+    @ApiResponse(responseCode = "200", description = "프로필 수정 성공")
     @PatchMapping("/profiles/{profileId}")
     public ResponseEntity<CommonResponse<Void>> updateProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long profileId,
-            @RequestBody ProfileRequestDto profileRequestDto) {
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "수정할 프로필 ID") @PathVariable Long profileId,
+            @Parameter(description = "프로필 수정 요청 정보") @RequestBody ProfileRequestDto profileRequestDto) {
 
         profileService.updateProfile(userDetails.getId(), profileId, profileRequestDto);
 
@@ -116,10 +133,12 @@ public class ProfileController {
         );
     }
 
+    @Operation(summary = "프로필 삭제", description = "프로필을 삭제합니다")
+    @ApiResponse(responseCode = "200", description = "프로필 삭제 성공")
     @DeleteMapping("/profiles/{profileId}")
     public ResponseEntity<CommonResponse<Void>> deleteProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long profileId
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "삭제할 프로필 ID") @PathVariable Long profileId
     ) {
         profileService.deleteProfile(userDetails.getId(), profileId);
         return ResponseEntity.status(HttpStatus.OK)
