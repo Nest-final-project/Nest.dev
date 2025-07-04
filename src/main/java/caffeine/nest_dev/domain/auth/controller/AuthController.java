@@ -12,7 +12,6 @@ import caffeine.nest_dev.domain.auth.dto.response.AuthResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.LoginResponseDto;
 import caffeine.nest_dev.domain.auth.dto.response.TokenResponseDto;
 import caffeine.nest_dev.domain.auth.service.AuthService;
-import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +20,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -112,11 +110,10 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
     @PostMapping("/token/refresh")
     public ResponseEntity<CommonResponse<TokenResponseDto>> reissue(
-            @Parameter(description = "리프레시 토큰 요청 정보") @RequestBody RefreshTokenRequestDto dto,
-            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails
+            @Parameter(description = "리프레시 토큰 요청 정보") @RequestBody RefreshTokenRequestDto dto
     ) {
 
-        TokenResponseDto responseDto = authService.reissue(dto, userDetails.getId());
+        TokenResponseDto responseDto = authService.reissue(dto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_REISSUE_TOKEN, responseDto));
