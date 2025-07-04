@@ -5,8 +5,22 @@ import caffeine.nest_dev.domain.complaint.enums.ComplaintStatus;
 import caffeine.nest_dev.domain.complaint.enums.ComplaintType;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.user.entity.User;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Entity
@@ -34,9 +48,11 @@ public class Complaint extends BaseEntity {
     private String contents;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ComplaintStatus complaintStatus;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ComplaintType complaintType;
 
     public void changeStatus(){

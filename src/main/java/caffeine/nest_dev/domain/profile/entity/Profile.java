@@ -49,8 +49,6 @@ public class Profile extends BaseEntity {
     @Column(nullable = false)
     private String introduction;
 
-    @Column(nullable = true)
-    private String accountNumber;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfileKeyword> profileKeywords = new ArrayList<>();

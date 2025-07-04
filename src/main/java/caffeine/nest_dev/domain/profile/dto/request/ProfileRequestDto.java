@@ -23,7 +23,6 @@ public class ProfileRequestDto {
     private String introduction;
     private List<Long> keywordId;
     private Long categoryId;
-    private String accountNumber;
 
     public Profile toEntity(User user, Category category) {
         return Profile.builder()
@@ -32,7 +31,6 @@ public class ProfileRequestDto {
                 .title(title)
                 .introduction(introduction)
                 .profileKeywords(new ArrayList<>())
-                .accountNumber(accountNumber)
                 .build();
     }
 

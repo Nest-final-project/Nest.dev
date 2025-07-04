@@ -8,6 +8,7 @@ import caffeine.nest_dev.domain.payment.enums.TossPaymentMethod;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.user.entity.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,11 +37,15 @@ public class Payment {
 
     private String paymentKey;
 
-    private Integer amount;          // 최종 결제 금액 (쿠폰 할인 적용 후)
+    @Column(nullable = false)
+    private Integer amount;
+
+    @Column(nullable = false)  // 최종 결제 금액 (쿠폰 할인 적용 후)
     private Integer originalAmount;  // 할인 전 원가 (토스 결제 기준)
     private Integer discountAmount;  // 쿠폰 할인 금액
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentStatus status;
 
     @Enumerated(value = EnumType.STRING)
