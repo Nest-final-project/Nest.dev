@@ -35,6 +35,7 @@ public class Consultation extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User mentor;
 
+    @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 
     @Column(nullable = false)

@@ -1,6 +1,7 @@
 package caffeine.nest_dev.domain.certificate.entity;
 
 import caffeine.nest_dev.domain.career.entity.Career;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Builder
@@ -31,11 +31,8 @@ public class Certificate {
     @JoinColumn(name = "career_id", nullable = false)
     private Career career;
 
+    @Column(nullable = false)
     private String fileUrl;
-
-    public void updateCertificate(MultipartFile file) {
-        this.fileUrl = file.getOriginalFilename();
-    }
 
     public void updateCareer(Career career) {
         this.career = career;
