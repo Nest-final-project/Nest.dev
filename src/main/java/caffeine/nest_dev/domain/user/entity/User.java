@@ -34,6 +34,7 @@ public class User extends BaseEntity {
 
     private String name;
 
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -53,6 +54,7 @@ public class User extends BaseEntity {
     private UserGrade userGrade; // 회원 등급
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole userRole;
 
     private Integer totalPrice;
