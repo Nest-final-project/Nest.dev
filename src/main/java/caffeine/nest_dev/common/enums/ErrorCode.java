@@ -159,7 +159,7 @@ public enum ErrorCode implements BaseCode {
 
     IMAGE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 이미지입니다."),
 
-    ;
+    SSE_RESPONSE_TIME_OUT(HttpStatus.BAD_REQUEST, "응답 데이터 처리 중 오류가 발생했습니다.");
 
 
     private final HttpStatus httpStatus;
