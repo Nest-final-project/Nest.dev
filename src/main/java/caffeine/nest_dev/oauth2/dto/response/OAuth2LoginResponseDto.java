@@ -1,6 +1,7 @@
 package caffeine.nest_dev.oauth2.dto.response;
 
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class OAuth2LoginResponseDto {
     private Long id;
     private String email;
     private String nickName;
+    private UserRole userRole;
     private boolean newUser;
     private String accessToken;
     private String refreshToken;
@@ -26,6 +28,7 @@ public class OAuth2LoginResponseDto {
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickName(user.getNickName())
+                .userRole(user.getUserRole())
                 .newUser(newUser)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

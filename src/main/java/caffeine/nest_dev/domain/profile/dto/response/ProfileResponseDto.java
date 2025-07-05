@@ -24,7 +24,6 @@ public class ProfileResponseDto {
     private String introduction;
     private String category;
     private List<KeywordResponseDto> keywords;
-    private String accountNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String name;
@@ -41,7 +40,6 @@ public class ProfileResponseDto {
                 .keywords(profile.getProfileKeywords().stream()
                         .map(pk -> KeywordResponseDto.of(pk.getKeyword()))
                         .collect(Collectors.toList()))
-                .accountNumber(profile.getAccountNumber())
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
                 .name(user.getName())
