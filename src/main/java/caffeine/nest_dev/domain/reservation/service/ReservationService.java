@@ -73,15 +73,18 @@ public class ReservationService {
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         if (user.getUserRole().equals(UserRole.MENTEE)) {
-            Page<Reservation> reservationPage = reservationRepository.findByMentorIdOrMenteeId(userId,
+            Page<Reservation> reservationPage = reservationRepository.findByMentorIdOrMenteeId(
+                    userId,
                     userId, pageable);
-            Page<ReservationResponseDto> responseDtos = reservationPage.map(ReservationResponseDto::of);
+            Page<ReservationResponseDto> responseDtos = reservationPage.map(
+                    ReservationResponseDto::of);
 
             return PagingResponse.from(responseDtos);
         }
 
         // MENTOR 경우
-        Page<Reservation> reservationPage = reservationRepository.findByMentorIdAndReservationStatus(userId,
+        Page<Reservation> reservationPage = reservationRepository.findByMentorIdAndReservationStatus(
+                userId,
                 ReservationStatus.PAID, pageable);
         Page<ReservationResponseDto> responseDtos = reservationPage.map(ReservationResponseDto::of);
 
@@ -102,4 +105,20 @@ public class ReservationService {
 
         return ReservationResponseDto.of(reservation);
     }
+
+    public void deleteReservation(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        if(!reservation.getReservationStatus().equals(ReservationStatus.REQUESTED)) {
+            throw new BaseException(ErrorCode.ONLY_REQUESTED_CAN_BE_CANCELED);
+        }
+
+        if(!reservation.getMentee().getId().equals(userId)){
+            throw new BaseException(ErrorCode.NO_PERMISSION);
+        }
+
+        reservationRepository.delete(reservation);
+    }
+
 }

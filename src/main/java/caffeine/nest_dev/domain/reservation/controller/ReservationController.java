@@ -69,14 +69,30 @@ public class ReservationController {
     @ApiResponse(responseCode = "200", description = "예약 상세 조회 성공")
     @GetMapping("/reservations/{reservationId}")
     public ResponseEntity<CommonResponse<ReservationResponseDto>> getReservation(
-            @Parameter(description = "조회할 예약 ID") @PathVariable Long reservationId, 
+            @Parameter(description = "조회할 예약 ID") @PathVariable Long reservationId,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser) {
 
         Long userId = authUser.getId();
 
-        ReservationResponseDto reservation = reservationService.getReservation(reservationId, userId);
+        ReservationResponseDto reservation = reservationService.getReservation(reservationId,
+                userId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_RESERVATION, reservation));
     }
+
+    @Operation(summary = "예약 삭제", description = "예약을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "예약 삭제 성공")
+    @DeleteMapping("/reservations/{reservationId}")
+    public ResponseEntity<CommonResponse<Void>> deleteReservation(
+            @Parameter(description = "삭제할 예약 ID") @PathVariable Long reservationId,
+            @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser) {
+
+        reservationService.deleteReservation(reservationId, authUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_RESERVATION));
+    }
+
+
 }
