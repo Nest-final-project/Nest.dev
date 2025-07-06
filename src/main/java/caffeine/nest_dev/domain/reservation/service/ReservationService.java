@@ -106,13 +106,18 @@ public class ReservationService {
         return ReservationResponseDto.of(reservation);
     }
 
-    public void deleteReservation(Long reservationId) {
+    public void deleteReservation(Long reservationId, Long userId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND));
 
         if(!reservation.getReservationStatus().equals(ReservationStatus.REQUESTED)) {
             throw new BaseException(ErrorCode.ONLY_REQUESTED_CAN_BE_CANCELED);
         }
+
+        if(!reservation.getMentee().getId().equals(userId)){
+            throw new BaseException(ErrorCode.NO_PERMISSION);
+        }
+
         reservationRepository.delete(reservation);
     }
 
