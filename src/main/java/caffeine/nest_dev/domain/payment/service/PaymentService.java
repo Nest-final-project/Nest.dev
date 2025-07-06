@@ -254,8 +254,8 @@ public class PaymentService {
             int finalAmount = finalAmountBD.intValue();
 
             // Payment 업데이트
-            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
-                    tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
+            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(), 
+                    tossResponse.getMethod(), tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
 
             // 최종 금액 및 할인 금액 업데이트
             payment.updateFinalAmount(finalAmount, discountAmount);
@@ -369,6 +369,10 @@ public class PaymentService {
                 userCoupon.unmarkAsUsed();
                 log.info("쿠폰 사용 상태 복구 완료 - userCouponId={}", userCoupon.getId());
             }
+
+            Reservation reservation = payment.getReservation();
+            reservation.cancel();
+
         } else {
             log.error("토스 결제 취소에 실패했습니다. paymentKey: {}", payment.getPaymentKey());
             throw new BaseException(ErrorCode.PAYMENT_CANCEL_FAILED);
