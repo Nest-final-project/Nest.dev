@@ -69,6 +69,7 @@ public enum ErrorCode implements BaseCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
     RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
     DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "이미 중복된 예약이 존재합니다."),
+    ONLY_REQUESTED_CAN_BE_CANCELED(HttpStatus.CONFLICT, "요청 상태(REQUESTED)인 예약만 삭제 가능합니다."),
 
     // 결제 권한 관련
     NO_PAYMENT_AUTHORITY(HttpStatus.FORBIDDEN, "해당 예약을 결제할 권한이 없습니다."),

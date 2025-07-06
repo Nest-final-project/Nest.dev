@@ -36,6 +36,7 @@ public class Payment {
     private Long id;
 
     private String paymentKey;
+    private String orderId;          // 토스 결제 주문 ID
 
     @Column(nullable = false)
     private Integer amount;
@@ -92,9 +93,10 @@ public class Payment {
         this.userCoupon = userCoupon;
     }
 
-    public void updateOnSuccess(String paymentKey, TossPaymentMethod tossPaymentMethod,
+    public void updateOnSuccess(String paymentKey, String orderId, TossPaymentMethod tossPaymentMethod,
             String approvedAt, String requestedAt) {
         this.paymentKey = paymentKey;
+        this.orderId = orderId;
         this.tossPaymentMethod = tossPaymentMethod;
         this.status = PaymentStatus.PAID;
         this.approvedAt = approvedAt;
