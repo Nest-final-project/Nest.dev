@@ -92,6 +92,7 @@ public enum ErrorCode implements BaseCode {
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
     TOSS_CANCEL_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 취소 요청에 실패했습니다."),
     TOSS_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 호출에 실패했습니다."),
+    PAYMENT_CANCEL_RESERVATION_EXPIRED(HttpStatus.BAD_REQUEST, "예약 날짜가 지나 결제를 취소할 수 없습니다."),
 
     // Review
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
