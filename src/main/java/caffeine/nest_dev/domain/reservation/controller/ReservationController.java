@@ -79,4 +79,18 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_SHOW_RESERVATION, reservation));
     }
+
+    @Operation(summary = "예약 삭제", description = "예약을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "예약 삭제 성공")
+    @DeleteMapping("/reservations/{reservationId}")
+    public ResponseEntity<CommonResponse<Void>> deleteReservation(
+            @Parameter(description = "삭제할 예약 ID") @PathVariable Long reservationId){
+
+        reservationService.deleteReservation(reservationId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_DELETE_RESERVATION));
+    }
+
+
 }
