@@ -32,6 +32,7 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
@@ -344,6 +345,10 @@ public class PaymentService {
         // 결제 내역 조회
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BaseException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if (payment.getReservation().getReservationStartAt().isAfter(LocalDateTime.now().minusHours(2))) {
+            throw new BaseException(ErrorCode.PAYMENT_CANCEL_RESERVATION_EXPIRED);
+        }
 
         // 본인 결제 확인
         if (!payment.getPayer().getEmail().equals(userEmail)) {
