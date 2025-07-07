@@ -14,11 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Socket Token", description = "WebSocket 토큰 관리 API")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/socket/token")
 public class SocketTokenController {
 
     private final SocketTokenService socketTokenService;
@@ -26,7 +28,7 @@ public class SocketTokenController {
     // socket token 발급
     @Operation(summary = "WebSocket 토큰 발급", description = "WebSocket 연결을 위한 토큰을 발급합니다")
     @ApiResponse(responseCode = "201", description = "WebSocket 토큰 발급 성공")
-    @PostMapping("/socket/token")
+    @PostMapping
     public ResponseEntity<CommonResponse<SocketTokenResponseDto>> createSocketToken(
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
