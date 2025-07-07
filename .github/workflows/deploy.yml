@@ -58,6 +58,8 @@ jobs:
           echo "AWS_SES_ACCESS_KEY=${{ secrets.AWS_SES_ACCESS_KEY }}" >> .env
           echo "AWS_SES_SECRET_KEY=${{ secrets.AWS_SES_SECRET_KEY }}" >> .env
           echo "AWS_SES_FROM_EMAIL=${{ secrets.AWS_SES_FROM_EMAIL }}" >> .env
+          echo "GF_SECURITY_ADMIN_USER=${{ secrets.GF_SECURITY_ADMIN_USER }}" >> .env
+          echo "GF_SECURITY_ADMIN_PASSWORD=${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}" >> .env
         # secrets에 정의된 값을 사용하여 .env 파일을 생성
       - name: Copy all docker-related files to server
         uses: appleboy/scp-action@v0.1.7
