@@ -26,11 +26,10 @@ public class GlobalExceptionHandler {
                 .body(CommonResponse.of(errorCode));
     }
 
-    // SSE 연결 끊김 예외 처리 (로그만 남기고 무시)
+    // SSE 연결 끊김 예외 처리
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     public void handleAsyncRequestNotUsableException(AsyncRequestNotUsableException e) {
         log.warn("Servlet container error notification for disconnected client");
-        // SSE 연결이 끊어진 경우이므로 응답을 보낼 수 없음. 로그만 남김.
     }
 
     @ExceptionHandler(AsyncRequestTimeoutException.class)
@@ -38,7 +37,6 @@ public class GlobalExceptionHandler {
         log.warn("SSE request timeout - client connection may be slow or disconnected");
     }
 
-    // 3. 추가 ✅
     @ExceptionHandler(HttpMessageNotWritableException.class)
     public ResponseEntity<?> handleHttpMessageNotWritableException(
             HttpMessageNotWritableException e,
