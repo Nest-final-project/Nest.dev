@@ -1,6 +1,5 @@
 package caffeine.nest_dev.domain.keyword.dto.request;
 
-import caffeine.nest_dev.domain.category.entity.Category;
 import caffeine.nest_dev.domain.keyword.entity.Keyword;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

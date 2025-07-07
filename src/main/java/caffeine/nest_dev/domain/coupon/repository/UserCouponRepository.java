@@ -17,8 +17,4 @@ public interface UserCouponRepository extends CrudRepository<UserCoupon, UserCou
     // 쿠폰 정보를 함께 조회하는 메서드 추가
     @Query("SELECT uc FROM UserCoupon uc JOIN FETCH uc.coupon WHERE uc.id.userId = :userId")
     Page<UserCoupon> findByUserIdWithCoupon(Long userId, Pageable pageable);
-    
-    // 모든 사용자 쿠폰을 쿠폰 정보와 함께 조회
-    @Query("SELECT uc FROM UserCoupon uc JOIN FETCH uc.coupon")
-    Page<UserCoupon> findAllWithCoupon(Pageable pageable);
 }

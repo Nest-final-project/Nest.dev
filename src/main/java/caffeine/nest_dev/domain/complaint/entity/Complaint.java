@@ -60,11 +60,3 @@ public class Complaint extends BaseEntity {
     }
 
 }
-
-/*
- 유저식별자
- 제목
- 내용
- 상태
- 생성일
- */

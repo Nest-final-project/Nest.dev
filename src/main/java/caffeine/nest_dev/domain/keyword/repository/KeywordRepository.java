@@ -1,9 +1,6 @@
 package caffeine.nest_dev.domain.keyword.repository;
 
-import caffeine.nest_dev.domain.category.entity.Category;
 import caffeine.nest_dev.domain.keyword.entity.Keyword;
-import java.awt.print.Book;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

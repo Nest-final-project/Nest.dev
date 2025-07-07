@@ -17,7 +17,7 @@ public class KakaoLoginUserInfoResponse extends OAuth2UserInfo {
         );
     }
 
-    // name 파싱
+    // todo name 파싱 / 추후 사용 예정
 //    private static String extractName(Map<String, Object> attributes) {
 //        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
 //        if (kakaoAccount != null) {
