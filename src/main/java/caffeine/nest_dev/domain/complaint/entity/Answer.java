@@ -1,7 +1,6 @@
 package caffeine.nest_dev.domain.complaint.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
-import caffeine.nest_dev.domain.complaint.dto.request.AnswerRequestDto;
 import caffeine.nest_dev.domain.complaint.dto.request.AnswerUpdateRequestDto;
 import caffeine.nest_dev.domain.user.entity.User;
 import jakarta.persistence.Column;

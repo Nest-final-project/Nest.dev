@@ -28,7 +28,6 @@ public class ChatRoomEventListener {
             log.info("채팅방 종료 스케줄 등록 완료 - reservationId: {}", event.getReservationId());
         } catch (Exception e) {
             log.error("채팅방 종료 스케줄 등록 실패 - reservationId: {}", event.getReservationId(), e);
-            // 필요시 보상 트랜잭션이나 알림 처리 추가
             throw e;
         }
     }
@@ -43,7 +42,6 @@ public class ChatRoomEventListener {
             log.info("채팅방 생성 스케줄 등록 완료 - reservationId: {}", event.getReservationId());
         } catch (Exception e) {
             log.error("채팅방 생성 스케줄 등록 실패 - reservationId: {}", event.getReservationId(), e);
-            // 필요시 보상 트랜잭션이나 알림 처리 추가
             throw e;
         }
     }

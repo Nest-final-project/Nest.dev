@@ -34,17 +34,4 @@ public class AuthRequestDto {
 
     @NotNull(message = "역할 입력은 필수입니다.")
     private UserRole userRole;
-
-//    public User toEntity(String encodedPassword) {
-//        return User.builder()
-//                .name(name)
-//                .email(email)
-//                .nickName(nickName)
-//                .password(encodedPassword)
-//                .phoneNumber(phoneNumber)
-//                .userRole(userRole)
-//                .userGrade(UserGrade.SEED)
-//                .totalPrice(0)
-//                .build();
-//    }
 }

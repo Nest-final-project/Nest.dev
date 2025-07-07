@@ -8,7 +8,6 @@ import caffeine.nest_dev.domain.admin.dto.response.AdminMentorCareerResponseDto;
 import caffeine.nest_dev.domain.career.entity.Career;
 import caffeine.nest_dev.domain.career.enums.CareerStatus;
 import caffeine.nest_dev.domain.career.repository.CareerRepository;
-import caffeine.nest_dev.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdminService {
 
-    private final UserRepository userRepository;
     private final CareerRepository careerRepository;
 
     /**

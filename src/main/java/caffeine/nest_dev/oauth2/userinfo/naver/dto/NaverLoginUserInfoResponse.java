@@ -22,7 +22,7 @@ public class NaverLoginUserInfoResponse extends OAuth2UserInfo {
         return response != null ? (String) response.get("id") : null;
     }
 
-    // 이름 파싱
+    // todo 이름 파싱 / 추후 사용 예정
 //    private static String extractName(Map<String, Object> attributes) {
 //        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 //        return response != null ? (String) response.get("name") : null;

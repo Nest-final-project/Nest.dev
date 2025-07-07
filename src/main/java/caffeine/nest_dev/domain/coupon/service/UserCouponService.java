@@ -65,12 +65,11 @@ public class UserCouponService {
     @Transactional(readOnly = true)
     public PagingResponse<AdminCouponResponseDto> getUserAvailableCoupon(Pageable pageable,
             UserDetailsImpl userDetails) {
-        // 로그인된 유저의 등급 찾기
+
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userDetails.getId());
 
         UserGrade userGrade = user.getUserGrade();
 
-        // 등급에 맞는 발급 가능한 쿠폰 찾기
         Page<Coupon> coupons = adminCouponRepository.findByMinGrade(userGrade, pageable);
 
         return PagingResponse.from(coupons.map(AdminCouponResponseDto::of));

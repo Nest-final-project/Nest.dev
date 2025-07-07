@@ -28,7 +28,6 @@ public class UserCouponResponseDto {
                 .couponId(userCoupon.getId().getCouponId())
                 .userId(userCoupon.getId().getUserId())
                 .useStatus(userCoupon.getIsUsed())
-                // 쿠폰 상세 정보 추가
                 .couponName(userCoupon.getCoupon().getName())
                 .discountAmount(userCoupon.getCoupon().getDiscountAmount())
                 .validFrom(userCoupon.getCoupon().getValidFrom())
