@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class ChatRoomController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<ChatRoomResponseDto>> createChatRooms(
-            @Parameter(description = "채팅방 생성 요청 정보") @RequestBody CreateChatRoomRequestDto requestDto
+            @Parameter(description = "채팅방 생성 요청 정보") @Valid @RequestBody CreateChatRoomRequestDto requestDto
     ) {
         ChatRoomResponseDto responseDto = chatRoomService.createChatRooms(requestDto);
         return ResponseEntity.created(URI.create("/api/chat_rooms"))
