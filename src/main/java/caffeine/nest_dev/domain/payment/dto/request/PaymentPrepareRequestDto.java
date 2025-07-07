@@ -21,13 +21,12 @@ public class PaymentPrepareRequestDto {
     private String reservationId;   // 예약 고유 식별자
     
     @NotNull(message = "티켓 ID는 필수입니다")
-    @Positive(message = "티켓 ID는 양수여야 합니다")
     private Long ticketId;          // 티켓 고유 식별자
     
-    @Positive(message = "쿠폰 ID는 양수여야 합니다")
+    @NotNull(message = "쿠폰 ID는 양수여야 합니다")
     private Long couponId;
     
-    @Positive(message = "사용자 ID는 양수여야 합니다")
+    @NotNull(message = "사용자 ID는 양수여야 합니다")
     private Long userId;
     
     @NotBlank(message = "주문명은 필수입니다")

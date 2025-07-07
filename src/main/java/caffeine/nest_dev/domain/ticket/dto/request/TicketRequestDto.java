@@ -20,7 +20,6 @@ public class TicketRequestDto {
     private String name;
     
     @NotNull(message = "티켓 가격은 필수입니다")
-    @Positive(message = "티켓 가격은 양수여야 합니다")
     @Min(value = 1000, message = "최소 티켓 가격은 1,000원입니다")
     @Max(value = 1000000, message = "최대 티켓 가격은 100만원입니다")
     private Integer price;
