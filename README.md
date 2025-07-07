@@ -1,5 +1,5 @@
 
-# Nest.dev
+# 🐥 Nest.dev
 <img src="https://github.com/user-attachments/assets/50a32839-cb81-4877-9571-a96f5674f605" width="400px" height="280px">
 <br><br>
 현직 개발자와 개발자 꿈나무들이 멘토와 멘티로 만나는 소통의 공간
@@ -16,18 +16,18 @@
 
 | 팀원  | 기능          |
 |-----|-------------|
-| 신은주(팀장) | Toss Payments API 연동, 이용권/ 쿠폰 발급 API, Redis를 이용한 동시성 제어 적용   |
-| 조혁준(부팀장) | 유저 API, JWT 인증/인가, 카카오 및 네이버 로그인 기능, AWS S3 이미지 기능, Redis를 이용한 캐시 적용  |
-| 이윤승 | 관리자/ 프로필 API, AWS SES 이메일 알림 서비스 기능, 프론트(vercel) / 백(EC2) 배포    |
-| 박한비 | 실시간 1:1 채팅, Redis pub/sub 적용, SSE 알림 |
-| 진혜정 | 예약/ 리뷰/ 민원 API, Redis를 이용한 동시성 제어 적용, Grafana + Prometheus를 이용한 모니터링 및 Slack 알림 |
+|  신은주(팀장) | Toss Payments API 연동, 이용권/ 쿠폰 발급 API, Redis를 이용한 동시성 제어 적용   |
+|  조혁준(부팀장) | 유저 API, JWT 인증/인가, 카카오 및 네이버 로그인 기능, AWS S3 이미지 기능, Redis를 이용한 캐시 적용  |
+|  이윤승 | 관리자/ 프로필 API, AWS SES 이메일 알림 서비스 기능, 프론트(vercel) / 백(EC2) 배포    |
+|  박한비 | 실시간 1:1 채팅, Redis pub/sub 적용, SSE 알림 |
+|  진혜정 | 예약/ 리뷰/ 민원 API, Redis를 이용한 동시성 제어 적용, Grafana + Prometheus를 이용한 모니터링 및 Slack 알림 |
 
 
 <br><br>
 
 ## 📌 개발 환경 및 기술 스택
 
-![image](https://github.com/user-attachments/assets/a3377d2d-bb1e-4496-944a-023b9270909f)
+<img width="653" alt="스크린샷 2025-07-07 오후 9 53 45" src="https://github.com/user-attachments/assets/8f3fccc3-875d-4cb8-a2aa-55a7f36d2efb" />
 
 
 <br><br>
