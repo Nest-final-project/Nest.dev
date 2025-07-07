@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.coupon.dto.request.UserCouponRequestDto;
+import caffeine.nest_dev.domain.coupon.dto.response.AdminCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.dto.response.UserCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.service.UserCouponService;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
@@ -50,9 +51,23 @@ public class UserCouponController {
             @Parameter(description = "페이지 정보") @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        PagingResponse<UserCouponResponseDto> responseDtos = userCouponService.getUserCoupon(pageable, userDetails);
+        PagingResponse<UserCouponResponseDto> responseDtos = userCouponService.getUserCoupon(
+                pageable, userDetails);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_COUPON_READ, responseDtos));
+    }
+
+    @Operation(summary = "발급가능한 쿠폰 목록 조회", description = "발급가능한 쿠폰 목록을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "발급가능한 쿠폰 목록 조회 성공")
+    @GetMapping("/available")
+    public ResponseEntity<CommonResponse<PagingResponse<AdminCouponResponseDto>>> findUserAvailableCoupons(
+            @Parameter(description = "페이지 정보") @PageableDefault Pageable pageable,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        PagingResponse<AdminCouponResponseDto> dto = userCouponService.getUserAvailableCoupon(
+                pageable, userDetails);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.of(SuccessCode.SUCCESS_USER_AVAILABLE_COUPON_READ, dto));
     }
 
     @Operation(summary = "쿠폰 사용", description = "사용자가 보유한 쿠폰을 사용합니다")
