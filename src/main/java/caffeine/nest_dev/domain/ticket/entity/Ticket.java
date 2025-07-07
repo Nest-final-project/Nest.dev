@@ -25,6 +25,7 @@ public class Ticket extends BaseEntity {
     private Integer price;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TicketTime ticketTime;
 
     @Column(nullable = false)

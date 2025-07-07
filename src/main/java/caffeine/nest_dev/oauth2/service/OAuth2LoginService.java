@@ -70,7 +70,7 @@ public class OAuth2LoginService {
             // Redis에 DTO를 저장할 때 사용한 userId를 일회성 코드로 사용
             String oneTimeCode = String.valueOf(dto.getId());
 
-            String redirectUrl = "http://localhost:3001/oauth2/callback";
+            String redirectUrl = "https://www.nest-dev.click/oauth2/callback";
             String finalRedirectUrl = UriComponentsBuilder.fromUriString(redirectUrl)
                     .queryParam("code", SUFFIX + oneTimeCode).build()
                     .toUriString();
@@ -94,7 +94,7 @@ public class OAuth2LoginService {
         // Redis에 DTO를 저장할 때 사용한 userId를 일회성 코드로 사용
         String oneTimeCode = String.valueOf(dto.getId());
 
-        String redirectUrl = "http://localhost:3001/oauth2/callback";
+        String redirectUrl = "https://www.nest-dev.click/oauth2/callback";
         String finalRedirectUrl = UriComponentsBuilder.fromUriString(redirectUrl)
                 .queryParam("code", SUFFIX + oneTimeCode).build()
                 .toUriString();
