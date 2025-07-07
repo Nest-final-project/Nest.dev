@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,21 +56,25 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private ReviewStatus reviewStatus;
 
-   public void update(ReviewRequestDto reviewRequestDto){
-       this.content = reviewRequestDto.getContent();
-   }
-
-    public void changeStatus() {
-       if(this.reviewStatus == ReviewStatus.ACTIVE){
-           this.reviewStatus = ReviewStatus.DELETED;
-       }else if(this.reviewStatus == ReviewStatus.DELETED){
-           this.reviewStatus = ReviewStatus.ACTIVE;
-       }else{
-           throw new BaseException(ErrorCode.REVIEW_NOT_FOUND);
-       }
+    public void update(ReviewRequestDto reviewRequestDto) {
+        this.content = reviewRequestDto.getContent();
     }
 
-    public void softDelete(){
-       this.reviewStatus = ReviewStatus.DELETED;
+    public void changeStatus() {
+        if (this.reviewStatus == ReviewStatus.ACTIVE) {
+            this.reviewStatus = ReviewStatus.DELETED;
+        } else if (this.reviewStatus == ReviewStatus.DELETED) {
+            this.reviewStatus = ReviewStatus.ACTIVE;
+        } else {
+            throw new BaseException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+    }
+
+    public void softDelete() {
+        this.reviewStatus = ReviewStatus.DELETED;
+    }
+
+    public void updateStatus() {
+        this.reviewStatus = ReviewStatus.ACTIVE;
     }
 }
