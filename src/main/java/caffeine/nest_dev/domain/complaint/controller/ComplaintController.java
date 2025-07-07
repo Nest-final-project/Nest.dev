@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,7 +40,7 @@ public class ComplaintController {
     @ApiResponse(responseCode = "201", description = "문의 생성 성공")
     @PostMapping("/complaints")
     public ResponseEntity<CommonResponse<ComplaintResponseDto>> save
-            (@Parameter(description = "문의 생성 요청 정보") @RequestBody ComplaintRequestDto complaintRequestDto,
+            (@Parameter(description = "문의 생성 요청 정보") @Valid @RequestBody ComplaintRequestDto complaintRequestDto,
                     @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser) {
 
         Long userId = authUser.getId();

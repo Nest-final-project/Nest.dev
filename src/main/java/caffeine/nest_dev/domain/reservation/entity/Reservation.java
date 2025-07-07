@@ -3,7 +3,6 @@ package caffeine.nest_dev.domain.reservation.entity;
 import caffeine.nest_dev.common.entity.BaseEntity;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;
 import caffeine.nest_dev.domain.ticket.entity.Ticket;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -59,13 +58,6 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime reservationEndAt;
 
-
-    private String cancellation;
-
-    public void update(ReservationCancelRequestDto cancelRequestDto) {
-        this.cancellation = cancelRequestDto.getCancellation();
-        this.reservationStatus = ReservationStatus.CANCELED;
-    }
 
     public void markAsPaid() {
         if (this.reservationStatus == ReservationStatus.REQUESTED) {
