@@ -26,19 +26,6 @@ public class ChatRoomReadDto {
     private LocalDateTime lastMessageTime;
     private Long lastMessageSenderId;
 
-    public static ChatRoomReadDto of(ChatRoom chatRoom) {
-        User mentor = chatRoom.getMentor();
-        User mentee = chatRoom.getMentee();
-        return ChatRoomReadDto.builder()
-                .roomId(chatRoom.getId())
-                .mentorId(mentor.getId())
-                .mentorName(mentor.getName())
-                .menteeId(mentee.getId())
-                .menteeName(mentee.getName())
-                // 마지막 메시지는 쿼리에서 설정
-                .build();
-    }
-
     // 마지막 메시지 정보를 설정하는 생성자
     public static ChatRoomReadDto of(ChatRoom chatRoom, String lastMessageContent,
             LocalDateTime lastMessageTime, Long lastMessageSenderId) {

@@ -31,13 +31,4 @@ public class WebSocketSessionRegistry {
         log.info("남은 session 여부 (userId: {}): {}", userId, sessions.containsKey(userId));
 
     }
-
-    public WebSocketSession getSession(String userId) {
-        WebSocketSession session = sessions.get(userId);
-        if (session != null && !session.isOpen()) {
-            sessions.remove(userId);
-            return null;
-        }
-        return session;
-    }
 }

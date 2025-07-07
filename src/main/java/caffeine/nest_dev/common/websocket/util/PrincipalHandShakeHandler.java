@@ -17,12 +17,9 @@ public class PrincipalHandShakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
             Map<String, Object> attributes) {
-        log.info("🔥 determineUser() called in HandshakeHandler");
-        log.info("🔥 attributes: {}", attributes);
-
         Object userId = attributes.get("userId");
         if (userId == null) {
-            log.error("❌ userId가 attributes에 없습니다. 인증 실패.");
+            log.error("userId가 attributes에 없습니다. 인증 실패.");
             return null; // 또는 throw new IllegalStateException()
         }
         return new UserPrincipal(userId.toString());
