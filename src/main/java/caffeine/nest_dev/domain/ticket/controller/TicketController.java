@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class TicketController {
     @ApiResponse(responseCode = "201", description = "티켓 등록 성공")
     @PostMapping("/admin/ticket")
     public ResponseEntity<CommonResponse<TicketResponseDto>> registerTicket(
-            @Parameter(description = "티켓 등록 요청 정보") @RequestBody TicketRequestDto requestDto) {
+            @Parameter(description = "티켓 등록 요청 정보") @Valid @RequestBody TicketRequestDto requestDto) {
         TicketResponseDto responseDto = ticketService.saveTicket(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_CREATED, responseDto));
@@ -64,7 +65,7 @@ public class TicketController {
     @PatchMapping("/admin/ticket/{ticketId}")
     public ResponseEntity<CommonResponse<Void>> updateTicket(
             @Parameter(description = "수정할 티켓 ID") @PathVariable Long ticketId, 
-            @Parameter(description = "티켓 수정 요청 정보") @RequestBody TicketRequestDto requestDto) {
+            @Parameter(description = "티켓 수정 요청 정보") @Valid @RequestBody TicketRequestDto requestDto) {
         ticketService.modifyTicket(ticketId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_TICKET_UPDATED));

@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Payment", description = "결제 관리 API")
@@ -44,7 +44,7 @@ public class PaymentController {
     @ApiResponse(responseCode = "201", description = "결제 준비 성공")
     @PostMapping("/prepare")
     public ResponseEntity<CommonResponse<PaymentPrepareResponseDto>> prepare(
-            @Parameter(description = "결제 준비 요청 정보") @RequestBody PaymentPrepareRequestDto requestDto,
+            @Parameter(description = "결제 준비 요청 정보") @Valid @RequestBody PaymentPrepareRequestDto requestDto,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String userEmail = userDetails.getEmail(); 
         PaymentPrepareResponseDto responseDto = paymentService.preparePayment(requestDto,
@@ -57,7 +57,7 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "결제 승인 성공")
     @PostMapping("/confirm")
     public ResponseEntity<CommonResponse<PaymentConfirmResponseDto>> confirmPayment(
-            @Parameter(description = "결제 승인 요청 정보") @RequestBody PaymentConfirmRequestDto requestDto,
+            @Parameter(description = "결제 승인 요청 정보") @Valid @RequestBody PaymentConfirmRequestDto requestDto,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String userEmail = userDetails.getEmail();
         PaymentConfirmResponseDto responseDto = paymentService.confirmPayment(requestDto, userEmail,
@@ -85,7 +85,7 @@ public class PaymentController {
     public ResponseEntity<CommonResponse<Void>> cancelPayment(
             @Parameter(description = "취소할 결제 ID") @PathVariable Long paymentId,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Parameter(description = "결제 취소 요청 정보") @RequestBody PaymentCancelRequestDto requestDto) {
+            @Parameter(description = "결제 취소 요청 정보") @Valid @RequestBody PaymentCancelRequestDto requestDto) {
         String userEmail = userDetails.getEmail();
         paymentService.cancelPayment(paymentId, requestDto, userEmail);
         return ResponseEntity.status(HttpStatus.OK)
