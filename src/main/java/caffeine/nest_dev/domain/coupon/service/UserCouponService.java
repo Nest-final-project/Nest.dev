@@ -4,6 +4,7 @@ import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.coupon.dto.request.UserCouponRequestDto;
+import caffeine.nest_dev.domain.coupon.dto.response.AdminCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.dto.response.UserCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.entity.Coupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
@@ -14,6 +15,7 @@ import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
 import caffeine.nest_dev.domain.reservation.lock.DistributedLock;
 import caffeine.nest_dev.domain.user.entity.User;
 import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
+import caffeine.nest_dev.domain.user.enums.UserGrade;
 import caffeine.nest_dev.domain.user.service.UserService;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +60,20 @@ public class UserCouponService {
                 userDetails.getId(), pageable);
         Page<UserCouponResponseDto> responseDtos = pagingResponse.map(UserCouponResponseDto::of);
         return PagingResponse.from(responseDtos);
+    }
+
+    @Transactional(readOnly = true)
+    public PagingResponse<AdminCouponResponseDto> getUserAvailableCoupon(Pageable pageable,
+            UserDetailsImpl userDetails) {
+        // 로그인된 유저의 등급 찾기
+        User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userDetails.getId());
+
+        UserGrade userGrade = user.getUserGrade();
+
+        // 등급에 맞는 발급 가능한 쿠폰 찾기
+        Page<Coupon> coupons = adminCouponRepository.findByMinGrade(userGrade, pageable);
+
+        return PagingResponse.from(coupons.map(AdminCouponResponseDto::of));
     }
 
     @Transactional

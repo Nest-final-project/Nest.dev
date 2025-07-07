@@ -11,7 +11,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WwbSocketDisconnectListener implements ApplicationListener<SessionDisconnectEvent> {
+public class WebSocketDisconnectListener implements ApplicationListener<SessionDisconnectEvent> {
 
     private final RedisTemplate<String, Object> chatRedisTemplate;
 
