@@ -1,5 +1,6 @@
 package caffeine.nest_dev.domain.reservation.lock;
 
+import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class DistributedLockAspect {
         try{
             isLocked = rlock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS); // 락 점유하기 위함
             if(!isLocked){ // 대기중(wait time)
-                throw new IllegalStateException("락 획득 실패 : key = " + key);
+                throw new BaseException(ErrorCode.LOCK_FAILED);
             }
 
             log.info("락 획득 성공: key = {} ", key);
