@@ -115,6 +115,11 @@ dependencies {
     // AWS SDK HTTP 클라이언트 (Apache HttpClient 사용 권장)
     implementation 'software.amazon.awssdk:url-connection-client:2.25.1'
 
+    // Spring Boot Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 }
