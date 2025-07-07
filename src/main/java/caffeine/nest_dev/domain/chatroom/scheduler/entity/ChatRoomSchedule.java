@@ -2,6 +2,7 @@ package caffeine.nest_dev.domain.chatroom.scheduler.entity;
 
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ScheduleStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -54,15 +55,19 @@ public class ChatRoomSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long reservationId;
 
     // 생성 예정 시간
+    @Column(nullable = false)
     private LocalDateTime scheduledTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ScheduleStatus scheduleStatus;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ChatRoomType chatRoomType;
 
     public void updateStatus() {

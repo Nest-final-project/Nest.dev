@@ -32,6 +32,7 @@ import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import caffeine.nest_dev.domain.user.repository.UserRepository;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
@@ -254,8 +255,8 @@ public class PaymentService {
             int finalAmount = finalAmountBD.intValue();
 
             // Payment 업데이트
-            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getMethod(),
-                    tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
+            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(), 
+                    tossResponse.getMethod(), tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
 
             // 최종 금액 및 할인 금액 업데이트
             payment.updateFinalAmount(finalAmount, discountAmount);
@@ -345,6 +346,10 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BaseException(ErrorCode.PAYMENT_NOT_FOUND));
 
+        if (payment.getReservation().getReservationStartAt().isAfter(LocalDateTime.now().minusHours(2))) {
+            throw new BaseException(ErrorCode.PAYMENT_CANCEL_RESERVATION_EXPIRED);
+        }
+
         // 본인 결제 확인
         if (!payment.getPayer().getEmail().equals(userEmail)) {
             throw new BaseException(ErrorCode.NO_PAYMENT_CANCEL_AUTHORITY);
@@ -369,6 +374,10 @@ public class PaymentService {
                 userCoupon.unmarkAsUsed();
                 log.info("쿠폰 사용 상태 복구 완료 - userCouponId={}", userCoupon.getId());
             }
+
+            Reservation reservation = payment.getReservation();
+            reservation.cancel();
+
         } else {
             log.error("토스 결제 취소에 실패했습니다. paymentKey: {}", payment.getPaymentKey());
             throw new BaseException(ErrorCode.PAYMENT_CANCEL_FAILED);

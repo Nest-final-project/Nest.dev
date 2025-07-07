@@ -45,6 +45,7 @@ public class ReviewService {
         Review review = reviewRepository.save(
                 reviewRequestDto.toEntity(reservation.getMentor(), reservation.getMentee(),
                         reservation));
+        review.updateStatus();
 
         return ReviewResponseDto.of(review);
 

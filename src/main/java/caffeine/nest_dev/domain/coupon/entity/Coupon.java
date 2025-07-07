@@ -5,11 +5,21 @@ import caffeine.nest_dev.common.exception.BaseException;
 import caffeine.nest_dev.domain.coupon.dto.request.AdminCouponRequestDto;
 import caffeine.nest_dev.domain.coupon.enums.CouponDiscountType;
 import caffeine.nest_dev.domain.user.enums.UserGrade;
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
@@ -42,6 +52,7 @@ public class Coupon {
     private LocalDateTime validTo; // 유효 종료일
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserGrade minGrade;   // 발급 가능 최소 등급
 
     @Column(nullable = false)

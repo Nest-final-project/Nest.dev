@@ -6,6 +6,7 @@ import caffeine.nest_dev.common.enums.SuccessCode;
 import caffeine.nest_dev.domain.coupon.dto.request.UserCouponRequestDto;
 import caffeine.nest_dev.domain.coupon.dto.response.UserCouponResponseDto;
 import caffeine.nest_dev.domain.coupon.service.UserCouponService;
+import caffeine.nest_dev.domain.user.entity.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,9 +47,10 @@ public class UserCouponController {
     @ApiResponse(responseCode = "200", description = "사용자 쿠폰 목록 조회 성공")
     @GetMapping
     public ResponseEntity<CommonResponse<PagingResponse<UserCouponResponseDto>>> findUserCoupons(
-            @Parameter(description = "페이지 정보") @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @Parameter(description = "페이지 정보") @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        PagingResponse<UserCouponResponseDto> responseDtos = userCouponService.getUserCoupon(pageable);
+        PagingResponse<UserCouponResponseDto> responseDtos = userCouponService.getUserCoupon(pageable, userDetails);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_COUPON_READ, responseDtos));
     }
