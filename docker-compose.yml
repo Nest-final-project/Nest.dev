@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: mysql-nest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command:
+      [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--lower_case_table_names=1' ]
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - nest-network
+    healthcheck: # <--- MySQL 헬스체크 추가
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 5s # 5초마다 체크
+      timeout: 5s # 5초 안에 응답 없으면 실패
+      retries: 10 # 10번 실패하면 unhealthy로 간주
+      start_period: 20s # 컨테이너 시작 후 첫 헬스체크까지 기다릴 시간 (MySQL 초기화 시간 고려)
+    restart: always # <-- 항상 재시작하도록 설정하여 안정성 높임
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      node-exporter: # healthcheck 사용을 위해 명시적으로 서비스 이름 뒤에 아무것도 붙이지 않거나 service_healthy로 변경
+        condition: service_healthy # <--- node-exporter가 healthy해질 때까지 기다림
+    networks:
+      - nest-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "4000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - nest-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    networks:
+      - nest-network
+    healthcheck: # <--- Node Exporter 헬스체크 수정
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9100/metrics || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - nest-network
+    healthcheck: # <--- Redis 헬스체크 추가
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    restart: always
+
+
+  nest-app:
+    container_name: nest-app
+    image: leeyounseung/nest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy # <--- mysql이 healthy해질 때까지 기다림
+      redis:
+        condition: service_healthy # <--- redis가 healthy해질 때까지 기다림
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY}
+      AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY}
+      AWS_SES_FROM_EMAIL: ${AWS_SES_FROM_EMAIL}
+      GMAIL: ${GMAIL}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    networks:
+      - nest-network
+    healthcheck: # <--- nest_app 자체 헬스체크 추가 (Prometheus 스크랩 오류 해결에 도움)
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s # 애플리케이션 시작 시간 고려하여 충분히 길게 설정
+
+volumes:
+  mysql-data:
+
+networks:
+  nest-network:

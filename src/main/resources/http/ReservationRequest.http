@@ -1,0 +1,12 @@
+### POST - 예약 생성
+POST {{root-path}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{authorizationToken}}
+
+{
+  "mentor": 7,
+  "ticket": 2,
+  "reservationStatus": "PAID",
+  "reservationStartAt": "2025-06-24T22:14:00.000",
+  "reservationEndAt": "2025-06-24T22:25:00.000"
+}

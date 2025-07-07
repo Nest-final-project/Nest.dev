@@ -1,0 +1,189 @@
+package caffeine.nest_dev.common.enums;
+
+import org.springframework.http.HttpStatus;
+
+public enum ErrorCode implements BaseCode {
+    // Auth
+    UNAUTHORIZED_ROLE(HttpStatus.FORBIDDEN, "권한이 없는 유저입니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
+    NO_PERMISSION(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    IS_BLACKLISTED(HttpStatus.UNAUTHORIZED, "사용할 수 없는 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 전달되지 않았습니다."),
+    TOKEN_USER_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰의 사용자 정보가 일치하지 않습니다."),
+    INVALID_STATE(HttpStatus.UNAUTHORIZED, "state가 일치하지 않습니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "입력받은 유저는 멘토가 아닙니다."),
+    INVALID_ROLE_FOR_SIGNUP(HttpStatus.BAD_REQUEST, "회원가입에 사용할 수 없는 역할입니다. "),
+    INVALID_RESERVATION_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 예약 상태입니다."),
+    ALREADY_DELETED_USER(HttpStatus.BAD_REQUEST, "이미 회원가입한 이메일입니다."),
+    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증 코드가 일치하지 않습니다."),
+
+    // User
+    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "해당 멘토의 프로필 아이디가 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    EXTRA_INFO_REQUIRED(HttpStatus.BAD_REQUEST, "사용자 역할과 비밀번호, 이름은 필수입니다."),
+    EMPTY_UPDATE_REQUEST(HttpStatus.BAD_REQUEST, "수정하려는 항목 중 하나는 필수 입력값입니다."),
+    NEW_PASSWORD_SAME_AS_CURRENT(HttpStatus.BAD_REQUEST, "새 비밀번호가 현재 비밀번호와 동일합니다."),
+    NOT_LOCAL_USER(HttpStatus.BAD_REQUEST, "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다."),
+
+    // Ticket
+    NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, "이용권이 없습니다."),
+
+    // Complaint
+    ERROR_CREATE_COMPLAINT(HttpStatus.CREATED, "민원이 생성되었습니다."),
+    COMPLAINT_NEED_RESERVATION_ID(HttpStatus.BAD_REQUEST, "예약 ID가 없습니다."),
+    COMPLAINT_NOT_FOUND(HttpStatus.NOT_FOUND, "민원을 찾을 수 없습니다."),
+    DUPLICATED_COMPLAINT(HttpStatus.CONFLICT, "이미 생성된 민원이 있습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "문의 종류를 선택하세요"),
+    COMPLAINT_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "민원은 작성자와 관리자만 접근 가능합니다."),
+
+    // AdminCoupon
+    NOT_FOUND_ADMIN_COUPON(HttpStatus.NOT_FOUND, "쿠폰이 없습니다."),
+    COUPON_QUANTITY_NOT_SET(HttpStatus.INTERNAL_SERVER_ERROR, "쿠폰 수량 정보가 존재하지 않습니다."),
+    COUPON_OUT_OF_STOCK(HttpStatus.CONFLICT, "쿠폰이 모두 소진되었습니다."),
+    NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, "존재하지 않는 쿠폰입니다."),
+
+    // UserCoupon
+    NOT_FOUND_USER_COUPON(HttpStatus.NOT_FOUND, "보유하신 쿠폰이 없습니다."),
+    COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다."),
+    COUPON_ALREADY_ISSUED(HttpStatus.CONFLICT, "이미 발급받은 쿠폰입니다."),
+    INVALID_DISCOUNT_AMOUNT(HttpStatus.BAD_REQUEST, "할인 금액이 결제 금액보다 클 수 없습니다."),
+    COUPON_MIN_ORDER_AMOUNT_NOT_MET(HttpStatus.NOT_FOUND, "주문 금액이 쿠폰 최소 사용 금액에 미달합니다."),
+
+    // SERVER_ERROR
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
+
+    // Admin 도메인 에러 예시
+    ADMIN_MENTOR_CAREER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 멘토 경력 요청입니다."),
+    ALREADY_SAME_STATUS(HttpStatus.CONFLICT, "이미 되어있는 상태입니다."),
+
+    // category
+    CATEGORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성되어있는 카테고리입니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_CATEGORY_NAME(HttpStatus.CONFLICT, "같은 카테고리명 입니다."),
+    ALREADY_EXIST_CATEGORY(HttpStatus.BAD_REQUEST, "중복된 카테고리 이름입니다."),
+
+    // Reservation
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다."),
+    RESERVATION_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "예약한 상담이 완료되지 않았습니다."),
+    DUPLICATED_RESERVATION(HttpStatus.CONFLICT, "이미 중복된 예약이 존재합니다."),
+    ONLY_REQUESTED_CAN_BE_CANCELED(HttpStatus.CONFLICT, "요청 상태(REQUESTED)인 예약만 삭제 가능합니다."),
+
+    // 결제 권한 관련
+    NO_PAYMENT_AUTHORITY(HttpStatus.FORBIDDEN, "해당 예약을 결제할 권한이 없습니다."),
+    NO_PAYMENT_INFO_AUTHORITY(HttpStatus.FORBIDDEN, "결제 정보를 처리할 권한이 없습니다."),
+    NO_PAYMENT_VIEW_AUTHORITY(HttpStatus.FORBIDDEN, "결제 내역을 조회할 권한이 없습니다."),
+    NO_PAYMENT_CANCEL_AUTHORITY(HttpStatus.NOT_FOUND, "결제를 취소할 권한이 없습니다."),
+
+    // 결제 내역/상태/검증 관련
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "주문 금액이 일치하지 않습니다."),
+    ALREADY_PROCESSED_OR_CANCELED(HttpStatus.CONFLICT, "이미 처리되었거나 취소된 주문입니다."),
+    ALREADY_PAID(HttpStatus.CONFLICT, "이미 결제가 완료된 예약입니다."),
+    ONLY_PAID_CAN_BE_CANCELED(HttpStatus.BAD_REQUEST, "결제 완료 상태의 주문만 취소할 수 있습니다."),
+
+    // 결제 내역 존재 관련
+    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제 내역입니다."),
+
+    // 결제/취소 처리 실패
+    PAYMENT_APPROVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스 결제 승인에 최종 실패했습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소에 실패했습니다."),
+    TOSS_CANCEL_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 취소 요청에 실패했습니다."),
+    TOSS_API_FAILED(HttpStatus.BAD_GATEWAY, "Toss API 호출에 실패했습니다."),
+    PAYMENT_CANCEL_RESERVATION_EXPIRED(HttpStatus.BAD_REQUEST, "예약 날짜가 지나 결제를 취소할 수 없습니다."),
+
+    // Review
+    REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "리뷰가 이미 존재합니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+
+    // Keyword
+    KEYWORD_ALREADY_EXISTS(HttpStatus.CONFLICT, "중복된 키워드 이름입니다."),
+    KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
+    ALREADY_SAME_KEYWORD_NAME(HttpStatus.CONFLICT, "같은 키워드명 입니다."),
+
+    // Profile
+    PROFILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
+
+    PROFILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 해당 카테고리에 프로필이 등록되어있습니다."),
+
+    // Career
+    NOT_FOUND_CAREER(HttpStatus.BAD_REQUEST, "경력이 존재하지 않습니다."),
+
+    CAREER_CERTIFICATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "경력 증명서는 최대 3개까지만 등록할 수 있습니다."),
+
+    CAREER_CERTIFICATE_EMPTY(HttpStatus.BAD_REQUEST, "경력증명서는 반드시 필요합니다."),
+
+    // Certificate
+    NOT_FOUND_CERTIFICATE(HttpStatus.BAD_REQUEST, "경력증명서가 존재하지 않습니다."),
+
+    // OAuth2
+    INVALID_SOCIAL_TYPE(HttpStatus.BAD_REQUEST, "소셜 로그인 타입이 일치하지 않습니다."),
+
+    DTO_NOT_FOUND(HttpStatus.BAD_REQUEST, "dto가 존재하지 않습니다."),
+
+    INVALID_SOCIAL_CODE(HttpStatus.BAD_REQUEST, "코드가 일치하지 않습니다."),
+
+
+    // ChatRoom
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방이 존재하지 않습니다."),
+
+    CHATROOM_NOT_CREATED(HttpStatus.BAD_REQUEST, "결제가 완료된 후 채팅방을 생성할 수 있습니다."),
+
+    // Consultation
+    CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상담 시간은 존재하지 않거나, 접근 권한이 없습니다."),
+
+    DUPLICATE_CONSULTATION_TIME(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 시간대 입니다."),
+
+    // Answer
+    ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 건입니다."),
+
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "답변을 찾을 수 없습니다."),
+
+    ANSWER_COMPLAINT_MISMATCH(HttpStatus.BAD_REQUEST, "해당 답변은 선택된 민원에 속하지 않습니다."),
+
+
+    // schedule
+    CHATROOM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 작업이 존재하지 않습니다."),
+
+    NOTIFICATION_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "예약된 알림 작업이 존재하지 않습니다."),
+
+    DUPLICATED_SCHEDULE(HttpStatus.BAD_REQUEST, "이미 등록된 작업입니다."),
+
+    INVALID_SCHEDULE_TIME(HttpStatus.BAD_REQUEST, "지정된 예약 시간이 지났습니다."),
+
+    CHATROOM_SCHEDULE_REGISTER_FAILED(HttpStatus.BAD_REQUEST, "채팅방 스케줄 등록이 실패했습니다."),
+
+    // S3
+    S3_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하셨습니다."),
+
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "이미지가 존재하지 않습니다."),
+
+    IMAGE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 등록된 이미지입니다."),
+
+    SSE_RESPONSE_TIME_OUT(HttpStatus.BAD_REQUEST, "응답 데이터 처리 중 오류가 발생했습니다."),
+    // Lock
+    LOCK_FAILED(HttpStatus.CONFLICT, "락 획득에 실패하였습니다.")
+
+    ;
+
+
+    private final HttpStatus httpStatus;
+    private final String message;
+
+    ErrorCode(HttpStatus httpStatus, String message) {
+        this.httpStatus = httpStatus;
+        this.message = message;
+    }
+
+    @Override
+    public HttpStatus getStatus() {
+        return httpStatus;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+}

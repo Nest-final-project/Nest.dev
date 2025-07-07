@@ -1,0 +1,92 @@
+### POST - 회원가입
+POST {{root-path}}/api/auth/signup
+Content-Type: application/json;charset=UTF-8
+
+{
+  "name": "Test",
+  "email": "test@abc.com",
+  "password": "Abcd1234!",
+  "nickName": "Test1",
+  "phoneNumber": "010-1234-1234",
+  "userRole": "MENTEE"
+}
+
+
+### POST - 회원가입
+POST {{root-path}}/api/auth/signup
+Content-Type: application/json;charset=UTF-8
+
+{
+  "name": "Test4",
+  "email": "test4@abc.com",
+  "password": "Abcd1234!",
+  "nickName": "Test2",
+  "phoneNumber": "010-1234-1235",
+  "userRole": "MENTEE"
+}
+
+
+### POST - 회원가입
+POST {{root-path}}/api/auth/signup
+Content-Type: application/json;charset=UTF-8
+
+{
+  "name": "Test5",
+  "email": "test5@abc.com",
+  "password": "Abcd1234!",
+  "nickName": "Test12",
+  "phoneNumber": "010-1235-1236",
+  "userRole": "MENTEE"
+}
+
+
+### POST - 로그인
+POST {{root-path}}/api/auth/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "bbb@abc.com",
+  "password": "Abcd1234!"
+}
+
+> {%
+  const token = response.body.data.accessToken;
+  client.global.set("authorizationToken", token);
+  client.log("Auth Token : " + client.global.get("authorizationToken"));
+%}
+
+### POST - 로그인
+POST {{root-path}}/api/auth/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "bbb@abc.com",
+  "password": "Abcd1234!"
+}
+
+> {%
+  const token = response.body.data.accessToken;
+  client.global.set("authorizationToken", token);
+  client.log("Auth Token : " + client.global.get("authorizationToken"));
+%}
+
+### POST - 로그인
+POST {{root-path}}/api/auth/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "test2@abc.com",
+  "password": "Abcd1234!"
+}
+
+> {%
+  const token = response.body.data.accessToken;
+  client.global.set("authorizationToken", token);
+  client.log("Auth Token : " + client.global.get("authorizationToken"));
+%}
+
+
+
+### Socket Token 발급
+POST {{root-path}}/socket/token
+Authorization: Bearer {{authorizationToken}}
