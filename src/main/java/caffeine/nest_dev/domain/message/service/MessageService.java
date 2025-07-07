@@ -1,6 +1,6 @@
 package caffeine.nest_dev.domain.message.service;
 
-import caffeine.nest_dev.common.websocket.config.RedisPublisher;
+import caffeine.nest_dev.common.websocket.redis.RedisPublisher;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.service.ChatRoomService;
 import caffeine.nest_dev.domain.message.dto.request.MessageRequestDto;
@@ -28,7 +28,6 @@ public class MessageService {
 
     @Transactional
     public void sendMessage(Long chatRoomId, Long userId, MessageRequestDto requestDto) {
-        log.info("message 서비스 들어옴");
         User user = userService.findByIdAndIsDeletedFalseOrElseThrow(userId);
 
         ChatRoom chatRoom = chatRoomService.findByIdOrElseThrow(chatRoomId);

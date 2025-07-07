@@ -1,11 +1,10 @@
 package caffeine.nest_dev.common.config;
 
-import java.time.Duration;
-import caffeine.nest_dev.common.websocket.config.RedisSubscriber;
-import caffeine.nest_dev.oauth2.dto.response.OAuth2LoginResponseDto;
+import caffeine.nest_dev.common.websocket.redis.RedisSubscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.Duration;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;

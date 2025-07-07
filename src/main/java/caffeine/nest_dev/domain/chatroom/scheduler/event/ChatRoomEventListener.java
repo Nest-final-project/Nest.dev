@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.chatroom.scheduler.util;
+package caffeine.nest_dev.domain.chatroom.scheduler.event;
 
 import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomSchedulerService;
 import caffeine.nest_dev.domain.chatroom.scheduler.service.ChatRoomTerminationSchedulerService;

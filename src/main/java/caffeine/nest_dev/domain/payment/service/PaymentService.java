@@ -3,7 +3,7 @@ package caffeine.nest_dev.domain.payment.service;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveCreateRoomEvent;
+import caffeine.nest_dev.domain.chatroom.scheduler.event.SaveCreateRoomEvent;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
 import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
@@ -141,7 +141,7 @@ public class PaymentService {
             // 새로운 쿠폰 검증 및 할인 계산 로직 사용
             BigDecimal orderAmount = BigDecimal.valueOf(originalAmount);
             userCouponService.validateCouponForUse(userCoupon.getCoupon(), orderAmount);
-            
+
             BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), orderAmount);
             if (calculatedDiscount.compareTo(orderAmount) > 0) {
                 throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT);
@@ -243,7 +243,8 @@ public class PaymentService {
                 }
 
                 // 새로운 할인 계산 로직 사용
-                BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), originalAmountBD);
+                BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(),
+                        originalAmountBD);
                 discountAmount = calculatedDiscount.intValue();
                 finalAmountBD = originalAmountBD.subtract(calculatedDiscount);
 
@@ -255,7 +256,7 @@ public class PaymentService {
             int finalAmount = finalAmountBD.intValue();
 
             // Payment 업데이트
-            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(), 
+            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(),
                     tossResponse.getMethod(), tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
 
             // 최종 금액 및 할인 금액 업데이트

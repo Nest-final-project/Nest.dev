@@ -1,4 +1,4 @@
-package caffeine.nest_dev.domain.chatroom.scheduler.util;
+package caffeine.nest_dev.domain.chatroom.scheduler.event;
 
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import java.time.LocalDateTime;
@@ -10,15 +10,15 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SaveTerminationRoomEvent {
+public class SaveCreateRoomEvent {
 
-    private final long reservationId;
-    private final LocalDateTime endAt;
+    private final Long reservationId;
+    private final LocalDateTime startAt;
 
-    public static SaveTerminationRoomEvent from(Reservation reservation) {
-        return SaveTerminationRoomEvent.builder()
+    public static SaveCreateRoomEvent from(Reservation reservation) {
+        return SaveCreateRoomEvent.builder()
                 .reservationId(reservation.getId())
-                .endAt(reservation.getReservationEndAt())
+                .startAt(reservation.getReservationStartAt())
                 .build();
     }
 }
