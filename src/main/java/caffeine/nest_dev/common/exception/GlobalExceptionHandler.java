@@ -51,8 +51,9 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+        log.warn("HTTP 메시지 쓰기 실패: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(CommonResponse.of(ErrorCode.SSE_RESPONSE_TIME_OUT));
+                .body(CommonResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 
     // Optionally → 모든 예외 (예상 못한 500)
