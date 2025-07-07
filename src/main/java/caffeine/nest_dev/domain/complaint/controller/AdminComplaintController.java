@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -41,7 +42,7 @@ public class AdminComplaintController {
     public ResponseEntity<CommonResponse<AnswerResponseDto>> save(
             @Parameter(description = "답변할 문의 ID") @PathVariable Long complaintId,
             @Parameter(description = "인증된 관리자 정보") @AuthenticationPrincipal UserDetailsImpl authUser,
-            @Parameter(description = "답변 생성 요청 정보") @RequestBody AnswerRequestDto answerRequestDto
+            @Parameter(description = "답변 생성 요청 정보") @Valid @RequestBody AnswerRequestDto answerRequestDto
     ) {
 
         Long userId = authUser.getId();
@@ -95,7 +96,7 @@ public class AdminComplaintController {
     public ResponseEntity<CommonResponse<Void>> update(
             @Parameter(description = "수정할 답변 ID") @PathVariable Long answerId,
             @Parameter(description = "인증된 관리자 정보") @AuthenticationPrincipal UserDetailsImpl authUser,
-            @Parameter(description = "답변 수정 요청 정보") @RequestBody AnswerUpdateRequestDto answerUpdateRequestDto){
+            @Parameter(description = "답변 수정 요청 정보") @Valid @RequestBody AnswerUpdateRequestDto answerUpdateRequestDto){
 
         Long userId = authUser.getId();
 

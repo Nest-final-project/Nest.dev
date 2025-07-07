@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -37,7 +38,7 @@ public class ReservationController {
     @ApiResponse(responseCode = "201", description = "예약 생성 성공")
     @PostMapping("/reservations")
     public ResponseEntity<CommonResponse<ReservationResponseDto>> save(
-            @Parameter(description = "예약 생성 요청 정보") @RequestBody ReservationRequestDto requestDto,
+            @Parameter(description = "예약 생성 요청 정보") @Valid @RequestBody ReservationRequestDto requestDto,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser) {
 
         Long userId = authUser.getId();
