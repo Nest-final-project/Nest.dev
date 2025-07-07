@@ -36,6 +36,7 @@ public enum SuccessCode implements BaseCode {
     SUCCESS_USER_COUPON_CREATED(HttpStatus.CREATED, "쿠폰 발급이 완료되었습니다."),
     SUCCESS_USER_COUPON_READ(HttpStatus.OK, "목록을 조회 완료하였습니다."),
     SUCCESS_USER_COUPON_UPDATED(HttpStatus.OK, "쿠폰이 사용되었습니다."),
+    SUCCESS_USER_AVAILABLE_COUPON_READ(HttpStatus.OK, "발급 가능한 쿠폰 목록을 조회 하였습니다."),
 
     // Admin
     SUCCESS_ADMIN_MENTOR_CAREER_READ(HttpStatus.OK, "멘토 경력 확인 요청 목록을 조회하였습니다."),
