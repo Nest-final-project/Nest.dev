@@ -10,7 +10,7 @@ import caffeine.nest_dev.domain.chatroom.dto.response.MessageDto;
 import caffeine.nest_dev.domain.chatroom.entity.ChatRoom;
 import caffeine.nest_dev.domain.chatroom.repository.ChatRoomRepository;
 import caffeine.nest_dev.domain.chatroom.scheduler.enums.ChatRoomType;
-import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveTerminationRoomEvent;
+import caffeine.nest_dev.domain.chatroom.scheduler.event.SaveTerminationRoomEvent;
 import caffeine.nest_dev.domain.notification.service.NotificationService;
 import caffeine.nest_dev.domain.reservation.entity.Reservation;
 import caffeine.nest_dev.domain.reservation.enums.ReservationStatus;

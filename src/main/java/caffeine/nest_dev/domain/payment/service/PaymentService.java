@@ -3,7 +3,7 @@ package caffeine.nest_dev.domain.payment.service;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.ErrorCode;
 import caffeine.nest_dev.common.exception.BaseException;
-import caffeine.nest_dev.domain.chatroom.scheduler.util.SaveCreateRoomEvent;
+import caffeine.nest_dev.domain.chatroom.scheduler.event.SaveCreateRoomEvent;
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.coupon.entity.UserCouponId;
 import caffeine.nest_dev.domain.coupon.repository.UserCouponRepository;
@@ -102,15 +102,11 @@ public class PaymentService {
 
             // 이미 결제 완료된 경우
             if (payment.getStatus() == PaymentStatus.PAID) {
-                log.warn("이미 결제 완료된 예약입니다: reservationId={}, paymentId={}",
-                        reservationPk, payment.getId());
                 throw new BaseException(ErrorCode.ALREADY_PAID);
             }
 
             // 기존 대기 중인 결제가 있는 경우 - 기존 결제 정보 반환
             if (payment.getStatus() == PaymentStatus.READY) {
-                log.info("기존 대기 중인 결제 발견. 기존 결제 정보 반환: reservationId={}, paymentId={}",
-                        reservationPk, payment.getId());
                 return new PaymentPrepareResponseDto(String.valueOf(reservation.getId()),
                         ticket.getName());
             }
@@ -118,9 +114,6 @@ public class PaymentService {
             // 실패하거나 취소된 결제가 있는 경우 - 기존 결제 삭제 후 새로 생성
             if (payment.getStatus() == PaymentStatus.FAILED
                     || payment.getStatus() == PaymentStatus.CANCELED) {
-                log.info(
-                        "실패/취소된 결제 발견. 기존 결제 삭제 후 새로 생성: reservationId={}, paymentId={}, status={}",
-                        reservationPk, payment.getId(), payment.getStatus());
                 paymentRepository.delete(payment);
             }
         }
@@ -133,15 +126,13 @@ public class PaymentService {
             userCoupon = userCouponRepository.findById(userCouponId)
                     .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_USER_COUPON));
             if (userCoupon.isUsed()) {
-                log.warn("중복 사용 쿠폰: couponId={}, userId={}", userCoupon.getCoupon().getId(),
-                        userCoupon.getUser().getId());
                 throw new BaseException(ErrorCode.COUPON_ALREADY_USED);
             }
 
             // 새로운 쿠폰 검증 및 할인 계산 로직 사용
             BigDecimal orderAmount = BigDecimal.valueOf(originalAmount);
             userCouponService.validateCouponForUse(userCoupon.getCoupon(), orderAmount);
-            
+
             BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), orderAmount);
             if (calculatedDiscount.compareTo(orderAmount) > 0) {
                 throw new BaseException(ErrorCode.INVALID_DISCOUNT_AMOUNT);
@@ -162,10 +153,6 @@ public class PaymentService {
                 .build();
         Payment savedPayment = paymentRepository.save(payment);
 
-        log.info("새 결제 생성 완료: reservationId={}, paymentId={}, originalAmount={}, coupon={}",
-                reservationPk, savedPayment.getId(), originalAmount,
-                userCoupon != null ? "적용" : "없음");
-
         // 예약ID, 티켓명 반환 (프론트 결제창 오픈 등에 사용)
         return new PaymentPrepareResponseDto(String.valueOf(reservation.getId()), ticket.getName());
     }
@@ -174,14 +161,9 @@ public class PaymentService {
     @Transactional
     public PaymentConfirmResponseDto confirmPayment(PaymentConfirmRequestDto requestDto,
             String userEmail, Long reservationId) {
-
-        log.info(" 결제 승인 요청 시작 - reservationId: {}, userEmail: {}", reservationId, userEmail);
-        log.info(" 결제 승인 요청 데이터: {}", requestDto);
-
         // 결제 정보 DB 조회
         Payment payment = paymentRepository.findByReservationId(reservationId)
                 .orElseThrow(() -> {
-                    log.error(" 예약 ID {}에 대한 결제 정보를 찾을 수 없습니다", reservationId);
 
                     // 디버깅을 위해 해당 예약이 존재하는지 확인
                     Optional<Reservation> reservation = reservationRepository.findById(
@@ -196,8 +178,6 @@ public class PaymentService {
                     return new BaseException(ErrorCode.NOT_FOUND_ORDER);
                 });
 
-        log.info(" 결제 정보 조회 성공 - paymentId: {}, status: {}", payment.getId(), payment.getStatus());
-
         // 결제자 확인
         if (!payment.getPayer().getEmail().equals(userEmail)) {
             throw new BaseException(ErrorCode.NO_PAYMENT_INFO_AUTHORITY);
@@ -205,22 +185,16 @@ public class PaymentService {
 
         //  원가 기준으로 토스 결제 금액 검증
         if (!payment.getOriginalAmount().equals(requestDto.getAmount())) {
-            log.error(" 결제 금액 불일치 - DB 원가: {}, 토스 결제: {}",
-                    payment.getOriginalAmount(), requestDto.getAmount());
             throw new BaseException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         }
 
         // 결제 유무 확인
         if (payment.getStatus() != PaymentStatus.READY) {
-            log.warn(" [중복 승인 시도] 이미 처리된 결제: paymentId={}, status={}, paymentKey={}",
-                    payment.getId(), payment.getStatus(), payment.getPaymentKey());
             throw new BaseException(ErrorCode.ALREADY_PROCESSED_OR_CANCELED);
         }
 
         // 이미 paymentKey가 있는 경우 중복 승인 시도 방지
         if (payment.getPaymentKey() != null && !payment.getPaymentKey().isEmpty()) {
-            log.warn(" [이미 승인된 결제] paymentId={}, paymentKey={}",
-                    payment.getId(), payment.getPaymentKey());
             throw new BaseException(ErrorCode.ALREADY_PROCESSED_OR_CANCELED);
         }
 
@@ -229,7 +203,6 @@ public class PaymentService {
 
         // 결제 승인 -> DB 업데이트
         if (tossResponse != null && "DONE".equals(tossResponse.getStatus())) {
-            log.info("[결제 승인 성공] orderId: {}", tossResponse.getOrderId());
 
             // 쿠폰 할인 적용 및 최종 금액 계산
             BigDecimal originalAmountBD = BigDecimal.valueOf(payment.getOriginalAmount());
@@ -243,26 +216,22 @@ public class PaymentService {
                 }
 
                 // 새로운 할인 계산 로직 사용
-                BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(), originalAmountBD);
+                BigDecimal calculatedDiscount = userCouponService.calculateDiscount(userCoupon.getCoupon(),
+                        originalAmountBD);
                 discountAmount = calculatedDiscount.intValue();
                 finalAmountBD = originalAmountBD.subtract(calculatedDiscount);
 
                 userCoupon.markAsUsed(); // 쿠폰 사용 처리
-                log.info(" 쿠폰 할인 적용 - 원가: {}원, 할인: {}원, 최종: {}원",
-                        payment.getOriginalAmount(), discountAmount, finalAmountBD.intValue());
             }
 
             int finalAmount = finalAmountBD.intValue();
 
             // Payment 업데이트
-            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(), 
+            payment.updateOnSuccess(tossResponse.getPaymentKey(), tossResponse.getOrderId(),
                     tossResponse.getMethod(), tossResponse.getApprovedAt(), tossResponse.getRequestedAt());
 
             // 최종 금액 및 할인 금액 업데이트
             payment.updateFinalAmount(finalAmount, discountAmount);
-
-            log.info(" 결제 완료 - 토스 결제: {}원, 실제 차감: {}원",
-                    payment.getOriginalAmount(), finalAmount);
 
             Reservation reservation = reservationRepository.findById((reservationId))
                     .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_ORDER));
@@ -277,21 +246,17 @@ public class PaymentService {
                 }
             } else {
                 reservation.markAsPaid();
-                log.info(" 예약 ID {}의 상태가 {}로 변경되었습니다.", reservationId, ReservationStatus.PAID);
                 eventPublisher.publishEvent(SaveCreateRoomEvent.from(reservation));
             }
 
             User mentee = reservation.getMentee();
             if (mentee == null) {
-                log.error(" 예약 ID {}에 연결된 멘티(User) 정보를 찾을 수 없습니다.", reservationId);
                 throw new BaseException(ErrorCode.NOT_FOUND_ORDER);
             }
             Integer previousTotalPrice = mentee.getTotalPrice();
             Integer newCalculatedTotalPrice = previousTotalPrice + finalAmount;
             mentee.updateTotalPrice(newCalculatedTotalPrice);
 
-            log.info(" 사용자 ID {}의 총 결제 금액이 {}원에서 {}원으로 업데이트되었습니다. (추가 금액: {})",
-                    mentee.getId(), previousTotalPrice, mentee.getTotalPrice(), finalAmount);
             // 응답 DTO 변환 후 반환
             return PaymentConfirmResponseDto.of(payment);
         } else {
@@ -367,19 +332,15 @@ public class PaymentService {
         // 취소 성공 시 DB 갱신 / 실패 시 예외 발생
         if (tossResponse != null && "CANCELED".equals(tossResponse.getStatus())) {
             payment.updateOnCancel(cancelDto.getCancelReason());
-            log.info("결제가 성공적으로 취소되었습니다. paymentKey: {}", payment.getPaymentKey());
-
             UserCoupon userCoupon = payment.getUserCoupon();
             if (userCoupon != null && userCoupon.isUsed()) {
                 userCoupon.unmarkAsUsed();
-                log.info("쿠폰 사용 상태 복구 완료 - userCouponId={}", userCoupon.getId());
             }
 
             Reservation reservation = payment.getReservation();
             reservation.cancel();
 
         } else {
-            log.error("토스 결제 취소에 실패했습니다. paymentKey: {}", payment.getPaymentKey());
             throw new BaseException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
     }
@@ -399,13 +360,6 @@ public class PaymentService {
                 .contentType(MediaType.APPLICATION_JSON).bodyValue(requestDto) // 요청 DTO 바디 전송
                 .retrieve().onStatus(HttpStatusCode::isError,
                         response -> response.bodyToMono(String.class).flatMap(errorBody -> {
-                            log.info("[결제 승인 요청] paymentKey={}, orderId={}, amount={}",
-                                    requestDto.getPaymentKey(), requestDto.getOrderId(),
-                                    requestDto.getAmount());
-                            log.info("[Toss 요청 전송] requestDto = {}", requestDto);
-                            log.error("Toss API 호출 실패: status={}, body={}",
-                                    response.statusCode(),
-                                    errorBody);
                             return Mono.error(new BaseException(ErrorCode.TOSS_API_FAILED));
                         })).bodyToMono(TossApproveResponse.class);
     }
@@ -422,8 +376,6 @@ public class PaymentService {
                 .uri(url).header(HttpHeaders.AUTHORIZATION, authorizations).retrieve()
                 .onStatus(HttpStatusCode::isError,
                         response -> response.bodyToMono(String.class).flatMap(errorBody -> {
-                            log.error("Toss Inquiry API Error - Status: {}, Body: {}",
-                                    response.statusCode(), errorBody);
                             return Mono.error(new BaseException(ErrorCode.TOSS_API_FAILED));
                         })).bodyToMono(TossPaymentInquiryResponse.class); // 응답 DTO 변환
     }
@@ -465,21 +417,19 @@ public class PaymentService {
                 pageable);
 
         Page<PaymentsResponseDto> dtoPage = paymentsPage.map(payment -> {
-            String mentorName = "Unknown Mentor"; // 기본값
-            String ticketName = "Unknown Ticket"; // 기본값
+            String mentorName = "Unknown Mentor";
+            String ticketName = "Unknown Ticket";
 
-            // NullPointerException 방지를 위한 안전한 접근
             if (payment.getReservation() != null
                     && payment.getReservation().getMentor() != null) {
                 mentorName = payment.getReservation().getMentor()
-                        .getName(); // Assuming User entity has getName()
+                        .getName();
             }
             if (payment.getTicket() != null) {
                 ticketName = payment.getTicket()
-                        .getName(); // Assuming Ticket entity has getName()
+                        .getName();
             }
 
-            // 수정된 DTO의 of 메서드 호출
             return PaymentsResponseDto.of(payment, mentorName, ticketName);
         });
 

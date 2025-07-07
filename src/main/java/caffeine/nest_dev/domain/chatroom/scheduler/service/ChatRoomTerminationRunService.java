@@ -53,8 +53,6 @@ public class ChatRoomTerminationRunService {
         // 사용자별 세션 종료
         String mentorId = chatRoom.getMentor().getId().toString();
         String menteeId = chatRoom.getMentee().getId().toString();
-//        disconnectUser(mentorId);
-//        disconnectUser(menteeId);
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(
                 () -> new BaseException(ErrorCode.RESERVATION_NOT_FOUND)
@@ -64,21 +62,4 @@ public class ChatRoomTerminationRunService {
         log.info("종료 작업 완료 : ScheduleId = {}", scheduleId);
         log.info("채팅방 종료 완료 : ChatRoomId = {}, mentor = {}, mentee = {}", chatRoom.getId(), mentorId, menteeId);
     }
-
-    /**
-     * 특정 사용자 ID의 WebSocket 세션 종료
-     *
-     * @param userId 종료할 사용자 ID
-     */
-//    private void disconnectUser(String userId) {
-//        WebSocketSession session = sessionRegistry.getSession(userId);
-//        log.info("종료할 세션 Id : {}, userId : {}", session.getId(), userId);
-//        if (session != null && session.isOpen()) {
-//            try {
-//                session.close(new CloseStatus(4000, "채팅 종료"));
-//            } catch (Exception e) {
-//                log.warn("세션 종료 실패 : {}", userId, e);
-//            }
-//        }
-//    }
 }

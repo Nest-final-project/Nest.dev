@@ -1,14 +1,10 @@
 package caffeine.nest_dev.domain.ticket.entity;
 
 import caffeine.nest_dev.common.entity.BaseEntity;
-import caffeine.nest_dev.domain.payment.entity.Payment;
 import caffeine.nest_dev.domain.ticket.dto.request.TicketRequestDto;
 import caffeine.nest_dev.domain.ticket.enums.TicketTime;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Entity

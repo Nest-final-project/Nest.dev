@@ -3,7 +3,6 @@ package caffeine.nest_dev.domain.reservation.controller;
 import caffeine.nest_dev.common.dto.CommonResponse;
 import caffeine.nest_dev.common.dto.PagingResponse;
 import caffeine.nest_dev.common.enums.SuccessCode;
-import caffeine.nest_dev.domain.reservation.dto.request.ReservationCancelRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.request.ReservationRequestDto;
 import caffeine.nest_dev.domain.reservation.dto.response.ReservationResponseDto;
 import caffeine.nest_dev.domain.reservation.service.ReservationService;

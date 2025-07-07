@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,7 +39,7 @@ public class UserCouponController {
     @ApiResponse(responseCode = "201", description = "사용자 쿠폰 등록 성공")
     @PostMapping
     public ResponseEntity<CommonResponse<UserCouponResponseDto>> registerUserCoupon(
-            @Parameter(description = "사용자 쿠폰 등록 요청 정보") @RequestBody UserCouponRequestDto requestDto) {
+            @Parameter(description = "사용자 쿠폰 등록 요청 정보") @Valid @RequestBody UserCouponRequestDto requestDto) {
         UserCouponResponseDto responseDto = userCouponService.saveUserCoupon(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.of(SuccessCode.SUCCESS_USER_COUPON_CREATED, responseDto));
@@ -74,7 +75,7 @@ public class UserCouponController {
     @ApiResponse(responseCode = "200", description = "쿠폰 사용 성공")
     @PatchMapping("/use")
     public ResponseEntity<CommonResponse<Void>> updateUseUserCoupon(
-            @Parameter(description = "쿠폰 사용 요청 정보") @RequestBody UserCouponRequestDto requestDto
+            @Parameter(description = "쿠폰 사용 요청 정보") @Valid @RequestBody UserCouponRequestDto requestDto
     ) {
         userCouponService.modifyUserCoupon(requestDto);
         return ResponseEntity.status(HttpStatus.OK)

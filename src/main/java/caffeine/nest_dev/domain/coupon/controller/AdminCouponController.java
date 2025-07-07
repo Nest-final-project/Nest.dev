@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,7 +38,7 @@ public class AdminCouponController {
     @ApiResponse(responseCode = "201", description = "쿠폰 등록 성공")
     @PostMapping
     public ResponseEntity<CommonResponse<AdminCouponResponseDto>> registerCoupon(
-            @Parameter(description = "쿠폰 등록 요청 정보") @RequestBody AdminCouponRequestDto requestDto
+            @Parameter(description = "쿠폰 등록 요청 정보") @Valid @RequestBody AdminCouponRequestDto requestDto
     ) {
         AdminCouponResponseDto responseDto = adminCouponService.saveCoupon(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,7 +61,7 @@ public class AdminCouponController {
     @PatchMapping("/{couponId}")
     public ResponseEntity<CommonResponse<Void>> updateCoupon(
             @Parameter(description = "수정할 쿠폰 ID") @PathVariable Long couponId,
-            @Parameter(description = "쿠폰 수정 요청 정보") @RequestBody AdminCouponRequestDto requestDto
+            @Parameter(description = "쿠폰 수정 요청 정보") @Valid @RequestBody AdminCouponRequestDto requestDto
     ) {
         adminCouponService.modifyCoupon(couponId, requestDto);
         return ResponseEntity.status(HttpStatus.OK)

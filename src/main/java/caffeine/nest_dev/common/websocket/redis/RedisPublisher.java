@@ -1,4 +1,4 @@
-package caffeine.nest_dev.common.websocket.config;
+package caffeine.nest_dev.common.websocket.redis;
 
 import caffeine.nest_dev.domain.message.dto.response.MessageResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +30,14 @@ public class RedisPublisher {
      * @param messageDto 발행할 메시지 DTO (MessageResponseDto)
      */
     public void publish(ChannelTopic topic, MessageResponseDto messageDto) {
-        log.info("📡 Redis 메시지 발행 시작 - 채널: {}, 발신자: {}, 수신자: {}, 내용: {}", 
-                topic.getTopic(), 
-                messageDto.getSenderId(), 
-                messageDto.getReceiverId(), 
+        log.info("Redis 메시지 발행 시작 - 채널: {}, 발신자: {}, 수신자: {}, 내용: {}",
+                topic.getTopic(),
+                messageDto.getSenderId(),
+                messageDto.getReceiverId(),
                 messageDto.getContent());
-        
+
         chatRedisTemplate.convertAndSend(topic.getTopic(), messageDto);
-        
-        log.info("✅ Redis 메시지 발행 완료 - 채널: {}", topic.getTopic());
+
+        log.info("Redis 메시지 발행 완료 - 채널: {}", topic.getTopic());
     }
 }

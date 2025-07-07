@@ -33,7 +33,7 @@ public class MessageController {
         String principalName = principal.getName();
         long userId = Long.parseLong(principalName);
 
-        log.info("✅ principal.getName() = {}", principalName);
+        log.info("principal.getName() = {}", principalName);
 
         messageService.sendMessage(chatRoomId, userId, requestDto);
 

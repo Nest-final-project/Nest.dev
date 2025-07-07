@@ -1,4 +1,4 @@
-package caffeine.nest_dev.common.websocket.config;
+package caffeine.nest_dev.common.websocket.redis;
 
 import caffeine.nest_dev.domain.message.dto.response.MessageResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,12 +49,12 @@ public class RedisSubscriber implements MessageListener {
             String channelName = new String(message.getChannel());
             String pubMessage = chatRedisTemplate.getStringSerializer().deserialize(message.getBody());
 
-            log.info("🔔 Redis 메시지 수신 - 채널: {}, 내용: {}", channelName, pubMessage);
+            log.info("Redis 메시지 수신 - 채널: {}, 내용: {}", channelName, pubMessage);
 
             // JSON -> DTO
             MessageResponseDto roomMessage = objectMapper.readValue(pubMessage, MessageResponseDto.class);
 
-            log.info("📤 STOMP로 전달 - 수신자: {}, 채팅방: {}, 메시지: {}",
+            log.info("STOMP로 전달 - 수신자: {}, 채팅방: {}, 메시지: {}",
                     roomMessage.getReceiverId(),
                     roomMessage.getChatRoomId(),
                     roomMessage.getContent());

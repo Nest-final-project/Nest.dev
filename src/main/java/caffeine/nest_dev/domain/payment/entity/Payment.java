@@ -1,6 +1,5 @@
 package caffeine.nest_dev.domain.payment.entity;
 
-
 import caffeine.nest_dev.domain.coupon.entity.UserCoupon;
 import caffeine.nest_dev.domain.payment.enums.PaymentStatus;
 import caffeine.nest_dev.domain.payment.enums.PaymentType;
