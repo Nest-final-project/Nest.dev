@@ -39,4 +39,33 @@ public class AwsSesMailService {
         }
     }
 
+    /**
+     * 예약 성공 시  메일 전송
+     */
+    public void sendReservationSuccessEmail(String userEmail, String mentorName, String startAt) {
+        try {
+            String subject = "상담 예약이 완료되었습니다!";
+            String bodyHtml = String.format(
+                    "<h1>상담 예약 완료 🎉</h1>" + "<p>%s 멘토님과의 상담이 %s에 예약되었습니다.</p>" + "<p>상담 시간 전에 미리 준비해주세요.</p>",
+                    mentorName, startAt
+            );
+
+            SendEmailRequest request = new SendEmailRequest()
+                    .withDestination(new Destination().withToAddresses(userEmail))
+                    .withMessage(new Message()
+                            .withSubject(new Content().withCharset("UTF-8").withData(subject))
+                            .withBody(new Body().withHtml(new Content()
+                                    .withCharset("UTF-8")
+                                    .withData(bodyHtml))))
+                    .withSource(fromEmail);
+
+            sesClient.sendEmail(request);
+            log.info("예약 성공 이메일 발송 완료: {}", userEmail);
+
+        } catch (Exception e) {
+            log.error("예약 메일 전송 실패: {}", e.getMessage(), e);
+        }
+    }
+
+
 }
