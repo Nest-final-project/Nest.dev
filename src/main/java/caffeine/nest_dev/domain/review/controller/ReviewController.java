@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,7 +40,7 @@ public class ReviewController {
     @PostMapping("/reservations/{reservationId}/reviews")
     public ResponseEntity<CommonResponse<ReviewResponseDto>> save(
             @Parameter(description = "예약 ID") @PathVariable Long reservationId,
-            @Parameter(description = "리뷰 작성 요청 정보") @RequestBody ReviewRequestDto reviewRequestDto,
+            @Parameter(description = "리뷰 작성 요청 정보") @Valid @RequestBody ReviewRequestDto reviewRequestDto,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser) {
 
         Long userId = authUser.getId();
@@ -93,7 +94,7 @@ public class ReviewController {
     public ResponseEntity<CommonResponse<Void>> update(
             @Parameter(description = "수정할 리뷰 ID") @PathVariable Long reviewId,
             @Parameter(description = "인증된 사용자 정보") @AuthenticationPrincipal UserDetailsImpl authUser,
-            @Parameter(description = "리뷰 수정 요청 정보") @RequestBody ReviewRequestDto reviewRequestDto
+            @Parameter(description = "리뷰 수정 요청 정보") @Valid @RequestBody ReviewRequestDto reviewRequestDto
     ) {
         Long userId = authUser.getId();
 

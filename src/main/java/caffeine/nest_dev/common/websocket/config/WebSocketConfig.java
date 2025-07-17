@@ -24,9 +24,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * 웹소켓 연결 시 인증을 위한 HandShake 인터셉터
      */
     private final WebSocketHandlerDecoratorFactory decoratorFactory;
-    //    private final AuthenticationChannelInterceptor channelInterceptor;
     private final StompExceptionHandler exceptionHandler;
-    private final PrincipalHandShakeHandler handler;
+    private final PrincipalHandShakeHandler handShakeHandler;
     private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
     /**
@@ -38,10 +37,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-nest") // handshake 를 위해(최초 연결 시) 연결하는 endpoint
                 .setAllowedOriginPatterns("*")  // cors 설정 (허용할 origin 지정)
-                .setHandshakeHandler(handler)
+                .setHandshakeHandler(handShakeHandler)
                 .addInterceptors(webSocketAuthInterceptor)
-                .withSockJS();  // 웹소켓을 지원하지 않는 브라우저도 사용할 수 있는 대체 옵션 지정
-        registry.setErrorHandler(exceptionHandler); // error 핸들러 추가
+                .withSockJS();
+        registry.setErrorHandler(exceptionHandler);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue"); // 구독 경로 (ex) /user/queue/message
         registry.setApplicationDestinationPrefixes("/app"); // 메시지를 보낼 경로
-        registry.setUserDestinationPrefix("/user"); // 본인에게 오는 메시지만 받도록
+        registry.setUserDestinationPrefix("/user");
     }
 
 
