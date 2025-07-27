@@ -141,4 +141,21 @@ public class AdminServiceTest {
             throw new RuntimeException("필드 설정 실패: " + fieldName, e);
         }
     }
+    @Test
+    void getMentorCareers_shouldReturnEmpty_whenNoCareersFound() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Career> emptyPage = new PageImpl<>(Collections.emptyList());
+
+        when(careerRepository.findByCareerStatus(pageable)).thenReturn(emptyPage);
+
+        PagingResponse<AdminMentorCareerResponseDto> result = adminService.getMentorCareers(pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isEqualTo(0);
+
+        verify(careerRepository, times(1)).findByCareerStatus(pageable);
+    }
+
+
 }
