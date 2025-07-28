@@ -157,5 +157,29 @@ public class AdminServiceTest {
         verify(careerRepository, times(1)).findByCareerStatus(pageable);
     }
 
+    @Test
+    void updateCareerStatus_shouldNotCallSave_whenOnlyStatusChanged() {
+        //  [Given] 관리자가 특정 Career 상태를 변경하려는 요청이 주어졌을 때
+        // CareerStatus.AUTHORIZED로 상태 변경을 요청하는 DTO 생성
+        AdminRequestDto dto = new AdminRequestDto(CareerStatus.AUTHORIZED);
+
+        // CareerRepository에서 ID 1L인 Career를 조회했을 때 dummyCareer를 반환하도록 mock 설정
+        when(careerRepository.findById(1L)).thenReturn(Optional.of(dummyCareer));
+
+        // [When] 상태 변경 메서드 실행
+        // adminService에서 상태 변경 메서드 호출 (내부적으로 dummyCareer의 상태가 변경됨)
+        adminService.updateCareerStatus(1L, dto);
+
+        // [Then] 검증 단계
+        // careerRepository.findById()는 정확히 1번 호출되었는지 확인
+        verify(careerRepository, times(1)).findById(1L);
+
+        // careerRepository.save()는 한 번도 호출되지 않았는지 확인
+        // 상태 변경이 영속성 컨텍스트 내에서만 일어나고 별도 save 호출이 없음을 검증
+        verify(careerRepository, never()).save(any());
+
+        // 실제 dummyCareer 객체의 상태가 요청한 값으로 변경되었는지 확인
+        assertThat(dummyCareer.getCareerStatus()).isEqualTo(CareerStatus.AUTHORIZED);
+    }
 
 }
