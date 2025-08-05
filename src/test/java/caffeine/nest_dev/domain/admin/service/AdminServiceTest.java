@@ -182,4 +182,26 @@ public class AdminServiceTest {
         assertThat(dummyCareer.getCareerStatus()).isEqualTo(CareerStatus.AUTHORIZED);
     }
 
+
+    @Test
+    void updateCareerStatus_shouldCallRepositoryOnlyOnce_whenValidRequest() {
+        // given
+        AdminRequestDto dto = new AdminRequestDto(CareerStatus.AUTHORIZED);
+        when(careerRepository.findById(1L)).thenReturn(Optional.of(dummyCareer));
+
+        // when
+        adminService.updateCareerStatus(1L, dto);
+
+        // then
+        // findById는 1번 호출
+        verify(careerRepository, times(1)).findById(1L);
+
+        // save()는 호출되지 않음 (영속성 컨텍스트에서만 변경)
+        verify(careerRepository, never()).save(any());
+
+        // 상태 값이 요청 값으로 정확히 변경되었는지 확인
+        assertThat(dummyCareer.getCareerStatus()).isEqualTo(CareerStatus.AUTHORIZED);
+    }
+
+
 }
