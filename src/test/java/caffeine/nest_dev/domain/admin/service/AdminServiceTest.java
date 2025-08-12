@@ -202,6 +202,18 @@ public class AdminServiceTest {
         // 상태 값이 요청 값으로 정확히 변경되었는지 확인
         assertThat(dummyCareer.getCareerStatus()).isEqualTo(CareerStatus.AUTHORIZED);
     }
+    @Test
+    void getMentorCareers_shouldReturnEmptyList() {
+        Pageable pageable = PageRequest.of(0, 5);
+        when(careerRepository.findByCareerStatus(pageable)).thenReturn(Page.empty());
+
+        PagingResponse<AdminMentorCareerResponseDto> result = adminService.getMentorCareers(pageable);
+
+        assertThat(result.getContent()).isEmpty();
+        verify(careerRepository).findByCareerStatus(pageable);
+    }
+
+
 
 
 }
