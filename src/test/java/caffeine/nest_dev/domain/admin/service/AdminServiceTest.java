@@ -213,6 +213,29 @@ public class AdminServiceTest {
         verify(careerRepository).findByCareerStatus(pageable);
     }
 
+    // getMentorCareers가 "다수 결과 + 페이징 메타데이터"를 올바르게 매핑하는지 검증하는 테스트.
+    @Test
+    void getMentorCareers_shouldReturnCorrectPagingMetadata_whenMultipleResults() {
+        // given: 2번째 페이지(page=1), 페이지 크기(size=5), 총 12건이라고 가정
+        Pageable pageable = PageRequest.of(1, 5);
+        Page<Career> page = new PageImpl<>(Collections.nCopies(5, dummyCareer), pageable, 12);
+
+        when(careerRepository.findByCareerStatus(pageable)).thenReturn(page);
+
+        // when
+        PagingResponse<AdminMentorCareerResponseDto> result = adminService.getMentorCareers(pageable);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(5);                 // 요청한 페이지 크기만큼 반환
+        assertThat(result.getTotalElements()).isEqualTo(12);        // 총 건수 확인
+        assertThat(result.getContent().get(0).getStatus())
+                .isEqualTo(CareerStatus.UNAUTHORIZED.name());       // 매핑 필드도 샘플로 확인
+
+        verify(careerRepository, times(1)).findByCareerStatus(pageable);
+    }
+
+
 
 
 
