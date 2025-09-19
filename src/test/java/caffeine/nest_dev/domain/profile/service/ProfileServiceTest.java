@@ -9,6 +9,7 @@ import caffeine.nest_dev.domain.profile.dto.request.ProfileRequestDto;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import caffeine.nest_dev.domain.user.entity.User;
+import caffeine.nest_dev.domain.user.enums.UserRole;
 import caffeine.nest_dev.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,4 +95,39 @@ class ProfileServiceTest {
         // (선택) 불필요한 상호작용이 없는지 체크하고 싶다면 아래 라인으로 마무리할 수도 있음
         // verifyNoMoreInteractions(userService, categoryRepository, profileRepository, keywordRepository);
     }
+    @Test
+    @DisplayName("createProfile: 성공 시 save가 호출된다")
+    void createProfile_success() {
+        Long userId = 1L;
+        Long categoryId = 10L;
+
+        ProfileRequestDto req = mock(ProfileRequestDto.class);
+        when(req.getCategoryId()).thenReturn(categoryId);
+
+        // User Mock
+        User user = mock(User.class);
+        when(user.getUserRole()).thenReturn(UserRole.MENTOR); // UserRole 세팅
+
+        Category category = mock(Category.class);
+        when(category.getId()).thenReturn(categoryId);
+
+        Profile profile = mock(Profile.class);
+        when(profile.getCategory()).thenReturn(category);
+        when(req.toEntity(user, category)).thenReturn(profile);
+        when(req.toProfileKeywords(eq(profile), any())).thenReturn(java.util.List.of());
+
+        when(userService.findByIdAndIsDeletedFalseOrElseThrow(userId)).thenReturn(user);
+        when(categoryRepository.findById(categoryId)).thenReturn(java.util.Optional.of(category));
+        when(profileRepository.existsByUserIdAndCategoryIdAndIsDeletedFalse(userId, categoryId)).thenReturn(false);
+        when(keywordRepository.findAllById(any())).thenReturn(java.util.List.of());
+        when(profileRepository.save(any(Profile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // 실행
+        var response = profileService.createProfile(userId, req);
+
+        // 검증
+        assertNotNull(response); // 응답이 null 아님
+        verify(profileRepository, times(1)).save(any(Profile.class));
+    }
+
 }
