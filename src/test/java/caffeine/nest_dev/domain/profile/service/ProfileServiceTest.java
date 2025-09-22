@@ -6,6 +6,7 @@ import caffeine.nest_dev.domain.category.entity.Category;
 import caffeine.nest_dev.domain.category.repository.CategoryRepository;
 import caffeine.nest_dev.domain.keyword.repository.KeywordRepository;
 import caffeine.nest_dev.domain.profile.dto.request.ProfileRequestDto;
+import caffeine.nest_dev.domain.profile.dto.response.ProfileResponseDto;
 import caffeine.nest_dev.domain.profile.entity.Profile;
 import caffeine.nest_dev.domain.profile.repository.ProfileRepository;
 import caffeine.nest_dev.domain.user.entity.User;
@@ -16,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,5 +133,38 @@ class ProfileServiceTest {
         assertNotNull(response); // 응답이 null 아님
         verify(profileRepository, times(1)).save(any(Profile.class));
     }
+    @Test
+    @DisplayName("createProfile: 동일 사용자·카테고리 프로필이 이미 존재하면 PROFILE_ALREADY_EXISTS 예외를 던진다")
+    void createProfile() {
+        // -------------------- Given (준비) --------------------
+        Long userId = 1L;
+        Long categoryId = 10L;
+
+        ProfileRequestDto req = Mockito.mock(ProfileRequestDto.class);
+        when(req.getCategoryId()).thenReturn(categoryId);
+
+        User user = Mockito.mock(User.class);
+        Category category = Mockito.mock(Category.class);
+        when(category.getId()).thenReturn(categoryId);
+
+        when(userService.findByIdAndIsDeletedFalseOrElseThrow(userId)).thenReturn(user);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+
+        when(profileRepository.existsByUserIdAndCategoryIdAndIsDeletedFalse(userId, categoryId)).thenReturn(true);
+
+        // -------------------- When (실행) --------------------
+        BaseException ex = assertThrows(
+                BaseException.class,
+                () -> profileService.createProfile(userId, req)
+        );
+
+        // -------------------- Then (검증) --------------------
+        assertEquals(ErrorCode.PROFILE_ALREADY_EXISTS, ex.getErrorCode());
+        verify(profileRepository, never()).save(any(Profile.class));
+        verify(userService, times(1)).findByIdAndIsDeletedFalseOrElseThrow(userId);
+        verify(categoryRepository, times(1)).findById(categoryId);
+        verify(profileRepository, times(1)).existsByUserIdAndCategoryIdAndIsDeletedFalse(userId, categoryId);
+    }
+
 
 }
