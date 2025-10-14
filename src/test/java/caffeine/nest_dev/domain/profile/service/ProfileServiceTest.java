@@ -166,5 +166,52 @@ class ProfileServiceTest {
         verify(profileRepository, times(1)).existsByUserIdAndCategoryIdAndIsDeletedFalse(userId, categoryId);
     }
 
+    /**
+     * ProfileService 단위 테스트
+     * - 존재하지 않는 카테고리 ID로 프로필 생성 시 BaseException(CATEGORY_NOT_FOUND) 발생 검증
+     */
+    @Test
+    @DisplayName("createProfile: 카테고리가 존재하지 않으면 CATEGORY_NOT_FOUND 예외를 던진다")
+    void createProfile_shouldThrow_whenCategoryNotFound() {
+        // -------------------- Given (준비) --------------------
+        Long userId = 1L;
+        Long nonExistentCategoryId = 999L; // 존재하지 않을 카테고리 ID
+
+        // 요청 DTO 설정: 존재하지 않는 카테고리 ID 반환
+        ProfileRequestDto req = Mockito.mock(ProfileRequestDto.class);
+        when(req.getCategoryId()).thenReturn(nonExistentCategoryId);
+
+        // 유저 조회 스텁: 정상 유저 반환 (유저는 존재한다고 가정)
+        User user = Mockito.mock(User.class);
+        when(userService.findByIdAndIsDeletedFalseOrElseThrow(userId)).thenReturn(user);
+
+        // 핵심 스텁: 카테고리 조회 시 Optional.empty() 반환 → 서비스가 예외 경로로 진입
+        when(categoryRepository.findById(nonExistentCategoryId)).thenReturn(Optional.empty());
+
+        // 참고: 이 경우, 중복 체크 로직(profileRepository.existsBy...)은 카테고리 조회 실패 전에 호출되지 않으므로 스텁할 필요 없음
+
+        // -------------------- When (실행) --------------------
+        // createProfile 호출 시 BaseException이 발생해야 함
+        BaseException ex = assertThrows(
+                BaseException.class,
+                () -> profileService.createProfile(userId, req)
+        );
+
+        // -------------------- Then (검증) --------------------
+        // 1) 예외의 ErrorCode가 정확히 CATEGORY_NOT_FOUND인지 확인
+        assertEquals(ErrorCode.CATEGORY_NOT_FOUND, ex.getErrorCode());
+
+        // 2) 프로필 저장(save)이 절대 실행되면 안 됨
+        verify(profileRepository, never()).save(any(Profile.class));
+
+        // 3) 유저 조회와 카테고리 조회가 정확히 1회씩 호출되었는지 확인
+        verify(userService, times(1)).findByIdAndIsDeletedFalseOrElseThrow(userId);
+        verify(categoryRepository, times(1)).findById(nonExistentCategoryId);
+
+        // 4) 중복 체크 로직은 카테고리 조회 실패로 인해 호출되지 않았는지 확인
+        verify(profileRepository, never())
+                .existsByUserIdAndCategoryIdAndIsDeletedFalse(eq(userId), any());
+    }
+
 
 }
