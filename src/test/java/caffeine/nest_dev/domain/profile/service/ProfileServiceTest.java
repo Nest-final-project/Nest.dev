@@ -213,6 +213,27 @@ class ProfileServiceTest {
                 .existsByUserIdAndCategoryIdAndIsDeletedFalse(eq(userId), any());
     }
 
+    @Test
+    @DisplayName("createProfile: 유저가 없으면 USER_NOT_FOUND 예외를 그대로 전파한다")
+    void createProfile_shouldThrow_whenUserNotFound() {
+        // Given
+        Long userId = 999L;
+
+        ProfileRequestDto req = mock(ProfileRequestDto.class);
+
+        BaseException userNotFound = new BaseException(ErrorCode.USER_NOT_FOUND);
+        when(userService.findByIdAndIsDeletedFalseOrElseThrow(userId)).thenThrow(userNotFound);
+
+        // When
+        BaseException ex = assertThrows(BaseException.class, () -> profileService.createProfile(userId, req));
+
+        // Then
+        assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
+        verify(categoryRepository, never()).findById(any());
+        verify(profileRepository, never()).existsByUserIdAndCategoryIdAndIsDeletedFalse(any(), any());
+        verify(profileRepository, never()).save(any(Profile.class));
+    }
+
 
 
 }
